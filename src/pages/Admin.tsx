@@ -308,7 +308,7 @@ function TransactionsTab() {
             </div>
             <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
               <span>MAJ: {new Date(tx.updated_at).toLocaleDateString('fr-FR')}</span>
-              {tx.offer_amount && <span className="text-primary font-medium">Offre: {tx.offer_amount.toLocaleString()} FCFA</span>}
+              {tx.offer_amount && <span className="text-primary font-medium">Offre: {tx.offer_amount.toLocaleString()} IDR</span>}
             </div>
           </div>
         ))}
