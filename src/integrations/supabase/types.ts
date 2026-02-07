@@ -381,6 +381,432 @@ export type Database = {
           },
         ]
       }
+      wf_documents: {
+        Row: {
+          buyer_validated: boolean | null
+          buyer_validated_at: string | null
+          content: Json | null
+          created_at: string
+          id: string
+          is_final: boolean | null
+          pdf_url: string | null
+          seller_validated: boolean | null
+          seller_validated_at: string | null
+          title: string
+          transaction_id: string
+          type: string
+          updated_at: string
+          version: number | null
+        }
+        Insert: {
+          buyer_validated?: boolean | null
+          buyer_validated_at?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_final?: boolean | null
+          pdf_url?: string | null
+          seller_validated?: boolean | null
+          seller_validated_at?: string | null
+          title: string
+          transaction_id: string
+          type: string
+          updated_at?: string
+          version?: number | null
+        }
+        Update: {
+          buyer_validated?: boolean | null
+          buyer_validated_at?: string | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          is_final?: boolean | null
+          pdf_url?: string | null
+          seller_validated?: boolean | null
+          seller_validated_at?: string | null
+          title?: string
+          transaction_id?: string
+          type?: string
+          updated_at?: string
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_documents_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wf_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_messages: {
+        Row: {
+          contains_phone_number: boolean | null
+          content: string
+          created_at: string
+          flagged_suspicious: boolean | null
+          id: string
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+          transaction_id: string
+        }
+        Insert: {
+          contains_phone_number?: boolean | null
+          content: string
+          created_at?: string
+          flagged_suspicious?: boolean | null
+          id?: string
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+          transaction_id: string
+        }
+        Update: {
+          contains_phone_number?: boolean | null
+          content?: string
+          created_at?: string
+          flagged_suspicious?: boolean | null
+          id?: string
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_messages_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wf_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          data: Json | null
+          email_sent: boolean | null
+          email_sent_at: string | null
+          id: string
+          message: string
+          push_sent: boolean | null
+          push_sent_at: string | null
+          read_at: string | null
+          title: string
+          transaction_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          data?: Json | null
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          id?: string
+          message: string
+          push_sent?: boolean | null
+          push_sent_at?: string | null
+          read_at?: string | null
+          title: string
+          transaction_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          data?: Json | null
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          id?: string
+          message?: string
+          push_sent?: boolean | null
+          push_sent_at?: string | null
+          read_at?: string | null
+          title?: string
+          transaction_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_notifications_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wf_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          reminder_type: string
+          scheduled_at: string
+          sent: boolean | null
+          sent_at: string | null
+          transaction_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reminder_type: string
+          scheduled_at: string
+          sent?: boolean | null
+          sent_at?: string | null
+          transaction_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          reminder_type?: string
+          scheduled_at?: string
+          sent?: boolean | null
+          sent_at?: string | null
+          transaction_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_reminders_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wf_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_transaction_logs: {
+        Row: {
+          action: string
+          actor_id: string
+          actor_role: string | null
+          created_at: string
+          details: Json | null
+          id: string
+          new_status: Database["public"]["Enums"]["transaction_status"] | null
+          previous_status:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          transaction_id: string
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          actor_role?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["transaction_status"] | null
+          previous_status?:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          transaction_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          actor_role?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["transaction_status"] | null
+          previous_status?:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_transaction_logs_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wf_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_transactions: {
+        Row: {
+          buyer_id: string
+          buyer_intention: string | null
+          buyer_no_show: boolean | null
+          buyer_validated: boolean | null
+          buyer_validated_at: string | null
+          created_at: string
+          deal_finalized_at: string | null
+          deposit_amount: number | null
+          deposit_paid: boolean | null
+          id: string
+          matched_at: string
+          offer_amount: number | null
+          offer_details: string | null
+          offer_type: string | null
+          previous_status:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          property_id: string
+          rejection_details: string | null
+          rejection_reason: string | null
+          seller_id: string
+          seller_no_show: boolean | null
+          seller_validated: boolean | null
+          seller_validated_at: string | null
+          status: Database["public"]["Enums"]["transaction_status"]
+          updated_at: string
+          visit_completed_at: string | null
+          visit_confirmed_by_buyer: boolean | null
+          visit_confirmed_by_seller: boolean | null
+          visit_confirmed_date: string | null
+          visit_proposed_dates: Json | null
+          visit_refusal_details: string | null
+          visit_refusal_reason: string | null
+          visit_requested_at: string | null
+        }
+        Insert: {
+          buyer_id: string
+          buyer_intention?: string | null
+          buyer_no_show?: boolean | null
+          buyer_validated?: boolean | null
+          buyer_validated_at?: string | null
+          created_at?: string
+          deal_finalized_at?: string | null
+          deposit_amount?: number | null
+          deposit_paid?: boolean | null
+          id?: string
+          matched_at?: string
+          offer_amount?: number | null
+          offer_details?: string | null
+          offer_type?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          property_id: string
+          rejection_details?: string | null
+          rejection_reason?: string | null
+          seller_id: string
+          seller_no_show?: boolean | null
+          seller_validated?: boolean | null
+          seller_validated_at?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"]
+          updated_at?: string
+          visit_completed_at?: string | null
+          visit_confirmed_by_buyer?: boolean | null
+          visit_confirmed_by_seller?: boolean | null
+          visit_confirmed_date?: string | null
+          visit_proposed_dates?: Json | null
+          visit_refusal_details?: string | null
+          visit_refusal_reason?: string | null
+          visit_requested_at?: string | null
+        }
+        Update: {
+          buyer_id?: string
+          buyer_intention?: string | null
+          buyer_no_show?: boolean | null
+          buyer_validated?: boolean | null
+          buyer_validated_at?: string | null
+          created_at?: string
+          deal_finalized_at?: string | null
+          deposit_amount?: number | null
+          deposit_paid?: boolean | null
+          id?: string
+          matched_at?: string
+          offer_amount?: number | null
+          offer_details?: string | null
+          offer_type?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["transaction_status"]
+            | null
+          property_id?: string
+          rejection_details?: string | null
+          rejection_reason?: string | null
+          seller_id?: string
+          seller_no_show?: boolean | null
+          seller_validated?: boolean | null
+          seller_validated_at?: string | null
+          status?: Database["public"]["Enums"]["transaction_status"]
+          updated_at?: string
+          visit_completed_at?: string | null
+          visit_confirmed_by_buyer?: boolean | null
+          visit_confirmed_by_seller?: boolean | null
+          visit_confirmed_date?: string | null
+          visit_proposed_dates?: Json | null
+          visit_refusal_details?: string | null
+          visit_refusal_reason?: string | null
+          visit_requested_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wf_transactions_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wf_user_scores: {
+        Row: {
+          cancelled_transactions: number | null
+          certified: boolean | null
+          certified_at: string | null
+          completed_transactions: number | null
+          created_at: string
+          last_calculated_at: string | null
+          no_shows: number | null
+          score: number
+          total_transactions: number | null
+          updated_at: string
+          user_id: string
+          vip_access: boolean | null
+          visit_refusals: number | null
+        }
+        Insert: {
+          cancelled_transactions?: number | null
+          certified?: boolean | null
+          certified_at?: string | null
+          completed_transactions?: number | null
+          created_at?: string
+          last_calculated_at?: string | null
+          no_shows?: number | null
+          score?: number
+          total_transactions?: number | null
+          updated_at?: string
+          user_id: string
+          vip_access?: boolean | null
+          visit_refusals?: number | null
+        }
+        Update: {
+          cancelled_transactions?: number | null
+          certified?: boolean | null
+          certified_at?: string | null
+          completed_transactions?: number | null
+          created_at?: string
+          last_calculated_at?: string | null
+          no_shows?: number | null
+          score?: number
+          total_transactions?: number | null
+          updated_at?: string
+          user_id?: string
+          vip_access?: boolean | null
+          visit_refusals?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -393,6 +819,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      wf_calculate_user_score: { Args: { p_user_id: string }; Returns: number }
     }
     Enums: {
       app_role: "user" | "owner" | "admin" | "notaire" | "agent"
@@ -410,6 +837,21 @@ export type Database = {
         | "commerce"
         | "entrepot"
       swipe_direction: "left" | "right"
+      transaction_status:
+        | "matched"
+        | "visit_requested"
+        | "visit_proposed"
+        | "visit_confirmed"
+        | "visit_completed"
+        | "visit_cancelled"
+        | "visit_rescheduled"
+        | "intention_expressed"
+        | "offer_made"
+        | "documents_generated"
+        | "in_validation"
+        | "deal_finalized"
+        | "deal_cancelled"
+        | "archived"
       visit_status: "pending" | "confirmed" | "cancelled" | "completed"
     }
     CompositeTypes: {
@@ -554,6 +996,22 @@ export const Constants = {
         "entrepot",
       ],
       swipe_direction: ["left", "right"],
+      transaction_status: [
+        "matched",
+        "visit_requested",
+        "visit_proposed",
+        "visit_confirmed",
+        "visit_completed",
+        "visit_cancelled",
+        "visit_rescheduled",
+        "intention_expressed",
+        "offer_made",
+        "documents_generated",
+        "in_validation",
+        "deal_finalized",
+        "deal_cancelled",
+        "archived",
+      ],
       visit_status: ["pending", "confirmed", "cancelled", "completed"],
     },
   },
