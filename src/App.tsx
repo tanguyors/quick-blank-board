@@ -11,6 +11,8 @@ import Profile from "./pages/Profile";
 import ProfileSelection from "./pages/ProfileSelection";
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
+import BuyerDashboard from "./pages/BuyerDashboard";
+import NotaireDashboard from "./pages/NotaireDashboard";
 import PropertyNew from "./pages/PropertyNew";
 import PropertyEdit from "./pages/PropertyEdit";
 import PropertyView from "./pages/PropertyView";
@@ -42,6 +44,8 @@ const App = () => (
             <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/buyer" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+            <Route path="/notaire" element={<ProtectedRoute><NotaireDashboard /></ProtectedRoute>} />
             <Route path="/properties/new" element={<ProtectedRoute><PropertyNew /></ProtectedRoute>} />
             <Route path="/properties/:id/edit" element={<ProtectedRoute><PropertyEdit /></ProtectedRoute>} />
             <Route path="/properties/:id" element={<ProtectedRoute><PropertyView /></ProtectedRoute>} />
