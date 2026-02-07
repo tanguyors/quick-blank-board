@@ -1,7 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
 import { Heart, X, ArrowRight, ChevronRight, MapPin, BedDouble, Shield, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,24 +12,24 @@ const DEMO_CARDS = [
   {
     image: villaImg,
     type: 'Villa',
-    location: 'Ubud, Bali',
-    price: '3,2 Miliar IDR',
+    location: 'Almadies, Dakar',
+    price: '320 M FCFA',
     beds: 4,
     area: '280 m²',
   },
   {
     image: apartmentImg,
     type: 'Appartement',
-    location: 'Menteng, Jakarta',
-    price: '1,8 Miliar IDR',
+    location: 'Plateau, Abidjan',
+    price: '180 M FCFA',
     beds: 2,
     area: '120 m²',
   },
   {
     image: beachImg,
     type: 'Maison de plage',
-    location: 'Seminyak, Bali',
-    price: '5,5 Miliar IDR',
+    location: 'Cocody, Abidjan',
+    price: '550 M FCFA',
     beds: 3,
     area: '200 m²',
   },
@@ -61,18 +59,12 @@ const SLIDES = [
 ];
 
 export default function Home() {
-  const { user, roles, loading } = useAuth();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [demoCardIndex, setDemoCardIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  if (!loading && user) {
-    const isOwner = roles.includes('owner');
-    return <Navigate to={isOwner ? '/dashboard' : '/explore'} replace />;
-  }
 
   const slide = SLIDES[currentSlide];
   const isLast = currentSlide === SLIDES.length - 1;
