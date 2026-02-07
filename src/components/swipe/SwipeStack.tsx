@@ -131,8 +131,10 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           <X className="h-7 w-7" />
         </button>
         <button
+          onClick={() => handleSwipe('right')}
           disabled={swipe.isPending}
           className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
+          aria-label="Super like"
         >
           <Star className="h-6 w-6" />
         </button>

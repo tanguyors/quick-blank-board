@@ -53,7 +53,7 @@ export default function BuyerDashboard() {
     !['deal_finalized', 'deal_cancelled', 'archived'].includes(t.status)
   ) || [];
 
-  const displayName = profile?.full_name || profile?.first_name || 'Selamat datang';
+  const displayName = profile?.full_name || profile?.first_name || 'Acheteur';
   const scoreVal = userScore?.score ?? 50;
 
   return (
@@ -62,7 +62,7 @@ export default function BuyerDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3">
           <div>
-            <p className="text-lg font-bold text-foreground">Halo, {displayName} 👋</p>
+            <p className="text-lg font-bold text-foreground">Bonjour, {displayName} 👋</p>
             <p className="text-xs text-muted-foreground">Trouvez votre bien idéal</p>
           </div>
           <NotificationBell />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
@@ -23,6 +23,7 @@ export default function NotaireDashboard() {
   const [activeTab, setActiveTab] = useState<NotaireTab>('overview');
 
   if (loading) return null;
+  if (!roles.includes('notaire') && !roles.includes('admin')) return <Navigate to="/" replace />;
 
   const tabs: { id: NotaireTab; label: string; icon: typeof Scale }[] = [
     { id: 'overview', label: 'Tableau de bord', icon: TrendingUp },
@@ -366,7 +367,7 @@ function NotaireTransactions() {
 
             {tx.offer_amount && (
               <p className="text-xs text-primary font-medium mt-1.5">
-                Offre: {tx.offer_amount.toLocaleString()} {tx.property?.prix_currency || 'IDR'}
+                Offre: {tx.offer_amount.toLocaleString()} {tx.property?.prix_currency || 'XOF'}
               </p>
             )}
           </button>
