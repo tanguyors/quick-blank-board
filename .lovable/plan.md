@@ -32,18 +32,18 @@
 - BottomNav adaptatif par rôle (buyer 5 items, owner 4, notaire 3, admin ajouté dynamiquement)
 - Routing intelligent selon le rôle à la connexion (/ → /buyer, /dashboard, /notaire)
 
-## 🔲 Étape 4 — Edge Functions + Améliorations
-- Edge Function `send-email` : emails transactionnels (notifications, rappels)
-- Edge Function `send-push` : notifications push
-- Edge Function `process-reminders` : traitement des wf_reminders programmés
-- Edge Function `create-test-users` : création de comptes de test avec données
-- Filtres avancés sur l'exploration (prix, type, surface, secteur)
-- PWA manifest + service worker basique
+## ✅ Étape 4 — Edge Functions + Améliorations
+- Edge Function `create-test-users` : 6 comptes de test (2 buyers, 2 owners, 1 notaire, 1 admin) avec biens, matches et transactions
+- Edge Function `process-reminders` : traitement des wf_reminders programmés → notifications in-app
+- Edge Function `send-push` : notifications push (mock/log, prêt pour FCM/OneSignal)
+- Filtres avancés sur Explore (opération, type, budget slider, surface, chambres, secteur)
+- PWA manifest + meta tags mobile (apple-mobile-web-app, theme-color)
+- SEO meta tags (title, description, OG tags, Twitter cards)
 
 ## 🔲 Étape 5 — Polish & UX
 - Animations framer-motion sur les transitions clés
 - Dark mode toggle
 - Responsive desktop amélioré (sidebar navigation)
 - Accessibilité (aria labels, focus management)
-- SEO meta tags dynamiques par page
 - Performance (lazy loading routes, image optimization)
+- Capacitor setup pour build natif iOS/Android
