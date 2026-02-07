@@ -11,5 +11,7 @@ export default function Index() {
   if (!user) return <Home />;
 
   const isOwner = roles.includes('owner');
-  return <Navigate to={isOwner ? '/dashboard' : '/explore'} replace />;
+  const isNotaire = roles.includes('notaire');
+  const redirectPath = isNotaire ? '/notaire' : isOwner ? '/dashboard' : '/buyer';
+  return <Navigate to={redirectPath} replace />;
 }

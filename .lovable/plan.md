@@ -25,6 +25,13 @@
 - Auto-génération après makeOffer dans WorkflowService
 - Route /admin avec accès restreint aux rôles admin
 
+## ✅ Étape 3.5 — Dashboards par rôle
+- Dashboard Acheteur (BuyerDashboard) : transactions actives, stats, quick actions, score
+- Dashboard Owner enrichi : ajout onglet Transactions avec stats en cours/finalisées
+- Dashboard Notaire (NotaireDashboard) : dossiers actifs, documents en attente, validation status
+- BottomNav adaptatif par rôle (buyer 5 items, owner 4, notaire 3, admin ajouté dynamiquement)
+- Routing intelligent selon le rôle à la connexion (/ → /buyer, /dashboard, /notaire)
+
 ## 🔲 Étape 4 — Edge Functions + Améliorations
 - Edge Function `send-email` : emails transactionnels (notifications, rappels)
 - Edge Function `send-push` : notifications push

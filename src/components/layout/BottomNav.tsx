@@ -1,9 +1,10 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield } from 'lucide-react';
+import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const buyerLinks = [
+  { to: '/buyer', icon: LayoutDashboard, label: 'Accueil' },
   { to: '/explore', icon: Flame, label: 'Découvrir' },
   { to: '/matches', icon: Heart, label: 'Favoris' },
   { to: '/messages', icon: MessageSquare, label: 'Messages' },
@@ -17,6 +18,12 @@ const ownerLinks = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
+const notaireLinks = [
+  { to: '/notaire', icon: Scale, label: 'Dossiers' },
+  { to: '/messages', icon: MessageSquare, label: 'Messages' },
+  { to: '/profile', icon: User, label: 'Profil' },
+];
+
 const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
 
 export function BottomNav() {
@@ -24,9 +31,13 @@ export function BottomNav() {
   const { roles } = useAuth();
   const isOwner = roles.includes('owner');
   const isAdmin = roles.includes('admin');
-  let links = isOwner ? ownerLinks : buyerLinks;
+  const isNotaire = roles.includes('notaire');
+
+  let links = isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
+
   if (isAdmin) {
-    links = [...links.slice(0, 3), adminLink, links[links.length - 1]];
+    // Insert admin link before last (Profile)
+    links = [...links.slice(0, -1), adminLink, links[links.length - 1]];
   }
 
   return (
