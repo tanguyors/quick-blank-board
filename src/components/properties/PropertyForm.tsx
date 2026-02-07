@@ -14,7 +14,35 @@ const PROPERTY_TYPES = ['villa', 'appartement', 'terrain', 'studio', 'maison', '
 const OPERATIONS = ['vente', 'location'] as const;
 const DROITS = ['titre_foncier', 'bail', 'deliberation'] as const;
 const CURRENCIES = ['EUR', 'XOF', 'USD'];
-const EQUIPEMENTS = ['Climatisation', 'Piscine', 'Jardin', 'Garage', 'Ascenseur', 'Balcon', 'Terrasse', 'Meublé', 'Gardien', 'Parking'];
+
+// Types that don't have bedrooms
+const TYPES_WITHOUT_BEDROOMS = ['terrain', 'bureau', 'commerce', 'entrepot'];
+// Types that don't have bathrooms
+const TYPES_WITHOUT_BATHROOMS = ['terrain'];
+// Types where bedrooms are fixed to 1
+const TYPES_FIXED_ONE_BEDROOM = ['studio'];
+
+const EQUIPEMENTS_RESIDENTIAL = ['Climatisation', 'Piscine', 'Jardin', 'Garage', 'Ascenseur', 'Balcon', 'Terrasse', 'Meublé', 'Gardien', 'Parking'];
+const EQUIPEMENTS_TERRAIN = ['Clôturé', 'Viabilisé', 'Accès goudronné', 'Eau courante', 'Électricité', 'Gardien'];
+const EQUIPEMENTS_COMMERCIAL = ['Climatisation', 'Parking', 'Ascenseur', 'Gardien', 'Alarme', 'Accès handicapé', 'Entrepôt', 'Bureau meublé'];
+
+function getEquipements(type: string) {
+  if (type === 'terrain') return EQUIPEMENTS_TERRAIN;
+  if (['bureau', 'commerce', 'entrepot'].includes(type)) return EQUIPEMENTS_COMMERCIAL;
+  return EQUIPEMENTS_RESIDENTIAL;
+}
+
+function hasRooms(type: string) {
+  return !TYPES_WITHOUT_BEDROOMS.includes(type);
+}
+
+function hasBathrooms(type: string) {
+  return !TYPES_WITHOUT_BATHROOMS.includes(type);
+}
+
+function isFixedOneBedroom(type: string) {
+  return TYPES_FIXED_ONE_BEDROOM.includes(type);
+}
 
 interface PropertyFormProps {
   property?: Tables<'properties'> | null;
@@ -45,12 +73,26 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
 
   const update = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
 
+  const handleTypeChange = (type: string) => {
+    setForm(prev => {
+      const newForm = { ...prev, type };
+      if (TYPES_WITHOUT_BEDROOMS.includes(type)) newForm.chambres = '0';
+      if (TYPES_WITHOUT_BATHROOMS.includes(type)) newForm.salles_bain = '0';
+      if (TYPES_FIXED_ONE_BEDROOM.includes(type)) newForm.chambres = '1';
+      const validEquipements = getEquipements(type);
+      newForm.equipements = prev.equipements.filter((eq: string) => validEquipements.includes(eq));
+      return newForm;
+    });
+  };
+
+
   const handleSubmit = async () => {
     try {
       const payload = {
         type: form.type, operations: form.operations, adresse: form.adresse,
         secteur: form.secteur || null, surface: form.surface ? Number(form.surface) : null,
-        chambres: Number(form.chambres), salles_bain: Number(form.salles_bain),
+        chambres: isFixedOneBedroom(form.type) ? 1 : (hasRooms(form.type) ? Number(form.chambres) : 0),
+        salles_bain: hasBathrooms(form.type) ? Number(form.salles_bain) : 0,
         prix: Number(form.prix), prix_currency: form.prix_currency,
         droit: form.droit || null, description: form.description || null,
         equipements: form.equipements,
@@ -83,7 +125,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         <div className="space-y-4">
           <div>
             <Label>Type de bien</Label>
-            <Select value={form.type} onValueChange={v => update('type', v)}>
+            <Select value={form.type} onValueChange={handleTypeChange}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {PROPERTY_TYPES.map(t => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}
@@ -109,10 +151,28 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Surface (m²)</Label><Input type="number" value={form.surface} onChange={e => update('surface', e.target.value)} /></div>
-            <div><Label>Chambres</Label><Input type="number" value={form.chambres} onChange={e => update('chambres', e.target.value)} /></div>
-            <div><Label>Salles de bain</Label><Input type="number" value={form.salles_bain} onChange={e => update('salles_bain', e.target.value)} /></div>
             <div><Label>Prix</Label><Input type="number" value={form.prix} onChange={e => update('prix', e.target.value)} required /></div>
           </div>
+
+          {/* Chambres & Salles de bain - conditionnels selon le type */}
+          {(hasRooms(form.type) || hasBathrooms(form.type)) && (
+            <div className="grid grid-cols-2 gap-4">
+              {hasRooms(form.type) && (
+                <div>
+                  <Label>Chambres</Label>
+                  {isFixedOneBedroom(form.type) ? (
+                    <Input type="number" value="1" disabled className="opacity-60" />
+                  ) : (
+                    <Input type="number" value={form.chambres} onChange={e => update('chambres', e.target.value)} />
+                  )}
+                </div>
+              )}
+              {hasBathrooms(form.type) && (
+                <div><Label>Salles de bain</Label><Input type="number" value={form.salles_bain} onChange={e => update('salles_bain', e.target.value)} /></div>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Devise</Label>
@@ -121,13 +181,16 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
                 <SelectContent>{CURRENCIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Droit foncier</Label>
-              <Select value={form.droit} onValueChange={v => update('droit', v)}>
-                <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                <SelectContent>{DROITS.map(d => <SelectItem key={d} value={d}>{d.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
+            {/* Droit foncier uniquement pour la vente */}
+            {form.operations === 'vente' && (
+              <div>
+                <Label>Droit foncier</Label>
+                <Select value={form.droit} onValueChange={v => update('droit', v)}>
+                  <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+                  <SelectContent>{DROITS.map(d => <SelectItem key={d} value={d}>{d.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Latitude</Label><Input type="number" step="any" value={form.latitude} onChange={e => update('latitude', e.target.value)} /></div>
@@ -142,7 +205,7 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
           <div>
             <Label>Équipements</Label>
             <div className="grid grid-cols-2 gap-2 mt-2">
-              {EQUIPEMENTS.map(eq => (
+              {getEquipements(form.type).map(eq => (
                 <label key={eq} className="flex items-center gap-2 text-sm">
                   <Checkbox
                     checked={form.equipements.includes(eq)}
