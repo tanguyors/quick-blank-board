@@ -2,8 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useExplorableProperties, useSwipe } from '@/hooks/useSwipes';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
-import { Button } from '@/components/ui/button';
-import { X, Heart } from 'lucide-react';
+import { X, Star, Heart } from 'lucide-react';
 
 export function SwipeStack() {
   const { data: properties, isLoading } = useExplorableProperties();
@@ -16,6 +15,7 @@ export function SwipeStack() {
   const startPos = useRef({ x: 0, y: 0 });
 
   const currentProperty = properties?.[currentIndex];
+  const totalCount = properties?.length || 0;
 
   const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
     if (!currentProperty || swipe.isPending) return;
@@ -58,7 +58,11 @@ export function SwipeStack() {
     }
   };
 
-  if (isLoading) return <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-full">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    </div>
+  );
 
   if (!currentProperty) {
     return (
@@ -71,47 +75,69 @@ export function SwipeStack() {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full px-4">
-      <div
-        className="w-full max-w-sm mx-auto touch-none"
-        style={{
-          transform: swipeDirection === 'left'
-            ? 'translateX(-150%) rotate(-30deg)'
-            : swipeDirection === 'right'
-              ? 'translateX(150%) rotate(30deg)'
-              : `translateX(${offset.x}px) rotate(${offset.x * 0.1}deg)`,
-          transition: swipeDirection ? 'transform 0.3s ease-out, opacity 0.3s' : isDragging ? 'none' : 'transform 0.3s ease-out',
-          opacity: swipeDirection ? 0 : 1,
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-      >
-        <SwipeCard property={currentProperty} />
+    <div className="relative flex flex-col items-center justify-center h-full">
+      {/* Counter */}
+      <div className="absolute top-4 right-4 z-10">
+        <span className="bg-secondary/80 text-foreground text-sm px-3 py-1.5 rounded-full font-medium">
+          {currentIndex + 1}/{totalCount}
+        </span>
       </div>
 
+      {/* Card */}
+      <div className="flex-1 flex items-center w-full px-4">
+        <div
+          className="w-full max-w-sm mx-auto touch-none"
+          style={{
+            transform: swipeDirection === 'left'
+              ? 'translateX(-150%) rotate(-30deg)'
+              : swipeDirection === 'right'
+                ? 'translateX(150%) rotate(30deg)'
+                : `translateX(${offset.x}px) rotate(${offset.x * 0.1}deg)`,
+            transition: swipeDirection ? 'transform 0.3s ease-out, opacity 0.3s' : isDragging ? 'none' : 'transform 0.3s ease-out',
+            opacity: swipeDirection ? 0 : 1,
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+        >
+          <SwipeCard property={currentProperty} />
+        </div>
+      </div>
+
+      {/* Swipe indicators */}
       {offset.x < -50 && (
-        <div className="absolute top-20 right-8 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-bold text-lg rotate-12">PASSER</div>
+        <div className="absolute top-32 right-8 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-bold text-lg rotate-12 z-20">
+          PASSER
+        </div>
       )}
       {offset.x > 50 && (
-        <div className="absolute top-20 left-8 bg-accent text-accent-foreground px-4 py-2 rounded-lg font-bold text-lg -rotate-12">J'AIME</div>
+        <div className="absolute top-32 left-8 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-bold text-lg -rotate-12 z-20">
+          J'AIME
+        </div>
       )}
 
-      <div className="flex gap-8 mt-6">
-        <Button
-          size="lg" variant="outline"
-          className="rounded-full h-16 w-16 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-          onClick={() => handleSwipe('left')} disabled={swipe.isPending}
+      {/* Action buttons */}
+      <div className="flex items-center gap-6 py-6">
+        <button
+          onClick={() => handleSwipe('left')}
+          disabled={swipe.isPending}
+          className="w-16 h-16 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
         >
-          <X className="h-8 w-8" />
-        </Button>
-        <Button
-          size="lg"
-          className="rounded-full h-16 w-16 bg-accent hover:bg-accent/90 text-accent-foreground"
-          onClick={() => handleSwipe('right')} disabled={swipe.isPending}
+          <X className="h-7 w-7" />
+        </button>
+        <button
+          disabled={swipe.isPending}
+          className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
         >
-          <Heart className="h-8 w-8" />
-        </Button>
+          <Star className="h-6 w-6" />
+        </button>
+        <button
+          onClick={() => handleSwipe('right')}
+          disabled={swipe.isPending}
+          className="w-16 h-16 rounded-full border-2 border-muted-foreground flex items-center justify-center text-muted-foreground hover:bg-muted-foreground hover:text-background transition-colors"
+        >
+          <Heart className="h-7 w-7" />
+        </button>
       </div>
 
       {showMatch && <MatchAnimation onClose={() => setShowMatch(false)} />}

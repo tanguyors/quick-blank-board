@@ -84,6 +84,11 @@ export default {
           from: { transform: "translateX(0) rotate(0)", opacity: "1" },
           to: { transform: "translateX(150%) rotate(30deg)", opacity: "0" },
         },
+        "match-pop": {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "60%": { transform: "scale(1.2)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -91,6 +96,7 @@ export default {
         "fade-in": "fade-in 0.3s ease-out",
         "slide-left": "slide-left 0.3s ease-out forwards",
         "slide-right": "slide-right 0.3s ease-out forwards",
+        "match-pop": "match-pop 0.5s ease-out",
       },
     },
   },
