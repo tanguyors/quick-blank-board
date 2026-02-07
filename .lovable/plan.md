@@ -1,5 +1,6 @@
 
 
+
 # Plan SomaGate
 
 ## ✅ Étape 1 — Bugs critiques + Workflow transactionnel
@@ -40,10 +41,16 @@
 - PWA manifest + meta tags mobile (apple-mobile-web-app, theme-color)
 - SEO meta tags (title, description, OG tags, Twitter cards)
 
-## 🔲 Étape 5 — Polish & UX
-- Animations framer-motion sur les transitions clés
-- Dark mode toggle
-- Responsive desktop amélioré (sidebar navigation)
-- Accessibilité (aria labels, focus management)
-- Performance (lazy loading routes, image optimization)
+## ✅ Étape 5 — Polish & UX
+- Animations framer-motion (PageTransition) sur toutes les pages
+- Dark mode toggle avec next-themes (light/dark, défaut dark)
+- Responsive desktop avec sidebar navigation (AppSidebar, hidden mobile)
+- Header + BottomNav cachés sur desktop (lg:hidden)
+- Accessibilité (aria-labels, aria-current, role=main/banner/navigation)
+- Performance (React.lazy + Suspense sur toutes les routes protégées)
+- Thème light ajouté (variables CSS :root + .dark)
+
+## 🔲 Étape 6 — Capacitor + Build natif
 - Capacitor setup pour build natif iOS/Android
+- Configuration capacitor.config.ts
+- Instructions build et déploiement stores
