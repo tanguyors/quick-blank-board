@@ -44,8 +44,10 @@ export function AuthForm() {
             user_id: data.user.id,
             role,
           });
+          // Initialize user score
+          await supabase.from('wf_user_scores').insert({ user_id: data.user.id }).select();
           toast.success('Compte créé avec succès !');
-          navigate('/');
+          navigate('/profile-selection');
         }
       }
     } catch (error: any) {

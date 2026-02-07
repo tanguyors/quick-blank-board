@@ -8,6 +8,8 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import ProfileSelection from "./pages/ProfileSelection";
+import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import PropertyNew from "./pages/PropertyNew";
 import PropertyEdit from "./pages/PropertyEdit";
@@ -20,6 +22,7 @@ import Visits from "./pages/Visits";
 import MapView from "./pages/MapView";
 import Transaction from "./pages/Transaction";
 import MyTransactions from "./pages/MyTransactions";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +37,8 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Index />} />
+            <Route path="/profile-selection" element={<ProtectedRoute><ProfileSelection /></ProtectedRoute>} />
+            <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/properties/new" element={<ProtectedRoute><PropertyNew /></ProtectedRoute>} />
@@ -47,6 +52,7 @@ const App = () => (
             <Route path="/map" element={<ProtectedRoute><MapView /></ProtectedRoute>} />
             <Route path="/transaction/:id" element={<ProtectedRoute><Transaction /></ProtectedRoute>} />
             <Route path="/mes-transactions" element={<ProtectedRoute><MyTransactions /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
