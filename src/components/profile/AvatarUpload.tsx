@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Camera } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -15,6 +14,10 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const initials = user?.email
+    ? user.email.substring(0, 2).toUpperCase()
+    : '??';
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,21 +39,20 @@ export function AvatarUpload({ url, onUpload }: AvatarUploadProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative">
-        <Avatar className="h-24 w-24">
-          <AvatarImage src={url || ''} />
-          <AvatarFallback className="text-2xl">{user?.email?.[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <Button
-          size="icon"
-          className="absolute bottom-0 right-0 rounded-full h-8 w-8"
-          onClick={() => fileRef.current?.click()}
-          disabled={uploading}
-        >
-          <Camera className="h-4 w-4" />
-        </Button>
-      </div>
+    <div className="relative">
+      <Avatar className="h-28 w-28 border-4 border-primary/30">
+        <AvatarImage src={url || ''} />
+        <AvatarFallback className="text-3xl bg-primary/20 text-primary font-bold">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <button
+        onClick={() => fileRef.current?.click()}
+        disabled={uploading}
+        className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-secondary border-2 border-background flex items-center justify-center text-foreground hover:bg-muted transition-colors"
+      >
+        <Camera className="h-4 w-4" />
+      </button>
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
     </div>
   );
