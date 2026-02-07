@@ -1,1 +1,10 @@
 project_id = "glefjdbehtumybpabkzj"
+
+[functions.create-test-users]
+verify_jwt = false
+
+[functions.process-reminders]
+verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false

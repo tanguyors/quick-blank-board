@@ -3,9 +3,14 @@ import { useExplorableProperties, useSwipe } from '@/hooks/useSwipes';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { X, Star, Heart } from 'lucide-react';
+import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
-export function SwipeStack() {
-  const { data: properties, isLoading } = useExplorableProperties();
+interface SwipeStackProps {
+  filters?: ExploreFilterValues;
+}
+
+export function SwipeStack({ filters }: SwipeStackProps) {
+  const { data: properties, isLoading } = useExplorableProperties(filters);
   const swipe = useSwipe();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
@@ -69,7 +74,7 @@ export function SwipeStack() {
       <div className="flex flex-col items-center justify-center h-full text-center p-8">
         <Heart className="h-16 w-16 text-muted-foreground mb-4" />
         <h2 className="text-xl font-semibold mb-2">Plus de biens à explorer</h2>
-        <p className="text-muted-foreground">Revenez plus tard pour découvrir de nouveaux biens !</p>
+        <p className="text-muted-foreground">Revenez plus tard ou ajustez vos filtres pour découvrir de nouveaux biens !</p>
       </div>
     );
   }

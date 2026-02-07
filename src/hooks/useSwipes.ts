@@ -2,11 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { WorkflowService } from '@/services/workflowService';
+import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
-export function useExplorableProperties() {
+export function useExplorableProperties(filters?: ExploreFilterValues) {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ['explorable-properties', user?.id],
+    queryKey: ['explorable-properties', user?.id, filters],
     queryFn: async () => {
       const { data: swipes } = await supabase
         .from('swipes')
@@ -14,12 +15,34 @@ export function useExplorableProperties() {
         .eq('user_id', user!.id);
       const swipedIds = new Set(swipes?.map(s => s.property_id) || []);
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('properties')
         .select('*, property_media(*)')
         .eq('is_published', true)
         .eq('status', 'available')
         .neq('owner_id', user!.id);
+
+      // Apply filters
+      if (filters?.operation) {
+        query = query.eq('operations', filters.operation as any);
+      }
+      if (filters?.type) {
+        query = query.eq('type', filters.type as any);
+      }
+      if (filters?.priceRange && (filters.priceRange[0] > 0 || filters.priceRange[1] < 10000000000)) {
+        query = query.gte('prix', filters.priceRange[0]).lte('prix', filters.priceRange[1]);
+      }
+      if (filters?.surfaceRange && (filters.surfaceRange[0] > 0 || filters.surfaceRange[1] < 1000)) {
+        query = query.gte('surface', filters.surfaceRange[0]).lte('surface', filters.surfaceRange[1]);
+      }
+      if (filters?.chambresMin && filters.chambresMin > 0) {
+        query = query.gte('chambres', filters.chambresMin);
+      }
+      if (filters?.secteur) {
+        query = query.eq('secteur', filters.secteur);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data?.filter(p => !swipedIds.has(p.id)) || [];
     },

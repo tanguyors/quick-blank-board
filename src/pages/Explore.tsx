@@ -2,12 +2,15 @@ import { useState, lazy, Suspense } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
 import { LayoutGrid, Map } from 'lucide-react';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
 export default function Explore() {
   const [view, setView] = useState<'swipe' | 'carte'>('swipe');
+  const [filters, setFilters] = useState<ExploreFilterValues>(DEFAULT_FILTERS);
+  const activeFilterCount = useFilterCount(filters);
 
   return (
     <AppLayout hideHeader>
@@ -38,13 +41,20 @@ export default function Explore() {
             </button>
           </div>
 
-          <NotificationBell />
+          <div className="flex items-center gap-2">
+            <ExploreFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              activeCount={activeFilterCount}
+            />
+            <NotificationBell />
+          </div>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-hidden">
           {view === 'swipe' ? (
-            <SwipeStack />
+            <SwipeStack filters={filters} />
           ) : (
             <Suspense fallback={
               <div className="flex items-center justify-center h-full">
