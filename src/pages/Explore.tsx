@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SwipeStack } from '@/components/swipe/SwipeStack';
-import { PropertyMap } from '@/components/map/PropertyMap';
 import { LayoutGrid, Map } from 'lucide-react';
+import { lazy, Suspense } from 'react';
+
+const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
 export default function Explore() {
   const [view, setView] = useState<'swipe' | 'carte'>('swipe');
@@ -42,7 +44,17 @@ export default function Explore() {
 
         {/* Content */}
         <div className="flex-1 overflow-hidden">
-          {view === 'swipe' ? <SwipeStack /> : <PropertyMap />}
+          {view === 'swipe' ? (
+            <SwipeStack />
+          ) : (
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              </div>
+            }>
+              <PropertyMap />
+            </Suspense>
+          )}
         </div>
       </div>
     </AppLayout>

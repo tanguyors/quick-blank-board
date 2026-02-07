@@ -18,6 +18,8 @@ import Messages from "./pages/Messages";
 import ConversationView from "./pages/ConversationView";
 import Visits from "./pages/Visits";
 import MapView from "./pages/MapView";
+import Transaction from "./pages/Transaction";
+import MyTransactions from "./pages/MyTransactions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,8 @@ const App = () => (
             <Route path="/messages/:id" element={<ProtectedRoute><ConversationView /></ProtectedRoute>} />
             <Route path="/visits" element={<ProtectedRoute><Visits /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute><MapView /></ProtectedRoute>} />
+            <Route path="/transaction/:id" element={<ProtectedRoute><Transaction /></ProtectedRoute>} />
+            <Route path="/mes-transactions" element={<ProtectedRoute><MyTransactions /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
