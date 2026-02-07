@@ -363,7 +363,7 @@ export class DocumentGenerationService {
         "Le préavis de résiliation est de 3 mois.",
         "Toute sous-location est interdite sans accord écrit du bailleur.",
       ],
-      note: 'Ce document est un projet de bail. Il doit être validé et enregistré conformément à la législation ivoirienne.',
+      note: 'Ce document est un projet de bail. Il doit être validé et enregistré conformément à la législation indonésienne.',
     };
   }
 }

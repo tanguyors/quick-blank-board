@@ -231,7 +231,7 @@ export function ProfileForm() {
             icon={<MessageSquare className="h-5 w-5" />}
             label="WhatsApp"
             value={form.whatsapp}
-            placeholder="+225..."
+            placeholder="+62..."
             editing={editingField === 'whatsapp'}
             onEdit={() => setEditingField('whatsapp')}
             onChange={v => setForm(f => ({ ...f, whatsapp: v }))}

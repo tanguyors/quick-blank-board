@@ -83,7 +83,7 @@ export default function ProfileSetup() {
             className="h-14 bg-card border-border rounded-xl"
           />
           <Input
-            placeholder="Numéro WhatsApp (+225...)"
+            placeholder="Numéro WhatsApp (+62...)"
             value={form.whatsapp}
             onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
             className="h-14 bg-card border-border rounded-xl"
