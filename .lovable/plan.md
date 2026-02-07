@@ -1,218 +1,160 @@
 
 
-# SomaGate - Plan de reconstruction complet
+# Etape 1 : Corriger les bugs existants et ajouter les fonctionnalites manquantes prioritaires
 
-## Vue d'ensemble
+## Analyse de l'existant vs le cahier des charges
 
-Reconstruction de l'application immobiliere SomaGate avec toutes les fonctionnalites principales : authentification, profil utilisateur, gestion de biens, systeme de swipe, matches, messagerie en temps reel, gestion de visites et vue carte.
+### Bugs a corriger en priorite
 
-La base de donnees Supabase est deja en place avec 9 tables (profiles, user_roles, properties, property_media, swipes, matches, conversations, messages, visits) et toutes les politiques RLS configurees.
+1. **Erreur critique sur `/explore`** : Le composant `PropertyMap` utilise `react-leaflet` de maniere incompatible avec React 18. L'erreur `render2 is not a function` vient d'un conflit `Context.Consumer` dans `MapContainer`. Il faut corriger l'import et le rendu de la carte.
 
----
+2. **Pas de page de selection de role (`/profile-selection`)** : Le cahier des charges prevoit qu'apres l'inscription, l'utilisateur passe par une page de selection de role PUIS une page de configuration de profil (`/profile-setup`). Actuellement, le role est choisi dans le formulaire d'inscription directement, mais il manque le flux post-inscription complet.
 
-## Phase 1 : Fondations (Auth + Layout + Theme)
+3. **Pas de page d'accueil desktop (`Home.tsx`)** : Le cahier des charges prevoit une page d'accueil pour le desktop, avec la landing page. Actuellement, `/` redirige directement vers `/explore` ou `/dashboard`.
 
-### 1.1 Theme et design system
-- Mise a jour des couleurs CSS pour un theme immobilier moderne (tons bleu/indigo avec accents orange pour les CTA)
-- Ajout d'animations de swipe (keyframes pour slide-left, slide-right, fade-in)
+4. **Statistiques du profil en dur** : Les stats (Biens vus, Matches, Visites) affichent toutes `0` en dur. Elles doivent etre alimentees par les vraies donnees depuis Supabase.
 
-### 1.2 Contexte d'authentification
-- Creation d'un `AuthProvider` avec `onAuthStateChange` + `getSession`
-- Hook `useAuth` pour acceder a l'utilisateur courant, son profil et ses roles
-- Composant `ProtectedRoute` pour securiser les pages
+### Fonctionnalites manquantes (par priorite)
 
-### 1.3 Pages d'authentification
-- Page `/auth` avec formulaire de connexion (email/mot de passe)
-- Formulaire d'inscription avec choix du role (utilisateur/acheteur ou proprietaire)
-- Redirection automatique apres connexion
-- Attribution du role via insertion dans `user_roles` a l'inscription
+**Priorite haute - Workflow de base manquant :**
 
-### 1.4 Layout principal
-- `AppLayout` avec barre de navigation inferieure (mobile-first) : Accueil, Recherche/Swipe, Matches, Messages, Profil
-- Header avec logo SomaGate et bouton de deconnexion
-- Navigation conditionnelle selon le role (proprietaire vs acheteur)
+5. **Tables workflow manquantes** : Le cahier des charges prevoit 7 tables supplementaires (`wf_transactions`, `wf_transaction_logs`, `wf_messages`, `wf_documents`, `wf_notifications`, `wf_user_scores`, `wf_reminders`). Aucune n'existe encore. Ce sont les fondations du workflow transactionnel.
 
----
+6. **Page Transaction** : La page `/transaction/:id` qui centralise tout le workflow (apercu, visite, messages securises, documents) n'existe pas.
 
-## Phase 2 : Profil utilisateur
+7. **Messagerie securisee** : Le cahier des charges prevoit un `MessageDetectionService` qui bloque les numeros de telephone et detecte les mots-cles suspects. La messagerie actuelle est basique sans aucune protection.
 
-### 2.1 Page Profil (`/profile`)
-- Affichage et edition du profil (nom, prenom, bio, WhatsApp, photo)
-- Upload d'avatar vers le bucket `avatars` de Supabase Storage
-- Affichage du role de l'utilisateur
-- Informations entreprise pour les proprietaires (nom societe, adresse)
+**Priorite moyenne :**
+
+8. **Page "Mes Transactions"** : Page `/mes-transactions` listant toutes les transactions actives.
+9. **Dashboard Owner avec onglets** : Le dashboard proprietaire doit avoir des onglets (Mes biens, Visites, Messages, Profil).
+10. **Systeme de notifications in-app** (`wf_notifications`).
+11. **Score utilisateur** et badge "Client Certifie".
+
+**Priorite basse (future) :**
+
+12. Edge Functions (send-email, send-push, process-reminders, create-test-users).
+13. Page Admin.
+14. Generation de documents PDF.
+15. PWA / Capacitor.
 
 ---
 
-## Phase 3 : Gestion des biens immobiliers (Proprietaires)
+## Plan d'implementation - Etape 1 (cette iteration)
 
-### 3.1 Dashboard proprietaire (`/dashboard`)
-- Liste des biens du proprietaire avec statut (brouillon, publie, vendu, loue)
-- Statistiques : nombre de vues/swipes, matches, visites
+On se concentre sur les **bugs critiques** et les **fondations du workflow** :
 
-### 3.2 Creation/Edition de bien (`/properties/new`, `/properties/:id/edit`)
-- Formulaire multi-etapes :
-  - Etape 1 : Type de bien, operation (vente/location), adresse, secteur
-  - Etape 2 : Details (surface, chambres, salles de bain, prix, devise, droit foncier)
-  - Etape 3 : Description et equipements
-  - Etape 4 : Photos/videos (upload vers bucket `property-media`)
-- Gestion des medias avec drag-and-drop pour reordonner et choix de l'image principale
+### 1. Corriger le bug `PropertyMap` (crash react-leaflet)
 
-### 3.3 Detail d'un bien (`/properties/:id`)
-- Carousel de photos
-- Toutes les informations du bien
-- Boutons d'action selon le role (editer pour le proprietaire, swiper/demander visite pour l'acheteur)
+- Le composant `MapContainer` de react-leaflet a un probleme de compatibilite Context.Consumer avec React 18
+- Corriger en supprimant les enfants JSX directs qui causent le probleme
+- Wrapper correctement les composants Leaflet
 
----
+### 2. Alimenter les statistiques du profil avec de vraies donnees
 
-## Phase 4 : Systeme de Swipe (Acheteurs)
+- Compter les swipes de l'utilisateur pour "Biens vus"
+- Compter les matches pour "Matches"  
+- Compter les visites pour "Visites"
+- Ajouter les requetes dans `ProfileForm.tsx`
 
-### 4.1 Page Swipe (`/explore`)
-- Chargement des biens publies et disponibles non encore swipes par l'utilisateur
-- Interface de carte empilable (stack) avec animation de swipe gauche/droite
-- Swipe droite = like, swipe gauche = passer
-- Boutons de swipe en bas de l'ecran (X et coeur)
-- Affichage des infos cles sur la carte : photo principale, prix, adresse, type, surface, chambres
+### 3. Creer les tables du workflow transactionnel
 
-### 4.2 Logique de match
-- Lors d'un swipe droit, insertion dans `swipes` avec direction "right"
-- Creation automatique d'un match dans la table `matches` (lien acheteur-proprietaire-bien)
-- Creation automatique d'une conversation dans `conversations`
-- Notification visuelle du match (animation "It's a match!")
+Migration SQL pour creer les 7 tables manquantes :
+- `wf_transactions` : Table centrale avec statuts, dates, validations croisees
+- `wf_transaction_logs` : Historique des actions/transitions
+- `wf_messages` : Messagerie securisee liee aux transactions
+- `wf_documents` : Documents generes (LOI, contrats, etc.)
+- `wf_notifications` : Notifications in-app
+- `wf_user_scores` : Score et certification utilisateur
+- `wf_reminders` : Rappels programmes
 
----
+Avec RLS policies appropriees pour chaque table.
 
-## Phase 5 : Matches et Messagerie
+### 4. Creer le WorkflowService
 
-### 5.1 Page Matches (`/matches`)
-- Liste des matches avec photo du bien, adresse et prix
-- Clic pour ouvrir la conversation
+- Service TypeScript implementant la state machine avec les 14 statuts
+- Transitions validees (`VALID_TRANSITIONS`)
+- Methodes : `createTransaction`, `updateStatus`, `requestVisit`, `proposeVisitDates`, `confirmVisit`, `completeVisit`, `expressIntention`, `makeOffer`
 
-### 5.2 Messagerie en temps reel (`/messages`, `/messages/:conversationId`)
-- Liste des conversations avec dernier message et indicateur de non-lu
-- Chat en temps reel utilisant Supabase Realtime (subscribe au canal de la conversation)
-- Envoi de messages texte
-- Marquage des messages comme lus
-- Affichage de l'avatar et du nom de l'interlocuteur
+### 5. Creer le MessageDetectionService
 
----
+- Detection de numeros de telephone (regex)
+- Detection de mots-cles suspects (whatsapp, telegram, virement, etc.)
+- Blocage des messages avec numeros
+- Flagging des messages suspects
+- Integration dans le `ChatView` existant
 
-## Phase 6 : Gestion des visites
+### 6. Creer la page Transaction (`/transaction/:id`)
 
-### 6.1 Demande de visite (depuis la page du bien ou la conversation)
-- Formulaire avec date/heure proposee et message optionnel
-- Insertion dans la table `visits` avec statut "pending"
+- 4 onglets : Apercu, Visite, Messages, Documents
+- Affichage du statut avec `TransactionStatusBadge`
+- Timeline de la transaction
+- Composants workflow selon le statut actuel
+- Integration de la messagerie securisee
 
-### 6.2 Page Visites (`/visits`)
-- Vue acheteur : liste des visites demandees avec statut
-- Vue proprietaire : liste des demandes de visite avec actions (confirmer/annuler)
-- Mise a jour du statut (pending -> confirmed/cancelled/completed)
-- Raison d'annulation optionnelle
+### 7. Modifier le flux de match pour creer une transaction
 
----
-
-## Phase 7 : Vue Carte
-
-### 7.1 Carte interactive (`/map`)
-- Integration d'une carte (Leaflet via react-leaflet, gratuit et sans cle API)
-- Affichage des biens publies comme marqueurs sur la carte
-- Popup au clic sur un marqueur avec apercu du bien (photo, prix, adresse)
-- Lien vers la page de detail du bien
-- Filtres : type de bien, fourchette de prix, operation (vente/location)
-
----
-
-## Architecture des fichiers
-
-```text
-src/
-  contexts/
-    AuthContext.tsx          -- Provider d'authentification
-  hooks/
-    useAuth.ts               -- Hook d'acces au contexte auth
-    useProperties.ts         -- Hooks React Query pour les biens
-    useSwipes.ts             -- Hook pour le systeme de swipe
-    useMatches.ts            -- Hook pour les matches
-    useConversations.ts      -- Hook pour les conversations
-    useMessages.ts           -- Hook pour les messages (avec Realtime)
-    useVisits.ts             -- Hook pour les visites
-    useProfile.ts            -- Hook pour le profil
-  components/
-    layout/
-      AppLayout.tsx          -- Layout avec navigation
-      BottomNav.tsx          -- Navigation inferieure mobile
-      Header.tsx             -- En-tete
-    auth/
-      AuthForm.tsx           -- Formulaire login/signup
-      ProtectedRoute.tsx     -- Route protegee
-    properties/
-      PropertyCard.tsx       -- Carte de bien (swipe)
-      PropertyForm.tsx       -- Formulaire creation/edition
-      PropertyDetail.tsx     -- Detail complet
-      PropertyList.tsx       -- Liste des biens
-      MediaUpload.tsx        -- Upload de medias
-    swipe/
-      SwipeStack.tsx         -- Pile de cartes swipables
-      SwipeCard.tsx          -- Carte individuelle
-      MatchAnimation.tsx     -- Animation "It's a match!"
-    matches/
-      MatchList.tsx          -- Liste des matches
-      MatchCard.tsx          -- Carte de match
-    messages/
-      ConversationList.tsx   -- Liste des conversations
-      ChatView.tsx           -- Vue de chat
-      MessageBubble.tsx      -- Bulle de message
-    visits/
-      VisitForm.tsx          -- Formulaire de demande
-      VisitList.tsx          -- Liste des visites
-      VisitCard.tsx          -- Carte de visite
-    map/
-      PropertyMap.tsx        -- Carte Leaflet
-      MapMarker.tsx          -- Marqueur personnalise
-      MapFilters.tsx         -- Filtres de la carte
-    profile/
-      ProfileForm.tsx        -- Formulaire de profil
-      AvatarUpload.tsx       -- Upload d'avatar
-  pages/
-    Auth.tsx
-    Index.tsx                -- Landing / redirection
-    Explore.tsx              -- Page de swipe
-    Dashboard.tsx            -- Dashboard proprietaire
-    PropertyNew.tsx          -- Creation de bien
-    PropertyEdit.tsx         -- Edition de bien
-    PropertyView.tsx         -- Detail d'un bien
-    Matches.tsx
-    Messages.tsx
-    ConversationView.tsx
-    Visits.tsx
-    MapView.tsx
-    Profile.tsx
-```
+- Quand un match est cree (swipe droit), creer aussi une `wf_transaction` avec statut `matched`
+- Lier la transaction au match
+- Rediriger vers la page transaction depuis les matches
 
 ---
 
 ## Details techniques
 
-### Authentification
-- `onAuthStateChange` configure AVANT `getSession()` pour eviter les race conditions
-- `emailRedirectTo: window.location.origin` dans signUp
-- Profil cree automatiquement via le trigger `handle_new_user` existant
-- Role insere dans `user_roles` cote client apres inscription
+### Tables SQL a creer
 
-### Swipe et Matches
-- Requete pour les biens : `properties` ou `is_published = true` et `status = 'available'`, filtrees par les swipes deja effectues (sous-requete sur `swipes`)
-- Lors d'un swipe droit : insertion dans `swipes`, puis insertion dans `matches` (avec `owner_id` du bien), puis creation de la `conversation` liee au match
+```text
+wf_transactions (24+ colonnes)
+  - Statut, liens buyer/seller/property
+  - Dates de chaque etape
+  - Validations croisees
+  - Offre et intention
 
-### Messagerie temps reel
-- Utilisation de `supabase.channel()` pour s'abonner aux INSERT sur la table `messages` filtres par `conversation_id`
-- Mise a jour optimiste de la liste des messages
-- Marquage automatique des messages comme lus quand la conversation est ouverte
+wf_transaction_logs
+  - Historique des transitions
+  - Actor et details JSON
 
-### Vue carte
-- Installation de `leaflet` et `react-leaflet` (pas de cle API requise)
-- Tuiles OpenStreetMap gratuites
-- Marqueurs positionnes via `latitude`/`longitude` des biens
+wf_messages
+  - Messages lies a une transaction
+  - Flags securite (phone, suspicious)
 
-### Dependances a ajouter
-- `leaflet` + `react-leaflet` + `@types/leaflet` pour la carte
+wf_documents  
+  - Documents generes
+  - Validation croisee buyer/seller
+
+wf_notifications
+  - Notifications in-app
+  - Support push/email
+
+wf_user_scores
+  - Score 0-100
+  - Compteurs et certification
+
+wf_reminders
+  - Rappels programmes
+  - Types : visit_j1, visit_h2, relance_12h
+```
+
+### Fichiers a creer/modifier
+
+**Nouveaux fichiers :**
+- `src/services/workflowService.ts`
+- `src/services/messageDetectionService.ts`
+- `src/types/workflow.ts`
+- `src/hooks/useTransaction.ts`
+- `src/pages/Transaction.tsx`
+- `src/pages/MyTransactions.tsx`
+- `src/components/workflow/TransactionStatus.tsx`
+- `src/components/workflow/SecureMessaging.tsx`
+- `src/components/workflow/VisitManagement.tsx`
+- `src/components/workflow/SecurityAlert.tsx`
+
+**Fichiers a modifier :**
+- `src/App.tsx` : Ajouter routes `/transaction/:id` et `/mes-transactions`
+- `src/components/map/PropertyMap.tsx` : Corriger le bug react-leaflet
+- `src/components/profile/ProfileForm.tsx` : Stats dynamiques
+- `src/hooks/useSwipes.ts` : Ajouter creation de `wf_transaction` au match
+- `src/components/matches/MatchList.tsx` : Lien vers la transaction
+- `src/components/layout/BottomNav.tsx` : Ajouter lien transactions si pertinent
 
