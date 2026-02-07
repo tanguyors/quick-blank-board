@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, lazy, Suspense } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SwipeStack } from '@/components/swipe/SwipeStack';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { LayoutGrid, Map } from 'lucide-react';
-import { lazy, Suspense } from 'react';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
@@ -39,7 +38,7 @@ export default function Explore() {
             </button>
           </div>
 
-          <div className="w-12" />
+          <NotificationBell />
         </div>
 
         {/* Content */}
