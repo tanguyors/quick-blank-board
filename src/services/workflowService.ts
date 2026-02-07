@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { TransactionStatus, VALID_TRANSITIONS } from '@/types/workflow';
+import { DocumentGenerationService } from './documentGenerationService';
 
 export class WorkflowService {
   static isValidTransition(from: TransactionStatus, to: TransactionStatus): boolean {
@@ -180,11 +181,20 @@ export class WorkflowService {
     transactionId: string, buyerId: string,
     offerType: string, amount: number, details?: string
   ) {
-    return this.updateStatus(transactionId, 'offer_made', buyerId, {
+    const result = await this.updateStatus(transactionId, 'offer_made', buyerId, {
       offer_type: offerType,
       offer_amount: amount,
       offer_details: details || null,
     });
+
+    // Auto-generate documents after offer
+    try {
+      await DocumentGenerationService.generateDocumentsForOffer(transactionId);
+    } catch (e) {
+      console.error('Document generation failed:', e);
+    }
+
+    return result;
   }
 
   // ------ Helpers ------

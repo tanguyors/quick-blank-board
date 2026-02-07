@@ -7,18 +7,21 @@ import { TransactionStatusBadge, TransactionTimeline } from '@/components/workfl
 import { VisitManagement } from '@/components/workflow/VisitManagement';
 import { SecureMessaging } from '@/components/workflow/SecureMessaging';
 import { SecurityBanner } from '@/components/workflow/SecurityAlert';
-import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2 } from 'lucide-react';
+import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DocumentGenerationService } from '@/services/documentGenerationService';
+import { toast } from 'sonner';
 import type { TransactionStatus as TxStatus, WfTransaction } from '@/types/workflow';
 
 type TabId = 'apercu' | 'visite' | 'messages' | 'documents';
+type ValidatingDoc = string | null;
 
 export default function Transaction() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>('apercu');
-
+  const [validatingDoc, setValidatingDoc] = useState<ValidatingDoc>(null);
   const {
     transaction, logs, messages, documents,
     requestVisit, proposeVisitDates, confirmVisit,
@@ -110,7 +113,30 @@ export default function Transaction() {
             />
           )}
           {activeTab === 'documents' && (
-            <DocumentsTab documents={documents.data || []} tx={tx} isBuyer={isBuyer} />
+            <DocumentsTab
+              documents={documents.data || []}
+              tx={tx}
+              isBuyer={isBuyer}
+              validatingDoc={validatingDoc}
+              onValidate={async (docId) => {
+                setValidatingDoc(docId);
+                try {
+                  await DocumentGenerationService.validateDocument(
+                    docId,
+                    user!.id,
+                    isBuyer ? 'buyer' : 'seller'
+                  );
+                  toast.success('Document validé !');
+                  // Refresh documents
+                  documents.refetch();
+                  transaction.refetch();
+                } catch (err: any) {
+                  toast.error(err.message || 'Erreur de validation');
+                } finally {
+                  setValidatingDoc(null);
+                }
+              }}
+            />
           )}
         </div>
       </div>
@@ -175,33 +201,99 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer }: {
   );
 }
 
-function DocumentsTab({ documents, tx, isBuyer }: { documents: any[]; tx: WfTransaction; isBuyer: boolean }) {
+function DocumentsTab({
+  documents, tx, isBuyer, validatingDoc, onValidate,
+}: {
+  documents: any[];
+  tx: WfTransaction;
+  isBuyer: boolean;
+  validatingDoc: ValidatingDoc;
+  onValidate: (docId: string) => void;
+}) {
   if (documents.length === 0) {
     return (
       <div className="text-center p-8">
         <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
         <p className="text-muted-foreground text-sm">Aucun document pour le moment</p>
-        <p className="text-muted-foreground/60 text-xs mt-1">Les documents seront générés après votre offre.</p>
+        <p className="text-muted-foreground/60 text-xs mt-1">Les documents seront générés automatiquement après votre offre.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3 p-4">
-      {documents.map(doc => (
-        <div key={doc.id} className="bg-card rounded-xl p-4 border border-border">
-          <div className="flex items-start justify-between">
-            <div>
-              <h4 className="font-medium text-foreground text-sm">{doc.title}</h4>
-              <p className="text-xs text-muted-foreground mt-1">{doc.type}</p>
+      {documents.map(doc => {
+        const myValidated = isBuyer ? doc.buyer_validated : doc.seller_validated;
+        const otherValidated = isBuyer ? doc.seller_validated : doc.buyer_validated;
+        const isValidating = validatingDoc === doc.id;
+
+        return (
+          <div key={doc.id} className="bg-card rounded-xl p-4 border border-border">
+            <div className="flex items-start justify-between">
+              <div>
+                <h4 className="font-medium text-foreground text-sm">{doc.title}</h4>
+                <p className="text-xs text-muted-foreground mt-1 capitalize">{doc.type.replace('_', ' ')}</p>
+              </div>
+              <div className="flex gap-1">
+                {doc.buyer_validated && (
+                  <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" /> Acheteur
+                  </span>
+                )}
+                {doc.seller_validated && (
+                  <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" /> Vendeur
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex gap-1">
-              {doc.buyer_validated && <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Acheteur ✓</span>}
-              {doc.seller_validated && <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">Vendeur ✓</span>}
-            </div>
+
+            {/* Document content preview */}
+            {doc.content && (
+              <div className="mt-3 bg-secondary/30 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
+                {doc.content.reference && <p>Réf: {doc.content.reference}</p>}
+                {doc.content.conditions?.prix_offert && (
+                  <p>Montant: {doc.content.conditions.prix_offert.toLocaleString()} {doc.content.conditions?.devise}</p>
+                )}
+                {doc.content.prix_et_paiement?.prix_vente && (
+                  <p>Prix: {doc.content.prix_et_paiement.prix_vente.toLocaleString()} {doc.content.prix_et_paiement?.devise}</p>
+                )}
+                {doc.content.conditions_financieres?.loyer_mensuel && (
+                  <p>Loyer: {doc.content.conditions_financieres.loyer_mensuel.toLocaleString()} {doc.content.conditions_financieres?.devise}/mois</p>
+                )}
+              </div>
+            )}
+
+            {/* Validate button */}
+            {!myValidated && (
+              <Button
+                size="sm"
+                className="mt-3 w-full"
+                onClick={() => onValidate(doc.id)}
+                disabled={isValidating}
+              >
+                {isValidating ? (
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Validation...</>
+                ) : (
+                  <><CheckCircle className="h-4 w-4 mr-2" /> Valider ce document</>
+                )}
+              </Button>
+            )}
+
+            {myValidated && !otherValidated && (
+              <p className="text-xs text-muted-foreground mt-3 text-center">
+                En attente de validation de {isBuyer ? "l'autre partie" : "l'acheteur"}
+              </p>
+            )}
+
+            {myValidated && otherValidated && (
+              <p className="text-xs text-primary mt-3 text-center font-medium">
+                ✓ Document validé par les deux parties
+              </p>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays } from 'lucide-react';
+import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -17,11 +17,17 @@ const ownerLinks = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
+const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
+
 export function BottomNav() {
   const { pathname } = useLocation();
   const { roles } = useAuth();
   const isOwner = roles.includes('owner');
-  const links = isOwner ? ownerLinks : buyerLinks;
+  const isAdmin = roles.includes('admin');
+  let links = isOwner ? ownerLinks : buyerLinks;
+  if (isAdmin) {
+    links = [...links.slice(0, 3), adminLink, links[links.length - 1]];
+  }
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 pb-safe">
