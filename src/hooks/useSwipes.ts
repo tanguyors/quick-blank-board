@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { WorkflowService } from '@/services/workflowService';
 
 export function useExplorableProperties() {
   const { user } = useAuth();
@@ -57,6 +58,14 @@ export function useSwipe() {
             match_id: match.id,
           });
         if (convError) throw convError;
+
+        // Create workflow transaction
+        try {
+          await WorkflowService.createTransaction(propertyId, user!.id, ownerId);
+        } catch (e) {
+          console.error('Failed to create workflow transaction:', e);
+        }
+
         return { matched: true };
       }
       return { matched: false };

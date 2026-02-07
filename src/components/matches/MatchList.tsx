@@ -1,9 +1,13 @@
 import { useMatches } from '@/hooks/useMatches';
+import { useMyTransactions } from '@/hooks/useTransaction';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, BedDouble, Bath, Maximize2, CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
+import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
+import type { TransactionStatus } from '@/types/workflow';
 
 export function MatchList() {
   const { data: matches, isLoading } = useMatches();
+  const { data: transactions } = useMyTransactions();
   const navigate = useNavigate();
 
   if (isLoading) return (
@@ -16,11 +20,17 @@ export function MatchList() {
     <div className="text-center p-8 text-muted-foreground">Aucun match pour le moment</div>
   );
 
+  // Map property_id to transaction
+  const txByProperty = new Map(
+    transactions?.map(tx => [tx.property_id, tx]) || []
+  );
+
   return (
     <div className="grid gap-4 p-4">
       {matches.map(match => {
         const property = match.properties as any;
         const primaryMedia = property?.property_media?.find((m: any) => m.is_primary) || property?.property_media?.[0];
+        const tx = txByProperty.get(property?.id);
 
         return (
           <div key={match.id} className="rounded-2xl overflow-hidden bg-card border border-border">
@@ -40,9 +50,13 @@ export function MatchList() {
               )}
               {/* Badges */}
               <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                <span className="bg-background/80 backdrop-blur-sm text-foreground text-xs px-3 py-1 rounded-full font-medium">
-                  Nouveau
-                </span>
+                {tx ? (
+                  <TransactionStatusBadge status={tx.status as TransactionStatus} />
+                ) : (
+                  <span className="bg-background/80 backdrop-blur-sm text-foreground text-xs px-3 py-1 rounded-full font-medium">
+                    Nouveau
+                  </span>
+                )}
                 <span className="bg-background/80 backdrop-blur-sm text-foreground text-xs px-3 py-1 rounded-full font-medium">
                   {property?.operations === 'vente' ? 'Vente' : 'Location'}
                 </span>
@@ -85,12 +99,21 @@ export function MatchList() {
 
               {/* Actions */}
               <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => navigate(`/visits`)}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-foreground font-medium hover:bg-secondary transition-colors"
-                >
-                  <CalendarDays className="h-4 w-4" /> Visiter
-                </button>
+                {tx ? (
+                  <button
+                    onClick={() => navigate(`/transaction/${tx.id}`)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+                  >
+                    Voir la transaction
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/visits`)}
+                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border text-foreground font-medium hover:bg-secondary transition-colors"
+                  >
+                    <CalendarDays className="h-4 w-4" /> Visiter
+                  </button>
+                )}
                 <button
                   onClick={() => navigate(`/messages`)}
                   className="w-14 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:bg-secondary transition-colors"

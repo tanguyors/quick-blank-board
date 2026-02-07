@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { AvatarUpload } from './AvatarUpload';
@@ -7,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export function ProfileForm() {
+  const navigate = useNavigate();
   const { roles, refreshProfile, user } = useAuth();
   const { profile, updateProfile } = useProfile();
   const [editingBio, setEditingBio] = useState(false);
@@ -47,6 +51,42 @@ export function ProfileForm() {
 
   const isOwner = roles.includes('owner');
   const displayName = form.full_name || form.first_name || user?.email || '';
+
+  // Dynamic stats
+  const { data: stats } = useQuery({
+    queryKey: ['profile-stats', user?.id],
+    queryFn: async () => {
+      const [swipesRes, matchesRes, visitsRes] = await Promise.all([
+        supabase.from('swipes').select('id', { count: 'exact', head: true }).eq('user_id', user!.id),
+        supabase.from('matches').select('id', { count: 'exact', head: true }).eq('user_id', user!.id),
+        supabase.from('visits').select('id', { count: 'exact', head: true }).eq('buyer_id', user!.id),
+      ]);
+      return {
+        biens_vus: swipesRes.count || 0,
+        matches: matchesRes.count || 0,
+        visites: visitsRes.count || 0,
+      };
+    },
+    enabled: !!user,
+  });
+
+  // User score
+  const { data: userScore } = useQuery({
+    queryKey: ['user-score', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('wf_user_scores')
+        .select('*')
+        .eq('user_id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const scoreValue = userScore?.score ?? 50;
+  const scoreLevel = scoreValue >= 80 ? 'Expert' : scoreValue >= 60 ? 'Actif' : scoreValue >= 40 ? 'Observateur' : 'Débutant';
+  const scoreEmoji = scoreValue >= 80 ? '🔥' : scoreValue >= 60 ? '⭐' : scoreValue >= 40 ? '🌱' : '🌱';
 
   return (
     <div className="max-w-lg mx-auto pb-8">
@@ -101,21 +141,26 @@ export function ProfileForm() {
         <div className="bg-card rounded-xl p-4 border border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🌱</span>
+              <span className="text-2xl">{scoreEmoji}</span>
               <div>
                 <p className="text-sm text-muted-foreground">Score de Chaleur</p>
-                <p className="font-semibold text-foreground">Observateur</p>
+                <p className="font-semibold text-foreground">{scoreLevel}</p>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold text-foreground">0</span>
+              <span className="text-3xl font-bold text-foreground">{Math.round(scoreValue / 10)}</span>
               <span className="text-muted-foreground text-sm">/10</span>
             </div>
           </div>
           <div className="mt-3 h-1.5 bg-secondary rounded-full overflow-hidden">
-            <div className="h-full bg-primary rounded-full" style={{ width: '0%' }} />
+            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${scoreValue}%` }} />
           </div>
           <p className="text-xs text-muted-foreground mt-2">↗ Swipez et visitez pour augmenter votre score</p>
+          {userScore?.certified && (
+            <div className="mt-2 flex items-center gap-1.5 text-primary text-xs font-medium">
+              ✅ Client Certifié
+            </div>
+          )}
         </div>
       </div>
 
@@ -124,19 +169,19 @@ export function ProfileForm() {
         <div className="bg-card rounded-xl p-4 border border-border">
           <Eye className="h-5 w-5 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">Biens vus</p>
-          <p className="text-2xl font-bold text-foreground mt-1">0</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{stats?.biens_vus ?? 0}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <Heart className="h-5 w-5 text-primary mb-2" />
           <p className="text-sm text-muted-foreground">Matches</p>
-          <p className="text-2xl font-bold text-foreground mt-1">0</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{stats?.matches ?? 0}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <CalendarDays className="h-5 w-5 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">Visites</p>
-          <p className="text-2xl font-bold text-foreground mt-1">0</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{stats?.visites ?? 0}</p>
         </div>
-        <div className="bg-card rounded-xl p-4 border border-border">
+        <div className="bg-card rounded-xl p-4 border border-border" onClick={() => navigate('/messages')} style={{ cursor: 'pointer' }}>
           <MessageSquare className="h-5 w-5 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">Messages</p>
           <div className="flex items-center justify-between mt-1">
