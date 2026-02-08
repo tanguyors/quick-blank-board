@@ -39,6 +39,7 @@ const Features = lazy(() => import("./pages/Features"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Security = lazy(() => import("./pages/Security"));
 const Assistance = lazy(() => import("./pages/Assistance"));
+const Install = lazy(() => import("./pages/Install"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,7 @@ const App = () => (
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/security" element={<Security />} />
                 <Route path="/assistance" element={<Assistance />} />
+                <Route path="/install" element={<Install />} />
                 <Route path="/profile-selection" element={<ProtectedRoute><ProfileSelection /></ProtectedRoute>} />
                 <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
