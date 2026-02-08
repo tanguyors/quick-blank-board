@@ -1,4 +1,5 @@
 import { MapPin, BedDouble, Bath, Maximize2 } from 'lucide-react';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 
 interface SwipeCardProps {
   property: any;
@@ -6,6 +7,7 @@ interface SwipeCardProps {
 }
 
 export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
+  const { displayPrice } = useDisplayPrice();
   const primaryMedia = property.property_media?.find((m: any) => m.is_primary) || property.property_media?.[0];
 
   return (
@@ -55,7 +57,7 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
           {/* Price */}
           <div className="mt-3">
             <span className="inline-block bg-secondary/90 text-foreground font-bold text-lg px-4 py-2 rounded-xl">
-              {property.prix_currency} {property.prix?.toLocaleString()}
+              {displayPrice(property.prix, property.prix_currency)}
             </span>
           </div>
         </div>

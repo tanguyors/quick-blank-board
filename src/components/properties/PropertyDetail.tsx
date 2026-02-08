@@ -6,6 +6,7 @@ import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays } from 'lucide-react
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 
 interface PropertyDetailProps {
   propertyId: string;
@@ -15,6 +16,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const { data: property, isLoading } = useProperty(propertyId);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { displayPrice } = useDisplayPrice();
   const [showVisitForm, setShowVisitForm] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -49,7 +51,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <Badge>{property.type}</Badge>
               <Badge variant="secondary">{property.operations === 'vente' ? 'Vente' : 'Location'}</Badge>
             </div>
-            <p className="text-2xl font-bold text-primary">{property.prix.toLocaleString()} {property.prix_currency}</p>
+            <p className="text-2xl font-bold text-primary">{displayPrice(property.prix, property.prix_currency)}</p>
           </div>
           {isOwner && (
             <Button variant="outline" size="icon" onClick={() => navigate(`/properties/${property.id}/edit`)}>
