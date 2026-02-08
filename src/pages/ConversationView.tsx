@@ -1,14 +1,21 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
+import { useAuth } from '@/hooks/useAuth';
 import { ChatView } from '@/components/messages/ChatView';
 import { ArrowLeft, MapPin } from 'lucide-react';
 
 export default function ConversationView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { displayPrice } = useDisplayPrice();
+  const { roles } = useAuth();
+  const isOwner = roles.includes('owner');
+
+  // Determine back destination: use state if provided, otherwise role-based
+  const backTo = (location.state as any)?.from || (isOwner ? '/dashboard?tab=messages' : '/messages');
 
   // Fetch conversation with property details
   const { data: conversation } = useQuery({
@@ -33,7 +40,7 @@ export default function ConversationView() {
       {/* Header with back button */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border flex-shrink-0">
         <button
-          onClick={() => navigate('/messages')}
+          onClick={() => navigate(backTo)}
           className="p-2 text-foreground hover:text-foreground/70 transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
