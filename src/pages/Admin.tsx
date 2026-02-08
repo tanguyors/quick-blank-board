@@ -8,13 +8,12 @@ import { Navigate, useSearchParams } from 'react-router-dom';
 import { Users, Building2, TrendingUp, FileText, Shield, Search, CalendarDays, Map } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { AdminUserDetail } from '@/components/admin/AdminUserDetail';
 import { AdminVisitsTab } from '@/components/admin/AdminVisitsTab';
 import { AdminPropertiesTab } from '@/components/admin/AdminPropertiesTab';
 import { AdminTransactionsTab } from '@/components/admin/AdminTransactionsTab';
+import { AdminOverviewTab } from '@/components/admin/AdminOverviewTab';
 import { PropertyMap } from '@/components/map/PropertyMap';
-import type { TransactionStatus } from '@/types/workflow';
 
 type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'map';
 
@@ -72,7 +71,7 @@ export default function Admin() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'overview' && <AdminOverviewTab onNavigate={setActiveTab} />}
           {activeTab === 'users' && (
             selectedUserId
               ? <AdminUserDetail userId={selectedUserId} onBack={() => setSelectedUserId(null)} />
@@ -89,80 +88,6 @@ export default function Admin() {
         </div>
       </div>
     </AppLayout>
-  );
-}
-
-function OverviewTab() {
-  const stats = useQuery({
-    queryKey: ['admin-stats'],
-    queryFn: async () => {
-      const [usersRes, propsRes, txRes, matchesRes, visitsRes, pendingPropsRes] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('properties').select('id', { count: 'exact', head: true }),
-        supabase.from('wf_transactions').select('id', { count: 'exact', head: true }),
-        supabase.from('matches').select('id', { count: 'exact', head: true }),
-        supabase.from('visits').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('properties').select('id', { count: 'exact', head: true }).eq('is_published', false),
-      ]);
-      return {
-        users: usersRes.count || 0,
-        properties: propsRes.count || 0,
-        transactions: txRes.count || 0,
-        matches: matchesRes.count || 0,
-        pendingVisits: visitsRes.count || 0,
-        pendingProperties: pendingPropsRes.count || 0,
-      };
-    },
-  });
-
-  const recentTx = useQuery({
-    queryKey: ['admin-recent-tx'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('wf_transactions')
-        .select('id, status, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      return data || [];
-    },
-  });
-
-  const cards = [
-    { label: 'Utilisateurs', value: stats.data?.users, icon: Users },
-    { label: 'Biens', value: stats.data?.properties, icon: Building2 },
-    { label: 'Transactions', value: stats.data?.transactions, icon: FileText },
-    { label: 'Matches', value: stats.data?.matches, icon: TrendingUp },
-    { label: 'Visites en attente', value: stats.data?.pendingVisits, icon: CalendarDays },
-    { label: 'Biens à valider', value: stats.data?.pendingProperties, icon: Building2 },
-  ];
-
-  return (
-    <div className="p-4 space-y-6 max-w-2xl mx-auto">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {cards.map(card => (
-          <div key={card.label} className="bg-card border border-border rounded-xl p-4">
-            <card.icon className="h-5 w-5 text-primary mb-2" />
-            <div className="text-2xl font-bold text-foreground">{card.value ?? '—'}</div>
-            <div className="text-xs text-muted-foreground mt-1">{card.label}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="font-semibold text-foreground text-sm mb-3">Transactions récentes</h3>
-        <div className="space-y-2">
-          {recentTx.data?.map(tx => (
-            <div key={tx.id} className="flex items-center justify-between text-sm py-2 border-b border-border last:border-0">
-              <span className="text-muted-foreground font-mono text-xs">{tx.id.slice(0, 8)}...</span>
-              <TransactionStatusBadge status={tx.status as TransactionStatus} />
-            </div>
-          ))}
-          {(!recentTx.data || recentTx.data.length === 0) && (
-            <p className="text-muted-foreground text-sm">Aucune transaction</p>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }
 
