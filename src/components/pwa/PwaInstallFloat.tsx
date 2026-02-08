@@ -46,10 +46,11 @@ export function PwaInstallFloat() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button — lifted above Safari bottom bar */}
       <button
         onClick={handleInstall}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-primary text-primary-foreground pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-all active:scale-95"
+        className="fixed z-50 flex items-center gap-2 bg-primary text-primary-foreground pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-all active:scale-95"
+        style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))', right: '1.5rem' }}
         aria-label="Installer l'application"
       >
         <Download className="h-5 w-5" />
