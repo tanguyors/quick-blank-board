@@ -37,8 +37,11 @@ const PROPERTY_TYPES = [
 ] as const;
 
 const DROITS = [
+  { value: 'titre_foncier', label: 'Titre foncier' },
+  { value: 'bail', label: 'Bail' },
+  { value: 'deliberation', label: 'Délibération' },
   { value: 'freehold', label: 'Freehold (Propriété totale)' },
-  { value: 'leasehold', label: 'Leasehold (Bail)' },
+  { value: 'leasehold', label: 'Leasehold (Bail longue durée)' },
 ] as const;
 
 const OPERATIONS = [
@@ -309,7 +312,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
       {cfg.showDroit && (
         <div>
           <Label className="text-sm font-semibold">Droit</Label>
-          <Select value={form.droit} onValueChange={v => update('droit', v)}>
+          <Select value={form.droit || undefined} onValueChange={v => update('droit', v)}>
             <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
             <SelectContent>
               {DROITS.map(d => (
