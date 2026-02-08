@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      buyer_preferences: {
+        Row: {
+          budget_currency: string | null
+          budget_max: number | null
+          budget_min: number | null
+          cash_available: string | null
+          created_at: string
+          custom_sector: string | null
+          id: string
+          intention: string | null
+          is_complete: boolean | null
+          payment_knowledge: string | null
+          preferred_chambres: number[] | null
+          preferred_operation: string | null
+          preferred_salles_bain: number[] | null
+          preferred_sectors: string[] | null
+          preferred_status: string | null
+          preferred_types: string[] | null
+          receive_alerts: boolean | null
+          updated_at: string
+          user_id: string
+          visit_availability: string[] | null
+          wants_advisor: boolean | null
+        }
+        Insert: {
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          cash_available?: string | null
+          created_at?: string
+          custom_sector?: string | null
+          id?: string
+          intention?: string | null
+          is_complete?: boolean | null
+          payment_knowledge?: string | null
+          preferred_chambres?: number[] | null
+          preferred_operation?: string | null
+          preferred_salles_bain?: number[] | null
+          preferred_sectors?: string[] | null
+          preferred_status?: string | null
+          preferred_types?: string[] | null
+          receive_alerts?: boolean | null
+          updated_at?: string
+          user_id: string
+          visit_availability?: string[] | null
+          wants_advisor?: boolean | null
+        }
+        Update: {
+          budget_currency?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          cash_available?: string | null
+          created_at?: string
+          custom_sector?: string | null
+          id?: string
+          intention?: string | null
+          is_complete?: boolean | null
+          payment_knowledge?: string | null
+          preferred_chambres?: number[] | null
+          preferred_operation?: string | null
+          preferred_salles_bain?: number[] | null
+          preferred_sectors?: string[] | null
+          preferred_status?: string | null
+          preferred_types?: string[] | null
+          receive_alerts?: boolean | null
+          updated_at?: string
+          user_id?: string
+          visit_availability?: string[] | null
+          wants_advisor?: boolean | null
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           buyer_id: string

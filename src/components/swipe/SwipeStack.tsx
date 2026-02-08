@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useExplorableProperties, useSwipe } from '@/hooks/useSwipes';
+import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { X, Star, Heart } from 'lucide-react';
@@ -12,6 +14,8 @@ interface SwipeStackProps {
 export function SwipeStack({ filters }: SwipeStackProps) {
   const { data: properties, isLoading } = useExplorableProperties(filters);
   const swipe = useSwipe();
+  const navigate = useNavigate();
+  const { needsPreferences } = useBuyerPreferences();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
@@ -147,7 +151,14 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </button>
       </div>
 
-      {showMatch && <MatchAnimation onClose={() => setShowMatch(false)} />}
+      {showMatch && (
+        <MatchAnimation onClose={() => {
+          setShowMatch(false);
+          if (needsPreferences) {
+            navigate('/buyer/preferences');
+          }
+        }} />
+      )}
     </div>
   );
 }

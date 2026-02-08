@@ -33,6 +33,7 @@ const Transaction = lazy(() => import("./pages/Transaction"));
 const MyTransactions = lazy(() => import("./pages/MyTransactions"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Admin = lazy(() => import("./pages/Admin"));
+const BuyerPreferences = lazy(() => import("./pages/BuyerPreferences"));
 const Features = lazy(() => import("./pages/Features"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Security = lazy(() => import("./pages/Security"));
@@ -87,6 +88,7 @@ const App = () => (
                 <Route path="/mes-transactions" element={<ProtectedRoute><MyTransactions /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/buyer/preferences" element={<ProtectedRoute><BuyerPreferences /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
