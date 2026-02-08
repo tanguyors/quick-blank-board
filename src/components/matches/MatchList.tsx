@@ -1,5 +1,6 @@
 import { useMatches } from '@/hooks/useMatches';
 import { useMyTransactions } from '@/hooks/useTransaction';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, BedDouble, Bath, Maximize2, CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
@@ -8,6 +9,7 @@ import type { TransactionStatus } from '@/types/workflow';
 export function MatchList() {
   const { data: matches, isLoading } = useMatches();
   const { data: transactions } = useMyTransactions();
+  const { displayPrice } = useDisplayPrice();
   const navigate = useNavigate();
 
   if (isLoading) return (
@@ -65,7 +67,7 @@ export function MatchList() {
               {/* Price overlay */}
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                 <span className="bg-secondary/90 backdrop-blur-sm text-foreground font-bold text-lg px-4 py-2 rounded-xl">
-                  {property?.prix ? `${(property.prix / 1000).toFixed(0)}K ${property.prix_currency}` : ''}
+                  {property?.prix ? displayPrice(property.prix, property.prix_currency) : ''}
                 </span>
                 <button
                   onClick={() => navigate(`/properties/${property?.id}`)}
