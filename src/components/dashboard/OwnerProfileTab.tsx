@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { User, Mail, CalendarDays, Phone, Briefcase, CreditCard, Shield, Bell, AlertTriangle, Save, LogOut } from 'lucide-react';
+import { User, Mail, CalendarDays, Phone, Briefcase, CreditCard, Shield, AlertTriangle, Save, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { CURRENCIES } from '@/lib/currencies';
+import { NotificationSettings } from '@/components/settings/NotificationSettings';
 
 
 export function OwnerProfileTab() {
@@ -18,6 +19,7 @@ export function OwnerProfileTab() {
     first_name: '', last_name: '', full_name: '', bio: '',
     whatsapp: '', avatar_url: '', company_name: '', company_address: '',
     preferred_currency: 'EUR', birth_date: '',
+    notif_push: true, notif_email: true, notif_whatsapp: true, notif_newsletter: true,
   });
 
   useEffect(() => {
@@ -33,6 +35,10 @@ export function OwnerProfileTab() {
         company_address: profile.company_address || '',
         preferred_currency: profile.preferred_currency || 'EUR',
         birth_date: profile.birth_date || '',
+        notif_push: (profile as any).notif_push ?? true,
+        notif_email: (profile as any).notif_email ?? true,
+        notif_whatsapp: (profile as any).notif_whatsapp ?? true,
+        notif_newsletter: (profile as any).notif_newsletter ?? true,
       });
     }
   }, [profile]);
@@ -170,25 +176,20 @@ export function OwnerProfileTab() {
         </div>
       </div>
 
-      {/* Préférences de communication */}
-      <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <h3 className="text-lg font-bold text-foreground">Préférences de communication</h3>
-        </div>
-        <p className="text-sm text-muted-foreground -mt-2">Gérez vos préférences d'email et de notifications</p>
-
-        <div className="flex items-center justify-between py-2">
-          <div>
-            <p className="font-medium text-foreground">Recevoir la newsletter</p>
-            <p className="text-sm text-muted-foreground">Recevez nos dernières offres et actualités par email</p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" defaultChecked className="sr-only peer" />
-            <div className="w-11 h-6 bg-secondary rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all" />
-          </label>
-        </div>
-      </div>
+      {/* Notifications */}
+      <NotificationSettings
+        prefs={{
+          notif_push: form.notif_push,
+          notif_email: form.notif_email,
+          notif_whatsapp: form.notif_whatsapp,
+          notif_newsletter: form.notif_newsletter,
+        }}
+        onToggle={(key, value) => {
+          setForm(f => ({ ...f, [key]: value }));
+          updateProfile.mutate({ [key]: value } as any);
+          toast.success('Préférence mise à jour');
+        }}
+      />
 
       {/* Déconnexion */}
       <div className="bg-card rounded-2xl p-5 border border-border space-y-4">

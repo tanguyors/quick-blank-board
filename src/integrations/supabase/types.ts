@@ -240,6 +240,10 @@ export type Database = {
           full_name: string | null
           id: string
           last_name: string | null
+          notif_email: boolean
+          notif_newsletter: boolean
+          notif_push: boolean
+          notif_whatsapp: boolean
           preferred_currency: string
           updated_at: string
           whatsapp: string | null
@@ -256,6 +260,10 @@ export type Database = {
           full_name?: string | null
           id: string
           last_name?: string | null
+          notif_email?: boolean
+          notif_newsletter?: boolean
+          notif_push?: boolean
+          notif_whatsapp?: boolean
           preferred_currency?: string
           updated_at?: string
           whatsapp?: string | null
@@ -272,6 +280,10 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_name?: string | null
+          notif_email?: boolean
+          notif_newsletter?: boolean
+          notif_push?: boolean
+          notif_whatsapp?: boolean
           preferred_currency?: string
           updated_at?: string
           whatsapp?: string | null

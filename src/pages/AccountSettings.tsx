@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save } from 'lucide-react';
 import { CURRENCIES } from '@/lib/currencies';
+import { NotificationSettings } from '@/components/settings/NotificationSettings';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +33,10 @@ export default function AccountSettings() {
     full_name: '',
     whatsapp: '',
     preferred_currency: 'EUR',
+    notif_push: true,
+    notif_email: true,
+    notif_whatsapp: true,
+    notif_newsletter: true,
   });
 
   useEffect(() => {
@@ -43,6 +48,10 @@ export default function AccountSettings() {
         full_name: p.full_name || '',
         whatsapp: p.whatsapp || '',
         preferred_currency: p.preferred_currency || 'EUR',
+        notif_push: p.notif_push ?? true,
+        notif_email: p.notif_email ?? true,
+        notif_whatsapp: p.notif_whatsapp ?? true,
+        notif_newsletter: p.notif_newsletter ?? true,
       });
     }
   }, [profile.data]);
@@ -151,6 +160,21 @@ export default function AccountSettings() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Notifications */}
+          <NotificationSettings
+            prefs={{
+              notif_push: form.notif_push,
+              notif_email: form.notif_email,
+              notif_whatsapp: form.notif_whatsapp,
+              notif_newsletter: form.notif_newsletter,
+            }}
+            onToggle={(key, value) => {
+              setForm(f => ({ ...f, [key]: value }));
+              updateProfile.mutate({ [key]: value } as any);
+              toast.success('Préférence mise à jour');
+            }}
+          />
 
           {/* Sauvegarder */}
           <Button onClick={handleSave} className="w-full gap-2" disabled={updateProfile.isPending}>
