@@ -1,4 +1,5 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import { PwaInstallFloat } from '@/components/pwa/PwaInstallFloat';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
@@ -12,5 +13,10 @@ export default function Auth() {
   );
   if (user) return <Navigate to="/" replace />;
 
-  return <AuthForm />;
+  return (
+    <>
+      <AuthForm />
+      <PwaInstallFloat />
+    </>
+  );
 }
