@@ -10,8 +10,9 @@ export default function Index() {
   // Non-authenticated users see the landing page
   if (!user) return <Home />;
 
+  const isAdmin = roles.includes('admin');
   const isOwner = roles.includes('owner');
   const isNotaire = roles.includes('notaire');
-  const redirectPath = isNotaire ? '/notaire' : isOwner ? '/profile' : '/explore';
+  const redirectPath = isNotaire ? '/notaire' : (isOwner || isAdmin) ? '/profile' : '/explore';
   return <Navigate to={redirectPath} replace />;
 }
