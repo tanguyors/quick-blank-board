@@ -39,7 +39,11 @@ export function OwnerProfileTab() {
 
   const handleSave = async () => {
     try {
-      await updateProfile.mutateAsync(form as any);
+      const payload = {
+        ...form,
+        birth_date: form.birth_date || null,
+      };
+      await updateProfile.mutateAsync(payload as any);
       await refreshProfile();
       toast.success('Profil mis à jour');
     } catch (error: any) {
