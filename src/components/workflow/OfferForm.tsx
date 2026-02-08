@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import type { WfTransaction } from '@/types/workflow';
 
 interface OfferFormProps {
@@ -23,6 +24,7 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
   const [offerType, setOfferType] = useState('');
   const [amount, setAmount] = useState('');
   const [details, setDetails] = useState('');
+  const { displayPrice, preferredCurrency } = useDisplayPrice();
 
   const property = transaction.properties;
   const askingPrice = property?.prix || 0;
@@ -50,7 +52,7 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Prix affiché : <span className="text-foreground font-bold">{askingPrice.toLocaleString()} {currency}</span>
+        Prix affiché : <span className="text-foreground font-bold">{displayPrice(askingPrice, currency)}</span>
       </p>
 
       {/* Offer type selection */}
@@ -85,7 +87,7 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
       {/* Amount input - shown for non-asking-price offers */}
       {offerType && offerType !== 'asking_price' && (
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Montant ({currency})</label>
+          <label className="text-sm text-muted-foreground">Montant ({preferredCurrency})</label>
           <Input
             type="number"
             value={amount}
