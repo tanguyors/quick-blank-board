@@ -10,11 +10,12 @@ import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 
 interface PropertyDetailProps {
   propertyId: string;
+  readOnly?: boolean;
 }
 
-export function PropertyDetail({ propertyId }: PropertyDetailProps) {
+export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailProps) {
   const { data: property, isLoading } = useProperty(propertyId);
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
   const navigate = useNavigate();
   const { displayPrice } = useDisplayPrice();
   const [showVisitForm, setShowVisitForm] = useState(false);
@@ -24,6 +25,8 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   if (!property) return <div className="text-center p-8">Bien non trouvé</div>;
 
   const isOwner = property.owner_id === user?.id;
+  const isViewerOwnerRole = roles.includes('owner');
+  const hideActions = readOnly || (isViewerOwnerRole && !isOwner);
   const images = property.property_media
     ?.filter(m => m.type === 'image')
     .sort((a, b) => a.position - b.position) || [];
@@ -81,12 +84,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
             </div>
           </div>
         )}
-        {!isOwner && (
+        {!isOwner && !hideActions && (
           <Button className="w-full" onClick={() => setShowVisitForm(true)}>
             <CalendarDays className="h-4 w-4 mr-2" /> Demander une visite
           </Button>
         )}
-        {showVisitForm && (
+        {showVisitForm && !hideActions && (
           <VisitForm propertyId={property.id} ownerId={property.owner_id} onClose={() => setShowVisitForm(false)} />
         )}
       </div>
