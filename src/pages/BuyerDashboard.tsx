@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyTransactions } from '@/hooks/useTransaction';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -12,7 +13,6 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
-import { NotificationBell } from '@/components/notifications/NotificationBell';
 import type { TransactionStatus } from '@/types/workflow';
 
 export default function BuyerDashboard() {
@@ -62,13 +62,12 @@ export default function BuyerDashboard() {
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <PageTopBar>
           <div>
             <p className="text-lg font-bold text-foreground">Bonjour, {displayName} 👋</p>
             <p className="text-xs text-muted-foreground">Trouvez votre bien idéal</p>
           </div>
-          <NotificationBell />
-        </div>
+        </PageTopBar>
 
         <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-5">
           {/* Quick Actions */}

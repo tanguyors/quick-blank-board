@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { MatchList } from '@/components/matches/MatchList';
 import { useMatches } from '@/hooks/useMatches';
 import { Heart, RefreshCw } from 'lucide-react';
@@ -12,7 +13,7 @@ export default function Matches() {
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <PageTopBar>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
               <Heart className="h-4 w-4 text-primary fill-primary" />
@@ -25,13 +26,7 @@ export default function Matches() {
               </div>
             ) : null}
           </div>
-          <button
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['matches'] })}
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <RefreshCw className="h-5 w-5" />
-          </button>
-        </div>
+        </PageTopBar>
 
         <MatchList />
       </div>

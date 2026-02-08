@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNavigate } from 'react-router-dom';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
@@ -13,7 +14,7 @@ export default function Favorites() {
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <PageTopBar>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
               <Star className="h-4 w-4 text-primary fill-primary" />
@@ -23,7 +24,7 @@ export default function Favorites() {
               <span className="text-sm text-muted-foreground">{favorites.data.length} bien(s)</span>
             ) : null}
           </div>
-        </div>
+        </PageTopBar>
 
         <div className="flex-1 overflow-y-auto px-4 pb-24">
           {favorites.isLoading ? (
