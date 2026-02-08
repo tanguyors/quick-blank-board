@@ -128,6 +128,9 @@ export class WorkflowService {
       // Create J-1 and H-2 reminders for both participants
       await this.createVisitReminders(transactionId, confirmedDate, tx.buyer_id, tx.seller_id);
 
+      // Send enriched notifications with property details
+      await this.sendVisitConfirmedNotifications(transactionId, confirmedDate, tx.buyer_id, tx.seller_id, tx.property_id);
+
       return result;
     } else {
       // Just update without status change
@@ -344,7 +347,8 @@ export class WorkflowService {
 
   private static async createNotification(
     userId: string, transactionId: string,
-    type: string, title: string, message: string
+    type: string, title: string, message: string,
+    data?: Record<string, any>
   ) {
     await supabase.from('wf_notifications').insert({
       user_id: userId,
@@ -353,6 +357,45 @@ export class WorkflowService {
       title,
       message,
       action_url: `/transaction/${transactionId}`,
+      data: data as any ?? null,
     });
+  }
+
+  private static async sendVisitConfirmedNotifications(
+    transactionId: string, confirmedDate: string,
+    buyerId: string, sellerId: string, propertyId: string
+  ) {
+    // Fetch property details for enriched notification
+    const { data: property } = await supabase
+      .from('properties')
+      .select('type, adresse, prix, prix_currency')
+      .eq('id', propertyId)
+      .single();
+
+    const dateStr = new Date(confirmedDate).toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+    });
+
+    const propertyLabel = property
+      ? `${property.type} — ${property.adresse}`
+      : 'Bien immobilier';
+
+    const enrichedData = {
+      property_type: property?.type,
+      property_address: property?.adresse,
+      property_price: property?.prix,
+      property_currency: property?.prix_currency,
+      visit_date: confirmedDate,
+      visit_date_formatted: dateStr,
+    };
+
+    const message = `📅 ${dateStr}\n📍 ${propertyLabel}\n\nCliquez pour voir les détails de votre visite.`;
+
+    await Promise.all([
+      this.createNotification(buyerId, transactionId, 'visit_confirmed',
+        'Visite confirmée ! 📅', message, enrichedData),
+      this.createNotification(sellerId, transactionId, 'visit_confirmed',
+        'Visite confirmée ! 📅', message, enrichedData),
+    ]);
   }
 }
