@@ -301,6 +301,13 @@ export default function Home() {
             >
               J'ai déjà un compte
             </Button>
+            {/* Info pages links */}
+            <div className="flex justify-center gap-4 pt-2">
+              <button onClick={() => navigate('/features')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</button>
+              <button onClick={() => navigate('/how-it-works')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</button>
+              <button onClick={() => navigate('/security')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Sécurité</button>
+              <button onClick={() => navigate('/assistance')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Aide</button>
+            </div>
           </div>
         ) : (
           <Button

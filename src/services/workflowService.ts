@@ -197,6 +197,81 @@ export class WorkflowService {
     return result;
   }
 
+  static async finalizeDeal(transactionId: string, userId: string) {
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('*')
+      .eq('id', transactionId)
+      .single();
+    if (!tx) throw new Error('Transaction introuvable');
+
+    const isBuyer = userId === tx.buyer_id;
+    const updateData: Record<string, any> = {};
+
+    if (isBuyer) {
+      updateData.buyer_validated = true;
+      updateData.buyer_validated_at = new Date().toISOString();
+    } else {
+      updateData.seller_validated = true;
+      updateData.seller_validated_at = new Date().toISOString();
+    }
+
+    // Check if both validated
+    const bothValidated = isBuyer ? tx.seller_validated : tx.buyer_validated;
+
+    if (bothValidated) {
+      const result = await this.updateStatus(transactionId, 'deal_finalized', userId, {
+        ...updateData,
+        deal_finalized_at: new Date().toISOString(),
+      });
+
+      // Certify both users
+      await Promise.all([
+        supabase.from('wf_user_scores').update({
+          certified: true,
+          certified_at: new Date().toISOString(),
+        }).eq('user_id', tx.buyer_id),
+        supabase.from('wf_user_scores').update({
+          certified: true,
+          certified_at: new Date().toISOString(),
+        }).eq('user_id', tx.seller_id),
+        // Recalculate scores
+        supabase.rpc('wf_calculate_user_score', { p_user_id: tx.buyer_id }),
+        supabase.rpc('wf_calculate_user_score', { p_user_id: tx.seller_id }),
+      ]);
+
+      // Notify both
+      await this.createNotification(
+        tx.buyer_id, transactionId, 'deal_finalized',
+        'Deal finalisé ! 🎉',
+        'Félicitations ! Votre transaction a été finalisée avec succès. Vous êtes maintenant Client Certifié !'
+      );
+      await this.createNotification(
+        tx.seller_id, transactionId, 'deal_finalized',
+        'Deal finalisé ! 🎉',
+        'Félicitations ! Votre transaction a été finalisée avec succès. Vous êtes maintenant Client Certifié !'
+      );
+
+      return result;
+    } else {
+      // Partial validation
+      await supabase.from('wf_transactions').update(updateData).eq('id', transactionId);
+      return { partial: true };
+    }
+  }
+
+  static async submitFeedback(transactionId: string, userId: string, feedback: Record<string, any>) {
+    await this.createLog(transactionId, 'feedback_submitted', userId, 'participant', 'deal_finalized', 'deal_finalized');
+    // Store feedback in log details
+    await supabase.from('wf_transaction_logs').insert({
+      transaction_id: transactionId,
+      action: 'feedback_submitted',
+      actor_id: userId,
+      actor_role: 'participant',
+      details: feedback as any,
+    });
+  }
+
   // ------ Helpers ------
 
   private static async createLog(

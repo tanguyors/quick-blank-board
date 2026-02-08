@@ -33,6 +33,10 @@ const Transaction = lazy(() => import("./pages/Transaction"));
 const MyTransactions = lazy(() => import("./pages/MyTransactions"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Features = lazy(() => import("./pages/Features"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const Security = lazy(() => import("./pages/Security"));
+const Assistance = lazy(() => import("./pages/Assistance"));
 
 const queryClient = new QueryClient();
 
@@ -56,11 +60,19 @@ const App = () => (
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/" element={<Index />} />
+                <Route path="/features" element={<Features />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/security" element={<Security />} />
+                <Route path="/assistance" element={<Assistance />} />
                 <Route path="/profile-selection" element={<ProtectedRoute><ProfileSelection /></ProtectedRoute>} />
                 <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/buyer" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+                {/* Alias routes for test guide compatibility */}
+                <Route path="/swipe" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
+                <Route path="/owner/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/owner/add-property" element={<ProtectedRoute><PropertyNew /></ProtectedRoute>} />
                 <Route path="/notaire" element={<ProtectedRoute><NotaireDashboard /></ProtectedRoute>} />
                 <Route path="/properties/new" element={<ProtectedRoute><PropertyNew /></ProtectedRoute>} />
                 <Route path="/properties/:id/edit" element={<ProtectedRoute><PropertyEdit /></ProtectedRoute>} />
