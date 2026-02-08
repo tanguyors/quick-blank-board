@@ -1,9 +1,11 @@
 import { useMyProperties } from '@/hooks/useProperties';
+import { useProfile } from '@/hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Eye } from 'lucide-react';
+import { convertCurrency, formatPrice } from '@/lib/currencies';
 
 const STATUS_LABELS: Record<string, string> = {
   available: 'Disponible', sold: 'Vendu', rented: 'Loué', draft: 'Brouillon',
@@ -11,6 +13,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function OwnerPropertyTab() {
   const { data: properties, isLoading } = useMyProperties();
+  const { profile } = useProfile();
+  const preferredCurrency = profile.data?.preferred_currency || 'EUR';
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -60,7 +64,9 @@ export function OwnerPropertyTab() {
                       <Badge variant="outline" className="text-xs">{STATUS_LABELS[property.status]}</Badge>
                     </div>
                     <p className="text-sm font-medium truncate">{property.adresse}</p>
-                    <p className="text-sm font-bold text-primary">{property.prix.toLocaleString()} {property.prix_currency}</p>
+                    <p className="text-sm font-bold text-primary">
+                      {formatPrice(convertCurrency(property.prix, property.prix_currency, preferredCurrency), preferredCurrency)}
+                    </p>
                     <div className="flex gap-1 mt-1">
                       <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => navigate(`/properties/${property.id}`)}><Eye className="h-3 w-3" /></Button>
                       <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => navigate(`/properties/${property.id}/edit`)}><Edit className="h-3 w-3" /></Button>
