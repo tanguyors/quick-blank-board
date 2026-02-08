@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useTransaction } from '@/hooks/useTransaction';
 import { useAuth } from '@/hooks/useAuth';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { TransactionStatusBadge, TransactionTimeline } from '@/components/workflow/TransactionStatus';
 import { VisitManagement } from '@/components/workflow/VisitManagement';
 import { SecureMessaging } from '@/components/workflow/SecureMessaging';
@@ -23,6 +24,7 @@ export default function Transaction() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { displayPrice } = useDisplayPrice();
   const [activeTab, setActiveTab] = useState<TabId>('apercu');
   const [validatingDoc, setValidatingDoc] = useState<ValidatingDoc>(null);
   const {
@@ -102,6 +104,7 @@ export default function Transaction() {
               primaryMedia={primaryMedia}
               logs={logs.data}
               isBuyer={isBuyer}
+              displayPrice={displayPrice}
               onMakeOffer={async (args) => makeOffer.mutateAsync(args)}
               onFinalizeDeal={async () => finalizeDeal.mutateAsync()}
               onSubmitFeedback={async (fb) => submitFeedback.mutateAsync(fb)}
@@ -159,8 +162,9 @@ export default function Transaction() {
   );
 }
 
-function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, onMakeOffer, onFinalizeDeal, onSubmitFeedback, isMakingOffer, isFinalizing, isSubmittingFeedback }: {
+function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, onMakeOffer, onFinalizeDeal, onSubmitFeedback, isMakingOffer, isFinalizing, isSubmittingFeedback }: {
   tx: WfTransaction; property: any; primaryMedia: any; logs: any; isBuyer: boolean;
+  displayPrice: (amount: number, fromCurrency: string) => string;
   onMakeOffer: (args: { offerType: string; amount: number; details?: string }) => Promise<any>;
   onFinalizeDeal: () => Promise<any>;
   onSubmitFeedback: (fb: Record<string, any>) => Promise<any>;
@@ -185,7 +189,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, onMakeOffer, onF
               <span className="text-sm">{property.adresse}</span>
             </div>
             <p className="text-primary font-bold text-xl mt-2">
-              {property.prix?.toLocaleString()} {property.prix_currency}
+              {property.prix ? displayPrice(property.prix, property.prix_currency) : ''}
             </p>
             <div className="flex gap-3 mt-2 text-sm text-muted-foreground">
               {property.chambres > 0 && (
@@ -229,7 +233,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, onMakeOffer, onF
       {(status === 'offer_made' || status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
           <h3 className="font-semibold text-foreground text-sm">Offre</h3>
-          <p className="text-primary font-bold text-lg">{tx.offer_amount.toLocaleString()} {property?.prix_currency || 'XOF'}</p>
+          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'XOF')}</p>
           {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
           {tx.offer_details && <p className="text-xs text-muted-foreground">{tx.offer_details}</p>}
         </div>
