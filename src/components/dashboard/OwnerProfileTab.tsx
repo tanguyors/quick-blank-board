@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { User, Mail, CalendarDays, Phone, Briefcase, CreditCard, Shield, Bell, AlertTriangle, Save } from 'lucide-react';
+import { User, Mail, CalendarDays, Phone, Briefcase, CreditCard, Shield, Bell, AlertTriangle, Save, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { CURRENCIES } from '@/lib/currencies';
@@ -188,6 +188,18 @@ export function OwnerProfileTab() {
             <div className="w-11 h-6 bg-secondary rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:rounded-full after:h-5 after:w-5 after:transition-all" />
           </label>
         </div>
+      </div>
+
+      {/* Déconnexion */}
+      <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
+        <div className="flex items-center gap-2">
+          <LogOut className="h-5 w-5 text-muted-foreground" />
+          <h3 className="text-lg font-bold text-foreground">Déconnexion</h3>
+        </div>
+        <p className="text-sm text-muted-foreground -mt-2">Se déconnecter de votre compte SomaGate</p>
+        <Button variant="outline" className="w-full gap-2" onClick={async () => { await signOut(); }}>
+          <LogOut className="h-4 w-4" /> Se déconnecter
+        </Button>
       </div>
 
       {/* Zone de danger */}
