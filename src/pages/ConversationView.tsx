@@ -1,21 +1,74 @@
-import { ChatView } from '@/components/messages/ChatView';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
+import { ChatView } from '@/components/messages/ChatView';
+import { ArrowLeft, MapPin } from 'lucide-react';
 
 export default function ConversationView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { displayPrice } = useDisplayPrice();
+
+  // Fetch conversation with property details
+  const { data: conversation } = useQuery({
+    queryKey: ['conversation-detail', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('conversations')
+        .select(`*, properties (id, type, adresse, prix, prix_currency, property_media (url, is_primary))`)
+        .eq('id', id!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const property = conversation?.properties as any;
+  const primaryMedia = property?.property_media?.find((m: any) => m.is_primary) || property?.property_media?.[0];
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <div className="flex items-center gap-2 p-3 border-b border-border">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/messages')}>
+      {/* Header with back button */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-border flex-shrink-0">
+        <button
+          onClick={() => navigate('/messages')}
+          className="p-2 text-foreground hover:text-foreground/70 transition-colors"
+        >
           <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="font-semibold">Conversation</h1>
+        </button>
+        <span className="font-semibold text-foreground text-sm">Conversation</span>
       </div>
-      <div className="flex-1 overflow-hidden">
+
+      {/* Property summary banner */}
+      {property && (
+        <button
+          onClick={() => navigate(`/properties/${property.id}`)}
+          className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card hover:bg-accent/50 transition-colors text-left flex-shrink-0"
+        >
+          <div className="w-12 h-12 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+            {primaryMedia ? (
+              <img src={primaryMedia.url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">📷</div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-foreground text-sm capitalize truncate">{property.type}</p>
+            <div className="flex items-center gap-1 text-muted-foreground mt-0.5">
+              <MapPin className="h-3 w-3 flex-shrink-0" />
+              <span className="text-xs truncate">{property.adresse}</span>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-primary flex-shrink-0">
+            {property.prix ? displayPrice(property.prix, property.prix_currency) : ''}
+          </span>
+        </button>
+      )}
+
+      {/* Chat */}
+      <div className="flex-1 min-h-0">
         <ChatView conversationId={id!} />
       </div>
     </div>
