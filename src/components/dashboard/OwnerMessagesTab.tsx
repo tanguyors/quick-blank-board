@@ -40,7 +40,7 @@ export function OwnerMessagesTab() {
               return (
                 <button
                   key={conv.id}
-                  onClick={() => navigate(`/messages/${conv.id}`)}
+                  onClick={() => navigate(`/messages/${conv.id}`, { state: { from: '/dashboard?tab=messages' } })}
                   className="w-full flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors text-left"
                 >
                   <Avatar>
