@@ -9,15 +9,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil, Coins } from 'lucide-react';
+import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil, Coins, SlidersHorizontal } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
 import { CURRENCIES } from '@/lib/currencies';
+import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
 
 export function ProfileForm() {
   const navigate = useNavigate();
   const { roles, refreshProfile, user } = useAuth();
   const { profile, updateProfile } = useProfile();
+  const { preferences } = useBuyerPreferences();
   const [editingBio, setEditingBio] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -195,6 +197,25 @@ export function ProfileForm() {
             <ArrowRight className="h-5 w-5 text-foreground" />
           </div>
         </div>
+      </div>
+
+      {/* Buyer Preferences */}
+      <div className="mx-4 mb-4">
+        <button
+          onClick={() => navigate('/buyer/preferences')}
+          className="w-full bg-card rounded-xl p-4 border border-border flex items-center justify-between hover:border-primary/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <SlidersHorizontal className="h-5 w-5 text-primary" />
+            <div className="text-left">
+              <p className="font-semibold text-foreground text-sm">Préférences de recherche</p>
+              <p className="text-xs text-muted-foreground">
+                {preferences.data?.is_complete ? 'Configuré ✅' : 'À configurer'}
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </button>
       </div>
 
       {/* Personal info */}
