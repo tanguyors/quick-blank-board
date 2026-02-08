@@ -13,6 +13,8 @@ import { Upload, X, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Tables } from '@/integrations/supabase/types';
+import { useProfile } from '@/hooks/useProfile';
+import { CURRENCIES, convertCurrency, getCurrencyInfo } from '@/lib/currencies';
 
 /* ── Type mappings ── */
 const PROPERTY_TYPES = [
@@ -40,7 +42,7 @@ const OPERATIONS = [
   { value: 'vente', label: 'Vente' },
 ] as const;
 
-const CURRENCIES = ['EUR', 'USD', 'GBP'];
+/* Currencies imported from @/lib/currencies */
 
 /* ── Per-type field config ── */
 interface TypeConfig {
@@ -113,10 +115,13 @@ interface PropertyFormProps {
 
 export function PropertyForm({ property, existingMedia = [], onSuccess }: PropertyFormProps) {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const createProperty = useCreateProperty();
   const updateProperty = useUpdateProperty();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const preferredCurrency = (profile.data as any)?.preferred_currency || 'EUR';
 
   const [form, setForm] = useState({
     type: (property?.type || 'appartement') as string,
@@ -124,7 +129,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     secteur: property?.secteur || '',
     adresse: property?.adresse || '',
     prix: property?.prix?.toString() || '',
-    prix_currency: property?.prix_currency || 'EUR',
+    prix_currency: property?.prix_currency || preferredCurrency,
     surface: property?.surface?.toString() || '',
     chambres: property?.chambres?.toString() || '1',
     salles_bain: property?.salles_bain?.toString() || '1',
@@ -325,10 +330,18 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         </div>
         <div>
           <Label className="text-sm font-semibold">Devise</Label>
-          <Select value={form.prix_currency} onValueChange={v => update('prix_currency', v)}>
+          <Select value={form.prix_currency} onValueChange={v => {
+            // Auto-convert the price when switching currency
+            const currentPrice = Number(form.prix);
+            if (currentPrice > 0) {
+              const converted = convertCurrency(currentPrice, form.prix_currency, v);
+              update('prix', converted.toString());
+            }
+            update('prix_currency', v);
+          }}>
             <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {CURRENCIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              {CURRENCIES.map(c => <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>

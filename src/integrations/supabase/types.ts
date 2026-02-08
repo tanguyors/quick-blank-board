@@ -139,6 +139,7 @@ export type Database = {
           full_name: string | null
           id: string
           last_name: string | null
+          preferred_currency: string
           updated_at: string
           whatsapp: string | null
         }
@@ -154,6 +155,7 @@ export type Database = {
           full_name?: string | null
           id: string
           last_name?: string | null
+          preferred_currency?: string
           updated_at?: string
           whatsapp?: string | null
         }
@@ -169,6 +171,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_name?: string | null
+          preferred_currency?: string
           updated_at?: string
           whatsapp?: string | null
         }
