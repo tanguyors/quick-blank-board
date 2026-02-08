@@ -17,30 +17,11 @@ export default function Explore() {
   return (
     <AppLayout hideHeader>
       <div className="flex flex-col" style={{ height: 'calc(100dvh - 5rem)' }}>
-        {/* Top bar with toggle */}
+        {/* Top bar: logo + icons */}
         <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
           <div className="flex items-center gap-2">
             <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
             <span className="text-foreground font-semibold">SomaGate</span>
-          </div>
-
-          <div className="flex items-center bg-secondary rounded-full p-1">
-            <button
-              onClick={() => setView('swipe')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                view === 'swipe' ? 'bg-foreground text-background' : 'text-muted-foreground'
-              }`}
-            >
-              <LayoutGrid className="h-4 w-4" /> Swipe
-            </button>
-            <button
-              onClick={() => setView('carte')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                view === 'carte' ? 'bg-foreground text-background' : 'text-muted-foreground'
-              }`}
-            >
-              <Map className="h-4 w-4" /> Carte
-            </button>
           </div>
 
           <div className="flex items-center gap-1">
@@ -54,19 +35,44 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-h-0">
-          {view === 'swipe' ? (
-            <SwipeStack filters={filters} />
-          ) : (
-            <Suspense fallback={
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-              </div>
-            }>
-              <PropertyMap />
-            </Suspense>
-          )}
+        {/* Content area with centered toggle */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          {/* Swipe / Carte toggle - inside content area */}
+          <div className="flex justify-center px-4 pb-2 flex-shrink-0">
+            <div className="flex items-center bg-secondary rounded-full p-1">
+              <button
+                onClick={() => setView('swipe')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  view === 'swipe' ? 'bg-foreground text-background' : 'text-muted-foreground'
+                }`}
+              >
+                <LayoutGrid className="h-4 w-4" /> Swipe
+              </button>
+              <button
+                onClick={() => setView('carte')}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  view === 'carte' ? 'bg-foreground text-background' : 'text-muted-foreground'
+                }`}
+              >
+                <Map className="h-4 w-4" /> Carte
+              </button>
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div className="flex-1 min-h-0">
+            {view === 'swipe' ? (
+              <SwipeStack filters={filters} />
+            ) : (
+              <Suspense fallback={
+                <div className="flex items-center justify-center h-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              }>
+                <PropertyMap />
+              </Suspense>
+            )}
+          </div>
         </div>
       </div>
     </AppLayout>
