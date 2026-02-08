@@ -67,7 +67,7 @@ export default function Transaction() {
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button onClick={() => navigate(-1)} className="text-foreground">
+          <button onClick={() => navigate('/matches')} className="text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex-1">
