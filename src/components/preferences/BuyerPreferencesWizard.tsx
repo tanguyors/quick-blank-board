@@ -31,7 +31,15 @@ const OPERATIONS = [
   { value: 'vente', label: 'Vente' },
 ];
 
-const SECTORS = ['Canggu', 'Ubud', 'Seminyak', 'Sanur', 'Uluwatu', 'Pererenan', 'Bingin', 'Nusa Dua'];
+const SECTORS = [
+  'Amed', 'Balangan', 'Balian', 'Bangli', 'Batubelig', 'Batu Bolong', 'Berawa', 'Bingin',
+  'Bukit', 'Candidasa', 'Canggu', 'Denpasar', 'Echo Beach', 'Gianyar', 'Jatiluwih',
+  'Jimbaran', 'Karangasem', 'Keramas', 'Kerobokan', 'Klungkung', 'Kuta', 'Legian',
+  'Lembongan', 'Lovina', 'Medewi', 'Mengwi', 'Munduk', 'Negara', 'Nusa Ceningan',
+  'Nusa Dua', 'Nusa Penida', 'Padang Padang', 'Pecatu', 'Pemuteran', 'Pererenan',
+  'Sanur', 'Selemadeg', 'Seminyak', 'Sidemen', 'Singaraja', 'Tabanan', 'Tanah Lot',
+  'Tegallalang', 'Tibubeneng', 'Ubud', 'Uluwatu', 'Ungasan',
+];
 
 const STATUSES = [
   { value: 'available', label: 'Disponible' },
