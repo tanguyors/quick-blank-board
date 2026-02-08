@@ -78,6 +78,43 @@ Deno.serve(async (req) => {
           data: reminder.metadata,
         })
 
+        // Send email for visit reminders
+        if (reminder.reminder_type === 'visit_reminder') {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('email, first_name, full_name')
+            .eq('id', reminder.user_id)
+            .single()
+
+          if (profile?.email) {
+            try {
+              await fetch(`${supabaseUrl}/functions/v1/send-email`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${serviceRoleKey}`,
+                },
+                body: JSON.stringify({
+                  to: profile.email,
+                  template: 'visit_reminder',
+                  data: {
+                    recipient_name: profile.first_name || profile.full_name,
+                    reminder_type: reminder.metadata?.type,
+                    visit_date_formatted: reminder.metadata?.visit_date
+                      ? new Date(reminder.metadata.visit_date).toLocaleDateString('fr-FR', {
+                          weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+                        })
+                      : undefined,
+                    action_url: transaction ? `https://app.somagate.com/transaction/${transaction.id}` : undefined,
+                  },
+                }),
+              })
+            } catch (e) {
+              console.error(`Failed to send visit reminder email to ${profile.email}:`, e)
+            }
+          }
+        }
+
         await supabase
           .from('wf_reminders')
           .update({ sent: true, sent_at: new Date().toISOString() })

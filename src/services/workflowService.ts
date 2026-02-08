@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { TransactionStatus, VALID_TRANSITIONS } from '@/types/workflow';
 import { DocumentGenerationService } from './documentGenerationService';
+import { EmailService } from './emailService';
 
 export class WorkflowService {
   static isValidTransition(from: TransactionStatus, to: TransactionStatus): boolean {
@@ -35,6 +36,11 @@ export class WorkflowService {
       'Nouveau coup de cœur ! ❤️',
       'Votre bien vient de recevoir un coup de cœur. Un acheteur pourrait bientôt demander une visite.'
     );
+
+    // Send emails (non-blocking)
+    EmailService.sendToTransactionParties(buyerId, sellerId, 'matched', {
+      action_url: `https://app.somagate.com/transaction/${data.id}`,
+    }).catch(e => console.error('Email send failed:', e));
 
     return data;
   }
@@ -243,6 +249,28 @@ export class WorkflowService {
       offer_details: details || null,
     });
 
+    // Notify seller by email about the offer
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('seller_id, property_id')
+      .eq('id', transactionId)
+      .single();
+    if (tx) {
+      const { data: property } = await supabase
+        .from('properties')
+        .select('type, adresse, prix_currency')
+        .eq('id', tx.property_id)
+        .single();
+      EmailService.sendToUser(tx.seller_id, 'offer_made', {
+        offer_amount: amount,
+        offer_type: offerType,
+        property_type: property?.type,
+        property_address: property?.adresse,
+        property_currency: property?.prix_currency,
+        action_url: `https://app.somagate.com/transaction/${transactionId}`,
+      }).catch(e => console.error('Offer email failed:', e));
+    }
+
     // Auto-generate documents after offer
     try {
       await DocumentGenerationService.generateDocumentsForOffer(transactionId);
@@ -307,6 +335,11 @@ export class WorkflowService {
         'Deal finalisé ! 🎉',
         'Félicitations ! Votre transaction a été finalisée avec succès. Vous êtes maintenant Client Certifié !'
       );
+
+      // Send deal finalized emails
+      EmailService.sendToTransactionParties(tx.buyer_id, tx.seller_id, 'deal_finalized', {
+        action_url: `https://app.somagate.com/transaction/${transactionId}`,
+      }).catch(e => console.error('Deal email failed:', e));
 
       return result;
     } else {
@@ -397,5 +430,11 @@ export class WorkflowService {
       this.createNotification(sellerId, transactionId, 'visit_confirmed',
         'Visite confirmée ! 📅', message, enrichedData),
     ]);
+
+    // Send visit confirmed emails (non-blocking)
+    EmailService.sendToTransactionParties(buyerId, sellerId, 'visit_confirmed', {
+      ...enrichedData,
+      action_url: `https://app.somagate.com/transaction/${transactionId}`,
+    }).catch(e => console.error('Visit email failed:', e));
   }
 }
