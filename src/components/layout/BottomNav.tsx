@@ -1,6 +1,7 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard } from 'lucide-react';
+import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 const buyerLinks = [
@@ -29,6 +30,7 @@ const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
 export function BottomNav() {
   const { pathname, search } = useLocation();
   const { roles } = useAuth();
+  const { theme, setTheme } = useTheme();
   const isOwner = roles.includes('owner');
   const isAdmin = roles.includes('admin');
   const isNotaire = roles.includes('notaire');
@@ -66,6 +68,16 @@ export function BottomNav() {
             </Link>
           );
         })}
+        {/* Theme toggle */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="flex flex-col items-center gap-1 px-3 py-2 text-xs text-muted-foreground transition-colors"
+          aria-label="Changer le thème"
+        >
+          <div className="relative">
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </div>
+        </button>
       </div>
     </nav>
   );
