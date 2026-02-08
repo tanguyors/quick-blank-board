@@ -168,6 +168,7 @@ function OverviewTab() {
 
 function UsersTab({ onSelectUser }: { onSelectUser: (id: string) => void }) {
   const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
 
   const users = useQuery({
     queryKey: ['admin-users'],
@@ -201,7 +202,18 @@ function UsersTab({ onSelectUser }: { onSelectUser: (id: string) => void }) {
     },
   });
 
+  const roleOptions = ['all', 'user', 'owner', 'admin', 'notaire', 'agent'];
+  const roleLabels: Record<string, string> = {
+    all: 'Tous',
+    user: 'Utilisateur',
+    owner: 'Propriétaire',
+    admin: 'Admin',
+    notaire: 'Notaire',
+    agent: 'Agent',
+  };
+
   const filtered = users.data?.filter(u => {
+    if (roleFilter !== 'all' && !u.roles.includes(roleFilter)) return false;
     if (!search) return true;
     const s = search.toLowerCase();
     return (
@@ -218,11 +230,32 @@ function UsersTab({ onSelectUser }: { onSelectUser: (id: string) => void }) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Rechercher un utilisateur ou rôle..."
+          placeholder="Rechercher un utilisateur..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="pl-10 bg-card border-border"
         />
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {roleOptions.map(role => (
+          <button
+            key={role}
+            onClick={() => setRoleFilter(role)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              roleFilter === role
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {roleLabels[role]}
+            {role !== 'all' && users.data && (
+              <span className="ml-1 opacity-70">
+                ({users.data.filter(u => u.roles.includes(role)).length})
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
       <div className="space-y-2">
