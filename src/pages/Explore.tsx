@@ -16,9 +16,9 @@ export default function Explore() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col" style={{ height: 'calc(100dvh - 5rem)' }}>
         {/* Top bar with toggle */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
           <div className="flex items-center gap-2">
             <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
             <span className="text-foreground font-semibold">SomaGate</span>
@@ -55,7 +55,7 @@ export default function Explore() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 min-h-0">
           {view === 'swipe' ? (
             <SwipeStack filters={filters} />
           ) : (
