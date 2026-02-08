@@ -11,10 +11,11 @@ import { SecurityBanner } from '@/components/workflow/SecurityAlert';
 import { OfferForm } from '@/components/workflow/OfferForm';
 import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
-import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2, CheckCircle, Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DocumentGenerationService } from '@/services/documentGenerationService';
 import { toast } from 'sonner';
+import { TransactionExportService } from '@/services/transactionExportService';
 import type { TransactionStatus as TxStatus, WfTransaction } from '@/types/workflow';
 
 type TabId = 'apercu' | 'visite' | 'messages' | 'documents';
@@ -76,6 +77,22 @@ export default function Transaction() {
             <h1 className="font-semibold text-foreground">Transaction</h1>
             <TransactionStatusBadge status={tx.status as TxStatus} />
           </div>
+          {['deal_finalized', 'archived', 'deal_cancelled'].includes(tx.status) && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                try {
+                  await TransactionExportService.exportTransaction(tx.id);
+                  toast.success('Dossier téléchargé !');
+                } catch (err) {
+                  toast.error('Erreur lors du téléchargement');
+                }
+              }}
+            >
+              <Download className="h-4 w-4 mr-1" /> Dossier
+            </Button>
+          )}
         </div>
 
         {/* Tabs */}
