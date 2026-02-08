@@ -7,10 +7,12 @@ import { AvatarUpload } from './AvatarUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil } from 'lucide-react';
+import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil, Coins } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
+import { CURRENCIES } from '@/lib/currencies';
 
 export function ProfileForm() {
   const navigate = useNavigate();
@@ -21,19 +23,22 @@ export function ProfileForm() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', full_name: '', bio: '',
     whatsapp: '', avatar_url: '', company_name: '', company_address: '',
+    preferred_currency: 'EUR',
   });
 
   useEffect(() => {
     if (profile.data) {
+      const pd = profile.data as any;
       setForm({
-        first_name: profile.data.first_name || '',
-        last_name: profile.data.last_name || '',
-        full_name: profile.data.full_name || '',
-        bio: profile.data.bio || '',
-        whatsapp: profile.data.whatsapp || '',
-        avatar_url: profile.data.avatar_url || '',
-        company_name: profile.data.company_name || '',
-        company_address: profile.data.company_address || '',
+        first_name: pd.first_name || '',
+        last_name: pd.last_name || '',
+        full_name: pd.full_name || '',
+        bio: pd.bio || '',
+        whatsapp: pd.whatsapp || '',
+        avatar_url: pd.avatar_url || '',
+        company_name: pd.company_name || '',
+        company_address: pd.company_address || '',
+        preferred_currency: pd.preferred_currency || 'EUR',
       });
     }
   }, [profile.data]);
@@ -266,6 +271,31 @@ export function ProfileForm() {
               />
             </>
           )}
+
+          {/* Devise préférée */}
+          <div className="bg-card rounded-xl p-4 border border-border">
+            <div className="flex items-center gap-3 mb-2">
+              <Coins className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-xs text-muted-foreground">Devise préférée</p>
+              </div>
+            </div>
+            <Select
+              value={form.preferred_currency}
+              onValueChange={v => {
+                setForm(f => ({ ...f, preferred_currency: v }));
+                updateProfile.mutate({ ...form, preferred_currency: v } as any);
+                toast.success('Devise mise à jour');
+              }}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CURRENCIES.map(c => (
+                  <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
     </div>
