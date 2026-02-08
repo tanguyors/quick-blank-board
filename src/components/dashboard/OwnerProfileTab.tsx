@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
-import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,7 +9,7 @@ import { User, Mail, CalendarDays, Phone, Briefcase, CreditCard, Shield, Bell, A
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { CURRENCIES } from '@/lib/currencies';
-import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
+
 
 export function OwnerProfileTab() {
   const { user, profile, refreshProfile, signOut } = useAuth();
@@ -53,23 +52,6 @@ export function OwnerProfileTab() {
 
   return (
     <div className="p-4 space-y-4 pb-8">
-      {/* Avatar + Name card */}
-      <div className="bg-card rounded-2xl p-5 border border-border">
-        <div className="flex items-center gap-4">
-          <AvatarUpload
-            url={form.avatar_url}
-            onUpload={url => {
-              setForm(f => ({ ...f, avatar_url: url }));
-              updateProfile.mutate({ avatar_url: url } as any);
-            }}
-          />
-          <div>
-            <h3 className="text-lg font-bold text-foreground">{displayName}</h3>
-            <p className="text-sm text-muted-foreground">✓ Membre SomaGate Pro</p>
-          </div>
-        </div>
-      </div>
-
       {/* Informations personnelles */}
       <div className="bg-card rounded-2xl p-5 border border-border space-y-5">
         <div className="flex items-center gap-2">
