@@ -1,56 +1,41 @@
 
+# Ajout du bouton "Voir les details" sur les cartes Swipe
 
+## Objectif
+Ajouter un bouton "Voir les details" sur chaque vignette de la page Decouvrir (swipe). Ce bouton ouvre un panneau coulissant (Sheet) identique a celui de la carte, affichant toutes les informations du bien avec les actions Match et Favori.
 
-# Plan SomaGate
+## Ce qui existe deja
+- Le composant `PropertyDetailSheet` (utilise sur la vue Carte) affiche deja toutes les informations du bien avec galerie photos, description, equipements, et les boutons Match / Favori / Demander une visite.
+- Il suffit de le reutiliser tel quel dans le SwipeStack.
 
-## ✅ Étape 1 — Bugs critiques + Workflow transactionnel
-- Corrigé bug PropertyMap (react-leaflet lazy loading)
-- Stats profil dynamiques (swipes, matches, visites, score)
-- 7 tables workflow créées (wf_transactions, logs, messages, documents, notifications, scores, reminders)
-- WorkflowService (14 statuts, transitions validées)
-- MessageDetectionService (anti-fraude, détection téléphone/mots-clés)
-- Pages Transaction + Mes Transactions
-- Création auto de transaction au match
+## Modifications prevues
 
-## ✅ Étape 2 — Dashboard owner, notifications, onboarding
-- Dashboard propriétaire avec onglets (Mes biens, Visites, Messages, Profil)
-- Système de notifications in-app avec NotificationBell
-- Flux onboarding post-inscription (sélection rôle → configuration profil)
-- Page Notifications
+### 1. SwipeCard - Ajout du bouton "Voir les details"
+**Fichier** : `src/components/swipe/SwipeCard.tsx`
 
-## ✅ Étape 3 — Landing page, Admin, Documents
-- Landing page desktop (Home.tsx) avec hero, features, stats, CTA
-- Page Admin avec 4 onglets (Vue globale, Utilisateurs, Transactions, Biens)
-- Service de génération automatique de documents (LOI, Term Sheet, Contrat Vente/Location)
-- Validation croisée des documents (acheteur + vendeur)
-- Auto-génération après makeOffer dans WorkflowService
-- Route /admin avec accès restreint aux rôles admin
+- Ajouter un bouton "Voir les details" en bas de la carte, sous le prix.
+- Ce bouton appelle un callback `onInfoClick` (deja prevu dans les props mais non utilise).
+- Le bouton sera style avec un fond semi-transparent et une icone "info" ou le texte "Voir les details".
 
-## ✅ Étape 3.5 — Dashboards par rôle
-- Dashboard Acheteur (BuyerDashboard) : transactions actives, stats, quick actions, score
-- Dashboard Owner enrichi : ajout onglet Transactions avec stats en cours/finalisées
-- Dashboard Notaire (NotaireDashboard) : dossiers actifs, documents en attente, validation status
-- BottomNav adaptatif par rôle (buyer 5 items, owner 4, notaire 3, admin ajouté dynamiquement)
-- Routing intelligent selon le rôle à la connexion (/ → /buyer, /dashboard, /notaire)
+### 2. SwipeStack - Integration du PropertyDetailSheet
+**Fichier** : `src/components/swipe/SwipeStack.tsx`
 
-## ✅ Étape 4 — Edge Functions + Améliorations
-- Edge Function `create-test-users` : 6 comptes de test (2 buyers, 2 owners, 1 notaire, 1 admin) avec biens, matches et transactions
-- Edge Function `process-reminders` : traitement des wf_reminders programmés → notifications in-app
-- Edge Function `send-push` : notifications push (mock/log, prêt pour FCM/OneSignal)
-- Filtres avancés sur Explore (opération, type, budget slider, surface, chambres, secteur)
-- PWA manifest + meta tags mobile (apple-mobile-web-app, theme-color)
-- SEO meta tags (title, description, OG tags, Twitter cards)
+- Ajouter un state `showDetail` pour controler l'ouverture du sheet.
+- Importer et integrer le composant `PropertyDetailSheet`.
+- Passer les callbacks `onLike` (match), `onToggleFavorite` (favori) et `isFavorite` au sheet.
+- Passer la prop `onInfoClick` au composant `SwipeCard` pour ouvrir le detail.
+- S'assurer que le drag/swipe ne se declenche pas quand on clique sur le bouton (stopPropagation).
 
-## ✅ Étape 5 — Polish & UX
-- Animations framer-motion (PageTransition) sur toutes les pages
-- Dark mode toggle avec next-themes (light/dark, défaut dark)
-- Responsive desktop avec sidebar navigation (AppSidebar, hidden mobile)
-- Header + BottomNav cachés sur desktop (lg:hidden)
-- Accessibilité (aria-labels, aria-current, role=main/banner/navigation)
-- Performance (React.lazy + Suspense sur toutes les routes protégées)
-- Thème light ajouté (variables CSS :root + .dark)
+### 3. Flux utilisateur
+1. L'utilisateur voit une carte de bien dans le swipe.
+2. Il clique sur le bouton "Voir les details" en bas de la vignette.
+3. Un panneau coulissant s'ouvre depuis le bas avec la galerie complete, les specs (type, operation, droit, surface, chambres, salles de bain), la description, les equipements.
+4. En bas du panneau, deux boutons : "Matcher" (coeur) et "Favori" (etoile), plus "Demander une visite".
+5. Fermer le panneau ramene au swipe sans changer de carte.
 
-## 🔲 Étape 6 — Capacitor + Build natif
-- Capacitor setup pour build natif iOS/Android
-- Configuration capacitor.config.ts
-- Instructions build et déploiement stores
+## Details techniques
+
+- Reutilisation directe de `PropertyDetailSheet` sans duplication de code.
+- Les actions Match et Favori dans le sheet utilisent les memes hooks (`useSwipe`, `useFavorites`) que le reste de l'app.
+- Le bouton sur la SwipeCard utilise `e.stopPropagation()` et `e.preventDefault()` pour eviter de declencher le swipe gestuel.
+- Import de `useFavorites` dans SwipeStack (deja present) pour fournir `isFavorite` et `toggleFavorite` au sheet.
