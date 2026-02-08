@@ -824,8 +824,13 @@ export type Database = {
     Enums: {
       app_role: "user" | "owner" | "admin" | "notaire" | "agent"
       media_type: "image" | "video"
-      property_droit: "titre_foncier" | "bail" | "deliberation"
-      property_operation: "vente" | "location"
+      property_droit:
+        | "titre_foncier"
+        | "bail"
+        | "deliberation"
+        | "freehold"
+        | "leasehold"
+      property_operation: "vente" | "location" | "achat"
       property_status: "available" | "sold" | "rented" | "draft"
       property_type:
         | "villa"
@@ -836,6 +841,14 @@ export type Database = {
         | "bureau"
         | "commerce"
         | "entrepot"
+        | "commercial"
+        | "construction"
+        | "maison_a_renover"
+        | "colocation_longue"
+        | "colocation_courte"
+        | "hebergement_service"
+        | "hebergement_animaux"
+        | "guesthouse"
       swipe_direction: "left" | "right"
       transaction_status:
         | "matched"
@@ -982,8 +995,14 @@ export const Constants = {
     Enums: {
       app_role: ["user", "owner", "admin", "notaire", "agent"],
       media_type: ["image", "video"],
-      property_droit: ["titre_foncier", "bail", "deliberation"],
-      property_operation: ["vente", "location"],
+      property_droit: [
+        "titre_foncier",
+        "bail",
+        "deliberation",
+        "freehold",
+        "leasehold",
+      ],
+      property_operation: ["vente", "location", "achat"],
       property_status: ["available", "sold", "rented", "draft"],
       property_type: [
         "villa",
@@ -994,6 +1013,14 @@ export const Constants = {
         "bureau",
         "commerce",
         "entrepot",
+        "commercial",
+        "construction",
+        "maison_a_renover",
+        "colocation_longue",
+        "colocation_courte",
+        "hebergement_service",
+        "hebergement_animaux",
+        "guesthouse",
       ],
       swipe_direction: ["left", "right"],
       transaction_status: [
