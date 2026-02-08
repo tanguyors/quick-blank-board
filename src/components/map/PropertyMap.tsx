@@ -97,6 +97,17 @@ export function PropertyMap() {
               <SelectItem value="terrain">Terrain</SelectItem>
               <SelectItem value="maison">Maison</SelectItem>
               <SelectItem value="studio">Studio</SelectItem>
+              <SelectItem value="bureau">Bureau</SelectItem>
+              <SelectItem value="commerce">Commerce</SelectItem>
+              <SelectItem value="entrepot">Entrepôt</SelectItem>
+              <SelectItem value="commercial">Commercial</SelectItem>
+              <SelectItem value="construction">Construction</SelectItem>
+              <SelectItem value="maison_a_renover">Maison à rénover</SelectItem>
+              <SelectItem value="colocation_longue">Colocation longue</SelectItem>
+              <SelectItem value="colocation_courte">Colocation courte</SelectItem>
+              <SelectItem value="hebergement_service">Hébergement service</SelectItem>
+              <SelectItem value="hebergement_animaux">Hébergement animaux</SelectItem>
+              <SelectItem value="guesthouse">Guesthouse</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filters.operation || 'all'} onValueChange={v => setFilters(f => ({ ...f, operation: v === 'all' ? '' : v }))}>
