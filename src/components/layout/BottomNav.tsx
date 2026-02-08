@@ -12,10 +12,10 @@ const buyerLinks = [
 ];
 
 const ownerLinks = [
-  { to: '/dashboard', icon: Home, label: 'Mes biens' },
-  { to: '/visits', icon: CalendarDays, label: 'Visites' },
-  { to: '/messages', icon: MessageSquare, label: 'Messages' },
-  { to: '/profile', icon: User, label: 'Profil' },
+  { to: '/dashboard?tab=biens', icon: Home, label: 'Mes biens' },
+  { to: '/dashboard?tab=visites', icon: CalendarDays, label: 'Visites' },
+  { to: '/dashboard?tab=messages', icon: MessageSquare, label: 'Messages' },
+  { to: '/dashboard?tab=profil', icon: User, label: 'Profil' },
 ];
 
 const notaireLinks = [
@@ -27,7 +27,7 @@ const notaireLinks = [
 const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
 
 export function BottomNav() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const { roles } = useAuth();
   const isOwner = roles.includes('owner');
   const isAdmin = roles.includes('admin');
@@ -44,7 +44,10 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 pb-safe lg:hidden" aria-label="Navigation mobile">
       <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
         {links.map(({ to, icon: Icon, label }) => {
-          const isActive = pathname === to || pathname.startsWith(to + '/');
+          const [linkPath, linkQuery] = to.split('?');
+          const isActive = linkQuery
+            ? pathname === linkPath && search === `?${linkQuery}`
+            : pathname === to || pathname.startsWith(to + '/');
           return (
             <Link
               key={to}
