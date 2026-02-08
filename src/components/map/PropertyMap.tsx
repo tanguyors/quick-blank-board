@@ -10,9 +10,13 @@ import { Input } from '@/components/ui/input';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Filter, X, ArrowLeft } from 'lucide-react';
+import { Filter, X, ArrowLeft, Heart, Star, MessageCircle } from 'lucide-react';
 import logoSoma from '@/assets/logo-soma.png';
 import { PropertyDetailSheet } from './PropertyDetailSheet';
+import { useAuth } from '@/hooks/useAuth';
+import { useSwipe } from '@/hooks/useSwipes';
+import { useFavorites } from '@/hooks/useFavorites';
+import { toast } from 'sonner';
 
 function createPriceIcon(priceLabel: string) {
   return L.divIcon({
@@ -38,12 +42,22 @@ function createPriceIcon(priceLabel: string) {
   });
 }
 
-export function PropertyMap() {
+interface PropertyMapProps {
+  /** Hide the top banner (used when embedded inside Explore which has its own header) */
+  embedded?: boolean;
+}
+
+export function PropertyMap({ embedded = false }: PropertyMapProps) {
   const navigate = useNavigate();
+  const { user, roles } = useAuth();
   const { displayPrice } = useDisplayPrice();
   const [filters, setFilters] = useState({ type: '', operation: '', minPrice: '', maxPrice: '' });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
+
+  const isBuyer = !roles.includes('owner') && !roles.includes('notaire') && !roles.includes('admin');
+  const swipeMutation = useSwipe();
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   const activeFilterCount = [filters.type, filters.operation, filters.minPrice, filters.maxPrice].filter(Boolean).length;
 
@@ -67,7 +81,6 @@ export function PropertyMap() {
     },
   });
 
-  // Pre-compute price icons for each property
   const priceIcons = useMemo(() => {
     const map = new Map<string, L.DivIcon>();
     properties?.forEach(p => {
@@ -77,39 +90,81 @@ export function PropertyMap() {
     return map;
   }, [properties, displayPrice]);
 
+  const handleLike = async (p: any) => {
+    try {
+      await swipeMutation.mutateAsync({ propertyId: p.id, direction: 'right', ownerId: p.owner_id });
+      toast.success('Match créé ! Vous pouvez maintenant discuter.');
+    } catch {
+      toast.error('Erreur lors du match');
+    }
+  };
+
+  const handleToggleFavorite = (propertyId: string) => {
+    if (isFavorite(propertyId)) {
+      removeFavorite.mutate(propertyId);
+      toast.success('Retiré des favoris');
+    } else {
+      addFavorite.mutate(propertyId);
+      toast.success('Ajouté aux favoris');
+    }
+  };
+
+  const handleMessage = (p: any) => {
+    // Open detail sheet which has the visit/message functionality
+    setSelectedProperty(p);
+  };
+
   return (
     <div className="relative h-full w-full flex flex-col">
-      {/* Top banner */}
-      <div className="flex items-center justify-between px-3 py-2.5 bg-background border-b border-border shrink-0">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" /> Retour
-        </Button>
-        <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-          <img src={logoSoma} alt="SomaGate" className="h-7 w-7 object-contain" />
-          <span className="text-foreground font-semibold text-base">SomaGate</span>
+      {/* Top banner — only shown in standalone mode */}
+      {!embedded && (
+        <div className="flex items-center justify-between px-3 py-2.5 bg-background border-b border-border shrink-0">
+          <Button size="sm" variant="ghost" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Retour
+          </Button>
+          <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+            <img src={logoSoma} alt="SomaGate" className="h-7 w-7 object-contain" />
+            <span className="text-foreground font-semibold text-base">SomaGate</span>
+          </div>
+          <Button
+            size="sm"
+            variant={showFilters ? 'default' : 'ghost'}
+            className="gap-1.5"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+            Filtres
+            {activeFilterCount > 0 && (
+              <Badge variant="destructive" className="h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
         </div>
-        <Button
-          size="sm"
-          variant={showFilters ? 'default' : 'ghost'}
-          className="gap-1.5"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <Filter className="h-4 w-4" />
-          Filtres
-          {activeFilterCount > 0 && (
-            <Badge variant="destructive" className="h-5 w-5 p-0 flex items-center justify-center text-[10px]">
-              {activeFilterCount}
-            </Badge>
-          )}
-        </Button>
-      </div>
+      )}
+
+      {/* Embedded floating filter button */}
+      {embedded && (
+        <div className="absolute top-3 right-3 z-[1000]">
+          <Button
+            size="sm"
+            variant={showFilters ? 'default' : 'secondary'}
+            className="shadow-lg gap-1.5"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+            Filtres
+            {activeFilterCount > 0 && (
+              <Badge variant="destructive" className="h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+        </div>
+      )}
 
       {showFilters && (
-        <div className="absolute top-[calc(2.75rem+1px)] right-3 z-[1000] bg-card border border-border rounded-xl shadow-xl p-4 w-72 space-y-3">
+        <div className={`absolute ${embedded ? 'top-14' : 'top-[calc(2.75rem+1px)]'} right-3 z-[1000] bg-card border border-border rounded-xl shadow-xl p-4 w-72 space-y-3`}>
           <div className="flex items-center justify-between">
             <span className="font-semibold text-sm text-foreground">Filtres</span>
             <button onClick={() => setShowFilters(false)} className="text-muted-foreground hover:text-foreground">
@@ -201,6 +256,32 @@ export function PropertyMap() {
                       {p.chambres} ch. · {p.salles_bain} sdb{p.surface ? ` · ${p.surface} m²` : ''}
                     </p>
                     <p className="text-xs text-muted-foreground mb-2">{p.adresse}</p>
+
+                    {/* Buyer action buttons */}
+                    {isBuyer && p.owner_id !== user?.id && (
+                      <div className="flex gap-1.5 mb-2">
+                        <button
+                          onClick={() => handleLike(p)}
+                          className="flex-1 flex items-center justify-center gap-1 bg-destructive text-destructive-foreground text-xs font-medium py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                          title="Matcher"
+                        >
+                          <Heart className="h-3.5 w-3.5" /> Match
+                        </button>
+                        <button
+                          onClick={() => handleToggleFavorite(p.id)}
+                          className={`flex-1 flex items-center justify-center gap-1 text-xs font-medium py-1.5 rounded-lg hover:opacity-90 transition-opacity ${
+                            isFavorite(p.id)
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-secondary-foreground'
+                          }`}
+                          title="Favori"
+                        >
+                          <Star className={`h-3.5 w-3.5 ${isFavorite(p.id) ? 'fill-current' : ''}`} />
+                          {isFavorite(p.id) ? 'Favori' : 'Favori'}
+                        </button>
+                      </div>
+                    )}
+
                     <button
                       onClick={() => setSelectedProperty(p)}
                       className="w-full text-center bg-primary text-primary-foreground text-xs font-medium py-1.5 rounded-lg hover:opacity-90 transition-opacity"
@@ -220,6 +301,10 @@ export function PropertyMap() {
         property={selectedProperty}
         open={!!selectedProperty}
         onClose={() => setSelectedProperty(null)}
+        showBuyerActions={isBuyer}
+        onLike={handleLike}
+        onToggleFavorite={handleToggleFavorite}
+        isFavorite={isFavorite}
       />
     </div>
   );
