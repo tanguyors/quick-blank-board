@@ -142,7 +142,7 @@ export function BuyerPreferencesWizard() {
         is_complete: complete,
       });
       toast.success(complete ? 'Préférences enregistrées !' : 'Brouillon sauvegardé');
-      if (complete) navigate(-1);
+      navigate('/profile');
     } catch (e: any) {
       toast.error(e.message || 'Erreur lors de la sauvegarde');
     }
