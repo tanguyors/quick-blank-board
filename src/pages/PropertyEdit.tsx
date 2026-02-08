@@ -15,9 +15,10 @@ export default function PropertyEdit() {
     <AppLayout>
       <h1 className="text-xl font-bold p-4 pb-0">Modifier le bien</h1>
       <PropertyForm
+        key={property.id}
         property={property}
         existingMedia={property.property_media || []}
-        onSuccess={() => navigate('/dashboard')}
+        onSuccess={() => navigate('/dashboard?tab=biens')}
       />
     </AppLayout>
   );
