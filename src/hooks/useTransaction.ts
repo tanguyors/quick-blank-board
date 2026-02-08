@@ -89,6 +89,12 @@ export function useTransaction(transactionId: string) {
     onSuccess: invalidateAll,
   });
 
+  const refuseVisit = useMutation({
+    mutationFn: (args: { reason: string; details?: string }) =>
+      WorkflowService.refuseVisit(transactionId, user!.id, args.reason, args.details),
+    onSuccess: invalidateAll,
+  });
+
   const confirmVisit = useMutation({
     mutationFn: (confirmedDate: string) =>
       WorkflowService.confirmVisit(transactionId, user!.id, confirmedDate),
@@ -98,6 +104,11 @@ export function useTransaction(transactionId: string) {
   const completeVisit = useMutation({
     mutationFn: (wasPresent: boolean) =>
       WorkflowService.completeVisit(transactionId, user!.id, wasPresent),
+    onSuccess: invalidateAll,
+  });
+
+  const rescheduleVisit = useMutation({
+    mutationFn: () => WorkflowService.rescheduleVisit(transactionId, user!.id),
     onSuccess: invalidateAll,
   });
 
@@ -143,8 +154,10 @@ export function useTransaction(transactionId: string) {
     documents,
     requestVisit,
     proposeVisitDates,
+    refuseVisit,
     confirmVisit,
     completeVisit,
+    rescheduleVisit,
     expressIntention,
     makeOffer,
     finalizeDeal,

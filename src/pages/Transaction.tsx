@@ -29,8 +29,8 @@ export default function Transaction() {
   const [validatingDoc, setValidatingDoc] = useState<ValidatingDoc>(null);
   const {
     transaction, logs, messages, documents,
-    requestVisit, proposeVisitDates, confirmVisit,
-    completeVisit, expressIntention, makeOffer, finalizeDeal,
+    requestVisit, proposeVisitDates, refuseVisit, confirmVisit,
+    completeVisit, rescheduleVisit, expressIntention, makeOffer, finalizeDeal,
     submitFeedback, sendMessage,
   } = useTransaction(id!);
 
@@ -118,10 +118,12 @@ export default function Transaction() {
               transaction={tx}
               onRequestVisit={async () => requestVisit.mutateAsync()}
               onProposeVisitDates={async (dates) => proposeVisitDates.mutateAsync(dates)}
+              onRefuseVisit={async (reason, details) => refuseVisit.mutateAsync({ reason, details })}
               onConfirmVisit={async (date) => confirmVisit.mutateAsync(date)}
               onCompleteVisit={async (p) => completeVisit.mutateAsync(p)}
+              onRescheduleVisit={async () => rescheduleVisit.mutateAsync()}
               onExpressIntention={async (args) => expressIntention.mutateAsync(args)}
-              isLoading={requestVisit.isPending || proposeVisitDates.isPending || confirmVisit.isPending || completeVisit.isPending || expressIntention.isPending}
+              isLoading={requestVisit.isPending || proposeVisitDates.isPending || confirmVisit.isPending || completeVisit.isPending || expressIntention.isPending || refuseVisit.isPending || rescheduleVisit.isPending}
             />
           )}
           {activeTab === 'messages' && (
@@ -296,6 +298,7 @@ function DocumentsTab({
 
   return (
     <div className="space-y-3 p-4">
+      <SecurityBanner type="litigation_protection" />
       {documents.map(doc => {
         const myValidated = isBuyer ? doc.buyer_validated : doc.seller_validated;
         const otherValidated = isBuyer ? doc.seller_validated : doc.buyer_validated;
