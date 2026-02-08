@@ -135,6 +135,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
   });
 
   const [media, setMedia] = useState<any[]>(existingMedia);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const update = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
@@ -157,23 +158,32 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     });
   };
 
-  /* ── Media upload ── */
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  /* ── Media: select files (pending for new, direct upload for existing) ── */
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files?.length || !property) return;
+    if (!files?.length) return;
+    if (property) {
+      handleUploadToProperty(property.id, Array.from(files));
+    } else {
+      setPendingFiles(prev => [...prev, ...Array.from(files)]);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleUploadToProperty = async (propertyId: string, files: File[]) => {
     setUploading(true);
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const ext = file.name.split('.').pop();
-        const path = `${property.id}/${Date.now()}-${i}.${ext}`;
+        const path = `${propertyId}/${Date.now()}-${i}.${ext}`;
         const { error: uploadError } = await supabase.storage.from('property-media').upload(path, file);
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from('property-media').getPublicUrl(path);
         const { data, error } = await supabase
           .from('property_media')
           .insert({
-            property_id: property.id,
+            property_id: propertyId,
             url: publicUrl,
             type: file.type.startsWith('image/') ? 'image' as const : 'video' as const,
             position: media.length + i,
@@ -184,13 +194,16 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         setMedia(prev => [...prev, data]);
       }
       toast.success('Photos uploadées');
-      queryClient.invalidateQueries({ queryKey: ['property', property.id] });
+      queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
     } catch (error: any) {
       toast.error(error.message);
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const removePendingFile = (index: number) => {
+    setPendingFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleDeleteMedia = async (mediaItem: any) => {
@@ -245,6 +258,11 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         onSuccess?.(property.id);
       } else {
         const data = await createProperty.mutateAsync({ ...payload, owner_id: user!.id });
+        // Upload pending files after creation
+        if (pendingFiles.length > 0) {
+          await handleUploadToProperty(data.id, pendingFiles);
+          setPendingFiles([]);
+        }
         toast.success('Bien créé');
         onSuccess?.(data.id);
       }
@@ -390,19 +408,16 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
       <div>
         <div className="flex items-center justify-between">
           <Label className="text-sm font-semibold">Photos du bien</Label>
-          {property && (
-            <>
-              <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleUpload} />
-              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
-                <Upload className="h-4 w-4 mr-2" />{uploading ? 'Upload...' : 'Ajouter des photos'}
-              </Button>
-            </>
-          )}
+          <div>
+            <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleFileSelect} />
+            <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              <Upload className="h-4 w-4 mr-2" />{uploading ? 'Upload...' : 'Ajouter des photos'}
+            </Button>
+          </div>
         </div>
-        {!property && (
-          <p className="text-sm text-muted-foreground mt-2">Les photos pourront être ajoutées après la création du bien.</p>
-        )}
-        {media.length > 0 ? (
+
+        {/* Existing uploaded media (edit mode) */}
+        {media.length > 0 && (
           <div className="grid grid-cols-3 gap-2 mt-3">
             {media.map((m: any) => (
               <div key={m.id} className="relative aspect-square rounded-lg overflow-hidden group">
@@ -415,7 +430,24 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
               </div>
             ))}
           </div>
-        ) : (
+        )}
+
+        {/* Pending files preview (create mode) */}
+        {pendingFiles.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {pendingFiles.map((file, index) => (
+              <div key={`pending-${index}`} className="relative aspect-square rounded-lg overflow-hidden group">
+                <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-full object-cover" />
+                {index === 0 && <div className="absolute top-1 left-1"><Star className="h-4 w-4 text-accent fill-accent" /></div>}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-primary-foreground" onClick={() => removePendingFile(index)}><X className="h-4 w-4" /></Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {media.length === 0 && pendingFiles.length === 0 && (
           <div className="mt-3 rounded-lg bg-muted/50 p-6 text-center text-sm text-muted-foreground">
             Aucune photo
           </div>
