@@ -40,12 +40,20 @@ const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Security = lazy(() => import("./pages/Security"));
 const Assistance = lazy(() => import("./pages/Assistance"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000,
+      gcTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function PageLoader() {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    <div className="flex h-screen items-center justify-center bg-background">
+      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
     </div>
   );
 }
