@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 
 const defaultIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -18,6 +19,7 @@ const defaultIcon = new L.Icon({
 
 export function PropertyMap() {
   const navigate = useNavigate();
+  const { displayPrice } = useDisplayPrice();
   const [filters, setFilters] = useState({ type: '', operation: '', minPrice: '', maxPrice: '' });
 
   const { data: properties } = useQuery({
@@ -79,7 +81,7 @@ export function PropertyMap() {
                     {(p.property_media as any)?.[0] && (
                       <img src={(p.property_media as any)[0].url} alt="" className="w-full h-20 object-cover rounded mb-2" />
                     )}
-                    <p className="font-bold">{p.prix.toLocaleString()} {p.prix_currency}</p>
+                    <p className="font-bold">{displayPrice(p.prix, p.prix_currency)}</p>
                     <p className="text-sm">{p.adresse}</p>
                     <button onClick={() => navigate(`/properties/${p.id}`)} className="text-primary text-sm underline mt-1">
                       Voir le détail
