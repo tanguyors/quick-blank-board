@@ -10,24 +10,44 @@ interface BeforeInstallPromptEvent extends Event {
 export function PwaInstallFloat() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIos, setIsIos] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const isIosDevice = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+    // Check if already dismissed this session
+    if (sessionStorage.getItem('pwa-dismissed') === '1') {
+      setDismissed(true);
+    }
+
+    const ua = navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(ua);
     setIsIos(isIosDevice);
 
+    // Check if already installed / running standalone
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (navigator as any).standalone === true;
-    if (isStandalone) setIsInstalled(true);
 
+    if (isStandalone) {
+      setDismissed(true);
+      return;
+    }
+
+    // Android / Chrome: capture the install prompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
     window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+
+    // Show button after a short delay for a nice entrance
+    const timer = setTimeout(() => setVisible(true), 800);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -38,28 +58,53 @@ export function PwaInstallFloat() {
     if (!deferredPrompt) return;
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') setIsInstalled(true);
+    if (outcome === 'accepted') {
+      handleDismiss();
+    }
     setDeferredPrompt(null);
   };
 
-  if (isInstalled) return null;
+  const handleDismiss = () => {
+    setDismissed(true);
+    sessionStorage.setItem('pwa-dismissed', '1');
+  };
+
+  // On non-iOS, only show if we have a deferred prompt (Android/Chrome)
+  // On iOS, always show the button so users can see the guide
+  const shouldShow = !dismissed && visible && (isIos || deferredPrompt);
+
+  if (!shouldShow) return null;
 
   return (
     <>
-      {/* Floating button — lifted above Safari bottom bar */}
-      <button
-        onClick={handleInstall}
-        className="fixed z-50 flex items-center gap-2 bg-primary text-primary-foreground pl-4 pr-5 py-3 rounded-full shadow-lg hover:bg-primary/90 transition-all active:scale-95"
-        style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))', right: '1.5rem' }}
-        aria-label="Installer l'application"
+      {/* Floating install button */}
+      <div
+        className="fixed z-[9999] flex items-center gap-1 animate-in slide-in-from-bottom-4 fade-in duration-500"
+        style={{
+          bottom: 'max(1.5rem, calc(1rem + env(safe-area-inset-bottom, 0px)))',
+          right: '1rem',
+        }}
       >
-        <Download className="h-5 w-5" />
-        <span className="text-sm font-semibold">Installer</span>
-      </button>
+        <button
+          onClick={handleInstall}
+          className="flex items-center gap-2 bg-primary text-primary-foreground pl-4 pr-5 py-3 rounded-full shadow-xl hover:bg-primary/90 transition-all active:scale-95"
+          aria-label="Installer l'application"
+        >
+          <Download className="h-5 w-5" />
+          <span className="text-sm font-semibold whitespace-nowrap">Installer</span>
+        </button>
+        <button
+          onClick={handleDismiss}
+          className="ml-1 bg-muted/80 backdrop-blur text-muted-foreground hover:text-foreground rounded-full p-1.5 shadow-lg transition-colors"
+          aria-label="Fermer"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
 
       {/* iOS Guide Popup */}
       {showIosGuide && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center p-4 bg-black/50 animate-in fade-in">
+        <div className="fixed inset-0 z-[10000] flex items-end justify-center p-4 bg-black/50 animate-in fade-in">
           <div className="w-full max-w-sm bg-card border border-border rounded-2xl p-5 space-y-4 animate-in slide-in-from-bottom-4 mb-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-foreground text-base">Installer SomaGate</h3>
