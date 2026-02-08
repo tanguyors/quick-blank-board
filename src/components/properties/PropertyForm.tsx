@@ -42,36 +42,67 @@ const OPERATIONS = [
 
 const CURRENCIES = ['EUR', 'USD', 'GBP'];
 
-/* ── Conditional logic helpers ── */
-const TYPES_WITHOUT_BEDROOMS = ['terrain', 'construction', 'hebergement_animaux', 'commercial'];
-const TYPES_WITHOUT_BATHROOMS = ['terrain', 'construction', 'hebergement_animaux'];
-
-function hasRooms(type: string) {
-  return !TYPES_WITHOUT_BEDROOMS.includes(type);
+/* ── Per-type field config ── */
+interface TypeConfig {
+  showRooms: boolean;
+  showBathrooms: boolean;
+  showDroit: boolean;
+  showEquipements: boolean;
+  equipementCategories: { title: string; items: string[] }[];
+  allowedOperations: string[];
 }
-function hasBathrooms(type: string) {
-  return !TYPES_WITHOUT_BATHROOMS.includes(type);
-}
 
-/* ── Equipment categories ── */
-const EQUIPMENT_CATEGORIES = [
-  {
-    title: 'Très demandés',
-    items: ['Jacuzzi', 'Lave-linge', 'Cuisine', 'Wifi', 'Barbecue', 'Piscine'],
-  },
-  {
-    title: 'Produits et services de base',
-    items: ['Sèche-linge', 'Climatisation', 'Chauffage', 'Espace de travail dédié', 'Télévision', 'Sèche-cheveux', 'Fer à repasser'],
-  },
-  {
-    title: 'Caractéristiques',
-    items: ['Parking gratuit', 'Station de recharge pour véhicules électriques', 'Lit pour bébé', 'Lit king size', 'Salle de sport', 'Petit déjeuner', 'Cheminée', 'Logement fumeur'],
-  },
-  {
-    title: 'Sécurité',
-    items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'],
-  },
+const EQ_RESIDENTIAL: TypeConfig['equipementCategories'] = [
+  { title: 'Très demandés', items: ['Jacuzzi', 'Lave-linge', 'Cuisine', 'Wifi', 'Barbecue', 'Piscine'] },
+  { title: 'Produits et services de base', items: ['Sèche-linge', 'Climatisation', 'Chauffage', 'Espace de travail dédié', 'Télévision', 'Sèche-cheveux', 'Fer à repasser'] },
+  { title: 'Caractéristiques', items: ['Parking gratuit', 'Station de recharge pour véhicules électriques', 'Lit pour bébé', 'Lit king size', 'Salle de sport', 'Petit déjeuner', 'Cheminée', 'Logement fumeur'] },
+  { title: 'Sécurité', items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'] },
 ];
+
+const EQ_COMMERCIAL: TypeConfig['equipementCategories'] = [
+  { title: 'Équipements', items: ['Climatisation', 'Parking gratuit', 'Ascenseur', 'Gardien', 'Alarme', 'Accès handicapé', 'Espace de travail dédié', 'Wifi'] },
+  { title: 'Sécurité', items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'] },
+];
+
+const EQ_TERRAIN: TypeConfig['equipementCategories'] = [
+  { title: 'Caractéristiques', items: ['Clôturé', 'Viabilisé', 'Accès goudronné', 'Eau courante', 'Électricité', 'Gardien'] },
+];
+
+const EQ_COLOCATION: TypeConfig['equipementCategories'] = [
+  { title: 'Très demandés', items: ['Lave-linge', 'Cuisine', 'Wifi', 'Piscine'] },
+  { title: 'Produits et services de base', items: ['Sèche-linge', 'Climatisation', 'Chauffage', 'Espace de travail dédié', 'Télévision', 'Sèche-cheveux', 'Fer à repasser'] },
+  { title: 'Caractéristiques', items: ['Parking gratuit', 'Lit king size', 'Salle de sport', 'Petit déjeuner', 'Logement fumeur'] },
+  { title: 'Sécurité', items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'] },
+];
+
+const EQ_GUESTHOUSE: TypeConfig['equipementCategories'] = [
+  { title: 'Très demandés', items: ['Jacuzzi', 'Lave-linge', 'Cuisine', 'Wifi', 'Barbecue', 'Piscine'] },
+  { title: 'Produits et services de base', items: ['Sèche-linge', 'Climatisation', 'Chauffage', 'Télévision', 'Sèche-cheveux', 'Fer à repasser'] },
+  { title: 'Caractéristiques', items: ['Parking gratuit', 'Lit king size', 'Salle de sport', 'Petit déjeuner', 'Cheminée'] },
+  { title: 'Sécurité', items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'] },
+];
+
+const EQ_HEBERGEMENT_ANIMAUX: TypeConfig['equipementCategories'] = [
+  { title: 'Caractéristiques', items: ['Clôturé', 'Jardin', 'Eau courante', 'Électricité', 'Gardien', 'Parking gratuit'] },
+];
+
+const TYPE_CONFIGS: Record<string, TypeConfig> = {
+  appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
+  villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
+  maison_a_renover:   { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
+  terrain:            { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_TERRAIN,      allowedOperations: ['achat', 'vente'] },
+  commercial:         { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
+  construction:       { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
+  colocation_longue:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
+  colocation_courte:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
+  hebergement_service:{ showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
+  hebergement_animaux:{ showRooms: false, showBathrooms: false, showDroit: false, showEquipements: true,  equipementCategories: EQ_HEBERGEMENT_ANIMAUX, allowedOperations: ['location'] },
+  guesthouse:         { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_GUESTHOUSE,   allowedOperations: ['achat', 'location', 'vente'] },
+};
+
+function getConfig(type: string): TypeConfig {
+  return TYPE_CONFIGS[type] || TYPE_CONFIGS['appartement'];
+}
 
 /* ── Props ── */
 interface PropertyFormProps {
@@ -110,9 +141,18 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
   const handleTypeChange = (type: string) => {
     setForm(prev => {
+      const cfg = getConfig(type);
       const newForm = { ...prev, type };
-      if (!hasRooms(type)) newForm.chambres = '0';
-      if (!hasBathrooms(type)) newForm.salles_bain = '0';
+      if (!cfg.showRooms) newForm.chambres = '0';
+      if (!cfg.showBathrooms) newForm.salles_bain = '0';
+      if (!cfg.showDroit) newForm.droit = '';
+      // Reset equipements that don't apply to the new type
+      const allValidItems = cfg.equipementCategories.flatMap(c => c.items);
+      newForm.equipements = prev.equipements.filter((eq: string) => allValidItems.includes(eq));
+      // Reset operation if not allowed
+      if (!cfg.allowedOperations.includes(prev.operations)) {
+        newForm.operations = cfg.allowedOperations[0];
+      }
       return newForm;
     });
   };
@@ -182,14 +222,15 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     if (!form.secteur.trim()) { toast.error('Le secteur est requis'); return; }
 
     try {
+      const submitCfg = getConfig(form.type);
       const payload = {
         type: form.type as any,
         operations: form.operations as any,
         adresse: form.adresse,
         secteur: form.secteur || null,
         surface: form.surface ? Number(form.surface) : null,
-        chambres: hasRooms(form.type) ? Number(form.chambres) : 0,
-        salles_bain: hasBathrooms(form.type) ? Number(form.salles_bain) : 0,
+        chambres: submitCfg.showRooms ? Number(form.chambres) : 0,
+        salles_bain: submitCfg.showBathrooms ? Number(form.salles_bain) : 0,
         prix: Number(form.prix),
         prix_currency: form.prix_currency,
         droit: (form.droit || null) as any,
@@ -214,6 +255,8 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
   const isPending = createProperty.isPending || updateProperty.isPending;
 
+  const cfg = getConfig(form.type);
+
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
       {/* Type de bien */}
@@ -229,18 +272,20 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         </Select>
       </div>
 
-      {/* Droit */}
-      <div>
-        <Label className="text-sm font-semibold">Droit</Label>
-        <Select value={form.droit} onValueChange={v => update('droit', v)}>
-          <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-          <SelectContent>
-            {DROITS.map(d => (
-              <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Droit - conditionnel */}
+      {cfg.showDroit && (
+        <div>
+          <Label className="text-sm font-semibold">Droit</Label>
+          <Select value={form.droit} onValueChange={v => update('droit', v)}>
+            <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+            <SelectContent>
+              {DROITS.map(d => (
+                <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Secteur */}
       <div>
@@ -271,19 +316,19 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         </div>
       </div>
 
-      {/* Surface / Chambres / Salles de bain */}
-      <div className={`grid gap-4 ${hasRooms(form.type) && hasBathrooms(form.type) ? 'grid-cols-3' : hasRooms(form.type) || hasBathrooms(form.type) ? 'grid-cols-2' : 'grid-cols-1'}`}>
+      {/* Surface / Chambres / Salles de bain - conditionnel */}
+      <div className={`grid gap-4 ${cfg.showRooms && cfg.showBathrooms ? 'grid-cols-3' : cfg.showRooms || cfg.showBathrooms ? 'grid-cols-2' : 'grid-cols-1'}`}>
         <div>
           <Label className="text-sm font-semibold">Surface (m²)</Label>
           <Input className="mt-1" type="number" value={form.surface} onChange={e => update('surface', e.target.value)} placeholder="0" />
         </div>
-        {hasRooms(form.type) && (
+        {cfg.showRooms && (
           <div>
             <Label className="text-sm font-semibold">Chambres</Label>
             <Input className="mt-1" type="number" value={form.chambres} onChange={e => update('chambres', e.target.value)} placeholder="0" />
           </div>
         )}
-        {hasBathrooms(form.type) && (
+        {cfg.showBathrooms && (
           <div>
             <Label className="text-sm font-semibold">Salles de bain</Label>
             <Input className="mt-1" type="number" value={form.salles_bain} onChange={e => update('salles_bain', e.target.value)} placeholder="0" />
@@ -297,11 +342,11 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         <Textarea className="mt-1" value={form.description} onChange={e => update('description', e.target.value)} rows={4} placeholder="Description détaillée du bien" />
       </div>
 
-      {/* Opérations */}
+      {/* Opérations - filtrées selon le type */}
       <div>
         <Label className="text-sm font-semibold">Opérations *</Label>
         <div className="flex gap-6 mt-2">
-          {OPERATIONS.map(op => (
+          {OPERATIONS.filter(op => cfg.allowedOperations.includes(op.value)).map(op => (
             <label key={op.value} className="flex items-center gap-2 text-sm">
               <Checkbox
                 checked={form.operations === op.value}
@@ -315,29 +360,31 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         </div>
       </div>
 
-      {/* Équipements par catégorie */}
-      <div>
-        <Label className="text-lg font-bold">Équipements</Label>
-        {EQUIPMENT_CATEGORIES.map(cat => (
-          <div key={cat.title} className="mt-4">
-            <h4 className="text-sm font-semibold mb-2">{cat.title}</h4>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-              {cat.items.map(eq => (
-                <label key={eq} className="flex items-center gap-2 text-sm">
-                  <Checkbox
-                    checked={form.equipements.includes(eq)}
-                    onCheckedChange={checked => {
-                      if (checked) update('equipements', [...form.equipements, eq]);
-                      else update('equipements', form.equipements.filter((e: string) => e !== eq));
-                    }}
-                  />
-                  {eq}
-                </label>
-              ))}
+      {/* Équipements - conditionnel avec catégories spécifiques au type */}
+      {cfg.showEquipements && cfg.equipementCategories.length > 0 && (
+        <div>
+          <Label className="text-lg font-bold">Équipements</Label>
+          {cfg.equipementCategories.map(cat => (
+            <div key={cat.title} className="mt-4">
+              <h4 className="text-sm font-semibold mb-2">{cat.title}</h4>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                {cat.items.map(eq => (
+                  <label key={eq} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={form.equipements.includes(eq)}
+                      onCheckedChange={checked => {
+                        if (checked) update('equipements', [...form.equipements, eq]);
+                        else update('equipements', form.equipements.filter((e: string) => e !== eq));
+                      }}
+                    />
+                    {eq}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Photos du bien */}
       <div>
