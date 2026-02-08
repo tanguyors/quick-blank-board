@@ -68,7 +68,7 @@ export function PropertyMap() {
         <Input type="number" placeholder="Prix max" className="w-24" value={filters.maxPrice} onChange={e => setFilters(f => ({ ...f, maxPrice: e.target.value }))} />
       </div>
       <div className="flex-1">
-        <MapContainer center={[5.35, -4.0]} zoom={12} className="h-full w-full" style={{ minHeight: '400px' }}>
+        <MapContainer center={[-8.45, 115.26]} zoom={10} className="h-full w-full" style={{ minHeight: '400px' }}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
