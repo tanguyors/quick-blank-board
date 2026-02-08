@@ -3,8 +3,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
@@ -12,20 +12,36 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Filter, X, ArrowLeft } from 'lucide-react';
 import logoSoma from '@/assets/logo-soma.png';
+import { PropertyDetailSheet } from './PropertyDetailSheet';
 
-const defaultIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-});
+function createPriceIcon(priceLabel: string) {
+  return L.divIcon({
+    className: 'price-marker',
+    html: `<div style="
+      background: hsl(43 74% 49%);
+      color: white;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      border: 2px solid white;
+      text-align: center;
+      line-height: 1.3;
+    ">${priceLabel}</div>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+    popupAnchor: [0, -5],
+  });
+}
 
 export function PropertyMap() {
   const navigate = useNavigate();
   const { displayPrice } = useDisplayPrice();
   const [filters, setFilters] = useState({ type: '', operation: '', minPrice: '', maxPrice: '' });
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
 
   const activeFilterCount = [filters.type, filters.operation, filters.minPrice, filters.maxPrice].filter(Boolean).length;
 
@@ -34,7 +50,7 @@ export function PropertyMap() {
     queryFn: async () => {
       let query = supabase
         .from('properties')
-        .select('*, property_media(url, is_primary)')
+        .select('*, property_media(url, is_primary, type)')
         .eq('is_published', true)
         .eq('status', 'available')
         .not('latitude', 'is', null)
@@ -48,6 +64,16 @@ export function PropertyMap() {
       return data;
     },
   });
+
+  // Pre-compute price icons for each property
+  const priceIcons = useMemo(() => {
+    const map = new Map<string, L.DivIcon>();
+    properties?.forEach(p => {
+      const label = displayPrice(p.prix, p.prix_currency);
+      map.set(p.id, createPriceIcon(label));
+    });
+    return map;
+  }, [properties, displayPrice]);
 
   return (
     <div className="relative h-full w-full flex flex-col">
@@ -146,39 +172,50 @@ export function PropertyMap() {
       {/* Full-screen map */}
       <div className="flex-1 relative">
         <MapContainer center={[-8.45, 115.26]} zoom={10} className="h-full w-full" style={{ minHeight: '100%' }}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {properties?.map(p => (
-          p.latitude && p.longitude && (
-            <Marker key={p.id} position={[p.latitude, p.longitude]} icon={defaultIcon}>
-              <Popup maxWidth={280} minWidth={220}>
-                <div className="min-w-[200px]">
-                  {(() => {
-                    const primaryImg = (p.property_media as any[])?.find((m: any) => m.is_primary) || (p.property_media as any[])?.[0];
-                    return primaryImg ? (
-                      <img src={primaryImg.url} alt="" className="w-full h-32 object-cover rounded-lg mb-2" />
-                    ) : (
-                      <div className="w-full h-32 bg-muted rounded-lg mb-2 flex items-center justify-center text-muted-foreground text-xs">Pas de photo</div>
-                    );
-                  })()}
-                  <p className="font-bold text-base mb-0.5">{displayPrice(p.prix, p.prix_currency)}</p>
-                  <p className="text-sm text-muted-foreground mb-0.5">{p.type} · {p.chambres} ch. · {p.salles_bain} sdb</p>
-                  <p className="text-xs text-muted-foreground mb-2">{p.adresse}</p>
-                  <button
-                    onClick={() => navigate(`/properties/${p.id}`)}
-                    className="w-full text-center bg-primary text-primary-foreground text-sm font-medium py-1.5 rounded-lg hover:opacity-90 transition-opacity"
-                  >
-                    Voir le détail
-                  </button>
-                </div>
-              </Popup>
-            </Marker>
-          )
-        ))}
-      </MapContainer>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {properties?.map(p => (
+            p.latitude && p.longitude && (
+              <Marker
+                key={p.id}
+                position={[p.latitude, p.longitude]}
+                icon={priceIcons.get(p.id) || createPriceIcon('—')}
+              >
+                <Popup maxWidth={260} minWidth={200}>
+                  <div className="min-w-[180px]">
+                    {(() => {
+                      const primaryImg = (p.property_media as any[])?.find((m: any) => m.is_primary) || (p.property_media as any[])?.[0];
+                      return primaryImg ? (
+                        <img src={primaryImg.url} alt="" className="w-full h-28 object-cover rounded-lg mb-2" />
+                      ) : (
+                        <div className="w-full h-28 bg-muted rounded-lg mb-2 flex items-center justify-center text-muted-foreground text-xs">Pas de photo</div>
+                      );
+                    })()}
+                    <p className="font-bold text-sm mb-0.5">{displayPrice(p.prix, p.prix_currency)}</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">{p.type} · {p.chambres} ch. · {p.salles_bain} sdb</p>
+                    <p className="text-xs text-muted-foreground mb-2">{p.adresse}</p>
+                    <button
+                      onClick={() => setSelectedProperty(p)}
+                      className="w-full text-center bg-primary text-primary-foreground text-xs font-medium py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      Voir le détail
+                    </button>
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          ))}
+        </MapContainer>
       </div>
+
+      {/* Property detail sheet */}
+      <PropertyDetailSheet
+        property={selectedProperty}
+        open={!!selectedProperty}
+        onClose={() => setSelectedProperty(null)}
+      />
     </div>
   );
 }
