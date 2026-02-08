@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale } from 'lucide-react';
+import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, Building2, Map } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,13 @@ const notaireLinks = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
-const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
+const adminLinks = [
+  { to: '/admin', icon: Shield, label: 'Admin' },
+  { to: '/admin?tab=properties', match: '/admin', tab: 'properties', icon: Building2, label: 'Biens' },
+  { to: '/admin?tab=visits', match: '/admin', tab: 'visits', icon: CalendarDays, label: 'Visites' },
+  { to: '/admin?tab=map', match: '/admin', tab: 'map', icon: Map, label: 'Carte' },
+  { to: '/profile', icon: User, label: 'Profil' },
+];
 
 export function BottomNav() {
   const { pathname, search } = useLocation();
@@ -33,11 +39,7 @@ export function BottomNav() {
   const isAdmin = roles.includes('admin');
   const isNotaire = roles.includes('notaire');
 
-  let links = isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
-
-  if (isAdmin) {
-    links = [...links.slice(0, -1), adminLink, links[links.length - 1]];
-  }
+  const links = isAdmin ? adminLinks : isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 pb-safe lg:hidden" aria-label="Navigation mobile">
@@ -45,8 +47,9 @@ export function BottomNav() {
         {links.map((link) => {
           const { to, icon: Icon, label } = link;
           const tabLink = 'tab' in link ? (link as any).tab : null;
+          const matchPath = 'match' in link ? (link as any).match : null;
           const isActive = tabLink
-            ? pathname === '/dashboard' && search === `?tab=${tabLink}`
+            ? pathname === matchPath && search === `?tab=${tabLink}`
             : pathname === to || pathname.startsWith(to + '/');
           return (
             <Link
