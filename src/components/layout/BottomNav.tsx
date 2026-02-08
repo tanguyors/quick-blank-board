@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard, Sun, Moon } from 'lucide-react';
+import { Flame, Heart, Star, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 const buyerLinks = [
   { to: '/buyer', icon: LayoutDashboard, label: 'Accueil' },
   { to: '/explore', icon: Flame, label: 'Découvrir' },
-  { to: '/matches', icon: Heart, label: 'Favoris' },
+  { to: '/matches', icon: Heart, label: 'Matches' },
+  { to: '/favorites', icon: Star, label: 'Favoris' },
   { to: '/messages', icon: MessageSquare, label: 'Messages' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];

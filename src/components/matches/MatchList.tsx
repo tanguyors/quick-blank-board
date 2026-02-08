@@ -17,7 +17,7 @@ export function MatchList() {
   );
 
   if (!matches?.length) return (
-    <div className="text-center p-8 text-muted-foreground">Aucun match pour le moment</div>
+    <div className="text-center p-8 text-muted-foreground">Aucun match pour le moment. Swipez ❤️ pour matcher !</div>
   );
 
   // Map property_id to transaction

@@ -1,6 +1,6 @@
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
-  Flame, Heart, MessageSquare, User, Home, CalendarDays,
+  Flame, Heart, Star, MessageSquare, User, Home, CalendarDays,
   Shield, Scale, LayoutDashboard, LogOut, Settings, Bell,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,7 +11,8 @@ import logoSoma from '@/assets/logo-soma.png';
 const buyerLinks = [
   { to: '/buyer', icon: LayoutDashboard, label: 'Tableau de bord' },
   { to: '/explore', icon: Flame, label: 'Découvrir' },
-  { to: '/matches', icon: Heart, label: 'Favoris' },
+  { to: '/matches', icon: Heart, label: 'Matches' },
+  { to: '/favorites', icon: Star, label: 'Favoris' },
   { to: '/messages', icon: MessageSquare, label: 'Messages' },
   { to: '/notifications', icon: Bell, label: 'Notifications' },
   { to: '/mes-transactions', icon: Scale, label: 'Transactions' },

@@ -15,11 +15,11 @@ export default function Matches() {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
-              <span className="text-primary font-bold text-lg">𝔫</span>
-              <span className="text-foreground font-semibold">Favoris</span>
+              <Heart className="h-4 w-4 text-primary fill-primary" />
+              <span className="text-foreground font-semibold">Matches</span>
             </div>
             {matches?.length ? (
-              <div className="flex items-center gap-1.5 bg-destructive/20 text-destructive px-3 py-1.5 rounded-full text-sm font-medium">
+              <div className="flex items-center gap-1.5 bg-primary/20 text-primary px-3 py-1.5 rounded-full text-sm font-medium">
                 <Heart className="h-4 w-4 fill-current" />
                 {matches.length}
               </div>
