@@ -123,7 +123,12 @@ export class WorkflowService {
       : tx.visit_confirmed_by_buyer;
 
     if (bothConfirmed) {
-      return this.updateStatus(transactionId, 'visit_confirmed', userId, updateData);
+      const result = await this.updateStatus(transactionId, 'visit_confirmed', userId, updateData);
+
+      // Create J-1 and H-2 reminders for both participants
+      await this.createVisitReminders(transactionId, confirmedDate, tx.buyer_id, tx.seller_id);
+
+      return result;
     } else {
       // Just update without status change
       await supabase
@@ -131,6 +136,54 @@ export class WorkflowService {
         .update(updateData)
         .eq('id', transactionId);
       return { partial: true };
+    }
+  }
+
+  static async rescheduleVisit(transactionId: string, userId: string) {
+    return this.updateStatus(transactionId, 'visit_rescheduled', userId, {
+      visit_confirmed_date: null,
+      visit_confirmed_by_buyer: false,
+      visit_confirmed_by_seller: false,
+      visit_proposed_dates: null,
+    });
+  }
+
+  private static async createVisitReminders(
+    transactionId: string, confirmedDate: string, buyerId: string, sellerId: string
+  ) {
+    const visitDate = new Date(confirmedDate);
+
+    // J-1: 24 hours before
+    const j1Date = new Date(visitDate.getTime() - 24 * 60 * 60 * 1000);
+    // H-2: 2 hours before
+    const h2Date = new Date(visitDate.getTime() - 2 * 60 * 60 * 1000);
+
+    const now = new Date();
+    const reminders: any[] = [];
+
+    for (const userId of [buyerId, sellerId]) {
+      if (j1Date > now) {
+        reminders.push({
+          transaction_id: transactionId,
+          user_id: userId,
+          reminder_type: 'visit_reminder',
+          scheduled_at: j1Date.toISOString(),
+          metadata: { type: 'j-1', visit_date: confirmedDate },
+        });
+      }
+      if (h2Date > now) {
+        reminders.push({
+          transaction_id: transactionId,
+          user_id: userId,
+          reminder_type: 'visit_reminder',
+          scheduled_at: h2Date.toISOString(),
+          metadata: { type: 'h-2', visit_date: confirmedDate },
+        });
+      }
+    }
+
+    if (reminders.length > 0) {
+      await supabase.from('wf_reminders').insert(reminders);
     }
   }
 
