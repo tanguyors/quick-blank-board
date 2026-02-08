@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyTransactions } from '@/hooks/useTransaction';
+import { useFavorites } from '@/hooks/useFavorites';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  Flame, Heart, CalendarDays, FileText, MapPin, ArrowRight,
+  Flame, Heart, Star, CalendarDays, FileText, MapPin, ArrowRight,
   TrendingUp, Eye, ChevronRight,
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -18,6 +19,7 @@ export default function BuyerDashboard() {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const { data: transactions, isLoading: txLoading } = useMyTransactions();
+  const { favorites } = useFavorites();
 
   const { data: stats } = useQuery({
     queryKey: ['buyer-dashboard-stats', user?.id],
@@ -70,22 +72,30 @@ export default function BuyerDashboard() {
 
         <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-5">
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <button
               onClick={() => navigate('/explore')}
               className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
             >
               <Flame className="h-6 w-6 text-primary mb-2" />
               <p className="font-semibold text-foreground text-sm">Explorer</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Swiper les biens</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Swiper</p>
             </button>
             <button
               onClick={() => navigate('/matches')}
-              className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 text-left transition-colors active:bg-destructive/20"
+              className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
             >
-              <Heart className="h-6 w-6 text-destructive mb-2" />
+              <Heart className="h-6 w-6 text-primary mb-2" />
+              <p className="font-semibold text-foreground text-sm">Matches</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{stats?.matches ?? 0}</p>
+            </button>
+            <button
+              onClick={() => navigate('/favorites')}
+              className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-left transition-colors active:bg-amber-500/20"
+            >
+              <Star className="h-6 w-6 text-amber-500 mb-2" />
               <p className="font-semibold text-foreground text-sm">Favoris</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{stats?.matches ?? 0} matches</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{favorites.data?.length ?? 0}</p>
             </button>
           </div>
 

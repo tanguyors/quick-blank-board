@@ -2,9 +2,11 @@ import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useExplorableProperties, useSwipe } from '@/hooks/useSwipes';
 import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
+import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { X, Star, Heart } from 'lucide-react';
+import { toast } from 'sonner';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
 interface SwipeStackProps {
@@ -16,6 +18,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const swipe = useSwipe();
   const navigate = useNavigate();
   const { needsPreferences } = useBuyerPreferences();
+  const { addFavorite } = useFavorites();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
@@ -26,13 +29,14 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const currentProperty = properties?.[currentIndex];
   const totalCount = properties?.length || 0;
 
-  const handleSwipe = useCallback(async (direction: 'left' | 'right') => {
+  // Heart = match (right swipe with conversation + transaction)
+  const handleMatch = useCallback(async () => {
     if (!currentProperty || swipe.isPending) return;
-    setSwipeDirection(direction);
+    setSwipeDirection('right');
     try {
       const result = await swipe.mutateAsync({
         propertyId: currentProperty.id,
-        direction,
+        direction: 'right',
         ownerId: currentProperty.owner_id,
       });
       setTimeout(() => {
@@ -46,6 +50,38 @@ export function SwipeStack({ filters }: SwipeStackProps) {
       setOffset({ x: 0, y: 0 });
     }
   }, [currentProperty, swipe]);
+
+  // X = pass (left swipe)
+  const handlePass = useCallback(async () => {
+    if (!currentProperty || swipe.isPending) return;
+    setSwipeDirection('left');
+    try {
+      await swipe.mutateAsync({
+        propertyId: currentProperty.id,
+        direction: 'left',
+        ownerId: currentProperty.owner_id,
+      });
+      setTimeout(() => {
+        setSwipeDirection(null);
+        setOffset({ x: 0, y: 0 });
+        setCurrentIndex(prev => prev + 1);
+      }, 300);
+    } catch {
+      setSwipeDirection(null);
+      setOffset({ x: 0, y: 0 });
+    }
+  }, [currentProperty, swipe]);
+
+  // Star = add to favorites (no match, no transaction, just bookmark)
+  const handleFavorite = useCallback(async () => {
+    if (!currentProperty || addFavorite.isPending) return;
+    try {
+      await addFavorite.mutateAsync(currentProperty.id);
+      toast.success('Ajouté aux favoris ★');
+    } catch {
+      toast.error('Déjà dans vos favoris');
+    }
+  }, [currentProperty, addFavorite]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     startPos.current = { x: e.clientX, y: e.clientY };
@@ -61,7 +97,11 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const onPointerUp = () => {
     setIsDragging(false);
     if (Math.abs(offset.x) > 100) {
-      handleSwipe(offset.x > 0 ? 'right' : 'left');
+      if (offset.x > 0) {
+        handleMatch();
+      } else {
+        handlePass();
+      }
     } else {
       setOffset({ x: 0, y: 0 });
     }
@@ -121,31 +161,33 @@ export function SwipeStack({ filters }: SwipeStackProps) {
       )}
       {offset.x > 50 && (
         <div className="absolute top-32 left-8 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-bold text-lg -rotate-12 z-20">
-          J'AIME
+          MATCH
         </div>
       )}
 
-      {/* Action buttons */}
+      {/* Action buttons: X (pass) | ★ (favorite) | ❤️ (match) */}
       <div className="flex items-center gap-6 py-6">
         <button
-          onClick={() => handleSwipe('left')}
+          onClick={handlePass}
           disabled={swipe.isPending}
           className="w-16 h-16 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          aria-label="Passer"
         >
           <X className="h-7 w-7" />
         </button>
         <button
-          onClick={() => handleSwipe('right')}
-          disabled={swipe.isPending}
+          onClick={handleFavorite}
+          disabled={addFavorite.isPending}
           className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
-          aria-label="Super like"
+          aria-label="Ajouter aux favoris"
         >
           <Star className="h-6 w-6" />
         </button>
         <button
-          onClick={() => handleSwipe('right')}
+          onClick={handleMatch}
           disabled={swipe.isPending}
-          className="w-16 h-16 rounded-full border-2 border-muted-foreground flex items-center justify-center text-muted-foreground hover:bg-muted-foreground hover:text-background transition-colors"
+          className="w-16 h-16 rounded-full border-2 border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+          aria-label="Match"
         >
           <Heart className="h-7 w-7" />
         </button>

@@ -25,6 +25,7 @@ const PropertyEdit = lazy(() => import("./pages/PropertyEdit"));
 const PropertyView = lazy(() => import("./pages/PropertyView"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Matches = lazy(() => import("./pages/Matches"));
+const Favorites = lazy(() => import("./pages/Favorites"));
 const Messages = lazy(() => import("./pages/Messages"));
 const ConversationView = lazy(() => import("./pages/ConversationView"));
 const Visits = lazy(() => import("./pages/Visits"));
@@ -80,6 +81,7 @@ const App = () => (
                 <Route path="/properties/:id" element={<ProtectedRoute><PropertyView /></ProtectedRoute>} />
                 <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
                 <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
                 <Route path="/messages/:id" element={<ProtectedRoute><ConversationView /></ProtectedRoute>} />
                 <Route path="/visits" element={<ProtectedRoute><Visits /></ProtectedRoute>} />
