@@ -2,6 +2,7 @@ import { useState, lazy, Suspense } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
 import { LayoutGrid, Map } from 'lucide-react';
 import logoSoma from '@/assets/logo-soma.png';
@@ -42,12 +43,13 @@ export default function Explore() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <ExploreFilters
               filters={filters}
               onFiltersChange={setFilters}
               activeCount={activeFilterCount}
             />
+            <ThemeToggle />
             <NotificationBell />
           </div>
         </div>

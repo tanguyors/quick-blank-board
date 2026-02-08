@@ -1,18 +1,17 @@
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { User } from 'lucide-react';
 
 export default function Profile() {
   return (
     <AppLayout hideHeader>
-      <div className="flex items-center px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="text-primary font-bold text-2xl">𝔫</span>
+      <PageTopBar>
+        <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
+          <User className="h-4 w-4 text-primary" />
+          <span className="text-foreground font-semibold">Profil</span>
         </div>
-        <div className="flex-1" />
-        <div className="flex items-center gap-2">
-          {/* Settings and logout are in the header component if needed */}
-        </div>
-      </div>
+      </PageTopBar>
       <ProfileForm />
     </AppLayout>
   );
