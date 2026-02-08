@@ -11,12 +11,7 @@ const buyerLinks = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
-const ownerLinks = [
-  { to: '/dashboard?tab=biens', icon: Home, label: 'Mes biens' },
-  { to: '/dashboard?tab=visites', icon: CalendarDays, label: 'Visites' },
-  { to: '/dashboard?tab=messages', icon: MessageSquare, label: 'Messages' },
-  { to: '/dashboard?tab=profil', icon: User, label: 'Profil' },
-];
+const ownerLinks: typeof buyerLinks = []; // Owner uses dashboard tabs directly
 
 const notaireLinks = [
   { to: '/notaire', icon: Scale, label: 'Dossiers' },
@@ -27,7 +22,7 @@ const notaireLinks = [
 const adminLink = { to: '/admin', icon: Shield, label: 'Admin' };
 
 export function BottomNav() {
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
   const { roles } = useAuth();
   const isOwner = roles.includes('owner');
   const isAdmin = roles.includes('admin');
@@ -40,14 +35,14 @@ export function BottomNav() {
     links = [...links.slice(0, -1), adminLink, links[links.length - 1]];
   }
 
+  // Hide bottom nav for owners (tabs are in the dashboard)
+  if (isOwner && !isNotaire) return null;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 pb-safe lg:hidden" aria-label="Navigation mobile">
       <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
         {links.map(({ to, icon: Icon, label }) => {
-          const [linkPath, linkQuery] = to.split('?');
-          const isActive = linkQuery
-            ? pathname === linkPath && search === `?${linkQuery}`
-            : pathname === to || pathname.startsWith(to + '/');
+          const isActive = pathname === to || pathname.startsWith(to + '/');
           return (
             <Link
               key={to}
