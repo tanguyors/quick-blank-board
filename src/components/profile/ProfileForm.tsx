@@ -5,14 +5,11 @@ import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { AvatarUpload } from './AvatarUpload';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Flame, Heart, Star, CalendarDays, Eye, TrendingUp, ArrowRight, User, Pencil, Coins, SlidersHorizontal, MessageSquare } from 'lucide-react';
+import { Flame, Heart, Star, CalendarDays, Eye, TrendingUp, ArrowRight, Settings, SlidersHorizontal, Pencil } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
-import { CURRENCIES } from '@/lib/currencies';
 import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useVisits } from '@/hooks/useVisits';
@@ -25,44 +22,33 @@ export function ProfileForm() {
   const { favorites } = useFavorites();
   const { visits } = useVisits();
   const [editingBio, setEditingBio] = useState(false);
-  const [editingField, setEditingField] = useState<string | null>(null);
   const [form, setForm] = useState({
-    first_name: '', last_name: '', full_name: '', bio: '',
-    whatsapp: '', avatar_url: '', company_name: '', company_address: '',
-    preferred_currency: 'EUR',
+    bio: '',
+    avatar_url: '',
   });
 
   useEffect(() => {
     if (profile.data) {
       const pd = profile.data as any;
       setForm({
-        first_name: pd.first_name || '',
-        last_name: pd.last_name || '',
-        full_name: pd.full_name || '',
         bio: pd.bio || '',
-        whatsapp: pd.whatsapp || '',
         avatar_url: pd.avatar_url || '',
-        company_name: pd.company_name || '',
-        company_address: pd.company_address || '',
-        preferred_currency: pd.preferred_currency || 'EUR',
       });
     }
   }, [profile.data]);
 
-  const handleSave = async () => {
+  const handleSaveBio = async () => {
     try {
-      await updateProfile.mutateAsync(form);
+      await updateProfile.mutateAsync({ bio: form.bio });
       await refreshProfile();
-      toast.success('Profil mis à jour');
-      setEditingField(null);
+      toast.success('Bio mise à jour');
       setEditingBio(false);
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
-  const isOwner = roles.includes('owner');
-  const displayName = form.full_name || form.first_name || user?.email || '';
+  const displayName = profile.data?.full_name || profile.data?.first_name || user?.email || '';
 
   // Dynamic stats
   const { data: stats } = useQuery({
@@ -110,8 +96,7 @@ export function ProfileForm() {
           url={form.avatar_url}
           onUpload={url => {
             setForm(f => ({ ...f, avatar_url: url }));
-            // Auto-save avatar
-            updateProfile.mutate({ ...form, avatar_url: url });
+            updateProfile.mutate({ avatar_url: url });
           }}
         />
         <h2 className="text-xl font-bold text-foreground mt-4">{displayName} 👋</h2>
@@ -137,7 +122,7 @@ export function ProfileForm() {
               />
               <div className="flex justify-end gap-2">
                 <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditingBio(false); }}>Annuler</Button>
-                <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSave(); }}>Enregistrer</Button>
+                <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSaveBio(); }}>Enregistrer</Button>
               </div>
             </div>
           ) : (
@@ -259,155 +244,22 @@ export function ProfileForm() {
         </button>
       </div>
 
-      {/* Personal info */}
-      <div className="mx-4">
-        <h3 className="text-lg font-semibold text-foreground mb-3">Informations personnelles</h3>
-        <div className="space-y-3">
-          <InfoField
-            icon={<User className="h-5 w-5" />}
-            label="Prénom"
-            value={form.first_name}
-            placeholder="Votre prénom"
-            editing={editingField === 'first_name'}
-            onEdit={() => setEditingField('first_name')}
-            onChange={v => setForm(f => ({ ...f, first_name: v }))}
-            onSave={handleSave}
-            onCancel={() => setEditingField(null)}
-          />
-          <InfoField
-            icon={<User className="h-5 w-5" />}
-            label="Nom"
-            value={form.last_name}
-            placeholder="Votre nom"
-            editing={editingField === 'last_name'}
-            onEdit={() => setEditingField('last_name')}
-            onChange={v => setForm(f => ({ ...f, last_name: v }))}
-            onSave={handleSave}
-            onCancel={() => setEditingField(null)}
-          />
-          <InfoField
-            icon={<User className="h-5 w-5" />}
-            label="Nom complet"
-            value={form.full_name}
-            placeholder="Nom complet"
-            editing={editingField === 'full_name'}
-            onEdit={() => setEditingField('full_name')}
-            onChange={v => setForm(f => ({ ...f, full_name: v }))}
-            onSave={handleSave}
-            onCancel={() => setEditingField(null)}
-          />
-          <InfoField
-            icon={<MessageSquare className="h-5 w-5" />}
-            label="WhatsApp"
-            value={form.whatsapp}
-            placeholder="+62..."
-            editing={editingField === 'whatsapp'}
-            onEdit={() => setEditingField('whatsapp')}
-            onChange={v => setForm(f => ({ ...f, whatsapp: v }))}
-            onSave={handleSave}
-            onCancel={() => setEditingField(null)}
-          />
-          {isOwner && (
-            <>
-              <InfoField
-                icon={<User className="h-5 w-5" />}
-                label="Entreprise"
-                value={form.company_name}
-                placeholder="Nom de l'entreprise"
-                editing={editingField === 'company_name'}
-                onEdit={() => setEditingField('company_name')}
-                onChange={v => setForm(f => ({ ...f, company_name: v }))}
-                onSave={handleSave}
-                onCancel={() => setEditingField(null)}
-              />
-              <InfoField
-                icon={<User className="h-5 w-5" />}
-                label="Adresse entreprise"
-                value={form.company_address}
-                placeholder="Adresse"
-                editing={editingField === 'company_address'}
-                onEdit={() => setEditingField('company_address')}
-                onChange={v => setForm(f => ({ ...f, company_address: v }))}
-                onSave={handleSave}
-                onCancel={() => setEditingField(null)}
-              />
-            </>
-          )}
-
-          {/* Devise préférée */}
-          <div className="bg-card rounded-xl p-4 border border-border">
-            <div className="flex items-center gap-3 mb-2">
-              <Coins className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-xs text-muted-foreground">Devise préférée</p>
-              </div>
-            </div>
-            <Select
-              value={form.preferred_currency}
-              onValueChange={v => {
-                setForm(f => ({ ...f, preferred_currency: v }));
-                updateProfile.mutate({ ...form, preferred_currency: v } as any);
-                toast.success('Devise mise à jour');
-              }}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CURRENCIES.map(c => (
-                  <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function InfoField({
-  icon, label, value, placeholder, editing, onEdit, onChange, onSave, onCancel
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  placeholder: string;
-  editing: boolean;
-  onEdit: () => void;
-  onChange: (v: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-}) {
-  return (
-    <div className="bg-card rounded-xl p-4 border border-border">
-      {editing ? (
-        <div className="space-y-2">
-          <label className="text-xs text-muted-foreground">{label}</label>
-          <Input
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            placeholder={placeholder}
-            className="bg-transparent border-border"
-            autoFocus
-          />
-          <div className="flex justify-end gap-2">
-            <Button size="sm" variant="ghost" onClick={onCancel}>Annuler</Button>
-            <Button size="sm" onClick={onSave}>OK</Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center justify-between cursor-pointer" onClick={onEdit}>
+      {/* Account Settings Button */}
+      <div className="mx-4 mb-4">
+        <button
+          onClick={() => navigate('/account-settings')}
+          className="w-full bg-card rounded-xl p-4 border border-border flex items-center justify-between hover:border-primary/30 transition-colors"
+        >
           <div className="flex items-center gap-3">
-            <span className="text-muted-foreground">{icon}</span>
-            <div>
-              <p className="text-xs text-muted-foreground">{label}</p>
-              <p className={value ? 'text-foreground' : 'text-muted-foreground'}>
-                {value || placeholder}
-              </p>
+            <Settings className="h-5 w-5 text-muted-foreground" />
+            <div className="text-left">
+              <p className="font-semibold text-foreground text-sm">Paramètres du compte</p>
+              <p className="text-xs text-muted-foreground">Infos personnelles, devise, déconnexion</p>
             </div>
           </div>
-          <Pencil className="h-4 w-4 text-muted-foreground" />
-        </div>
-      )}
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
     </div>
   );
 }
