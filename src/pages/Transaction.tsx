@@ -7,6 +7,9 @@ import { TransactionStatusBadge, TransactionTimeline } from '@/components/workfl
 import { VisitManagement } from '@/components/workflow/VisitManagement';
 import { SecureMessaging } from '@/components/workflow/SecureMessaging';
 import { SecurityBanner } from '@/components/workflow/SecurityAlert';
+import { OfferForm } from '@/components/workflow/OfferForm';
+import { DealFinalization } from '@/components/workflow/DealFinalization';
+import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
 import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DocumentGenerationService } from '@/services/documentGenerationService';
@@ -25,7 +28,8 @@ export default function Transaction() {
   const {
     transaction, logs, messages, documents,
     requestVisit, proposeVisitDates, confirmVisit,
-    completeVisit, expressIntention, makeOffer, sendMessage,
+    completeVisit, expressIntention, makeOffer, finalizeDeal,
+    submitFeedback, sendMessage,
   } = useTransaction(id!);
 
   if (transaction.isLoading) {
@@ -92,7 +96,19 @@ export default function Transaction() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'apercu' && (
-            <ApercuTab tx={tx} property={property} primaryMedia={primaryMedia} logs={logs.data} isBuyer={isBuyer} />
+            <ApercuTab
+              tx={tx}
+              property={property}
+              primaryMedia={primaryMedia}
+              logs={logs.data}
+              isBuyer={isBuyer}
+              onMakeOffer={async (args) => makeOffer.mutateAsync(args)}
+              onFinalizeDeal={async () => finalizeDeal.mutateAsync()}
+              onSubmitFeedback={async (fb) => submitFeedback.mutateAsync(fb)}
+              isMakingOffer={makeOffer.isPending}
+              isFinalizing={finalizeDeal.isPending}
+              isSubmittingFeedback={submitFeedback.isPending}
+            />
           )}
           {activeTab === 'visite' && (
             <VisitManagement
@@ -127,7 +143,6 @@ export default function Transaction() {
                     isBuyer ? 'buyer' : 'seller'
                   );
                   toast.success('Document validé !');
-                  // Refresh documents
                   documents.refetch();
                   transaction.refetch();
                 } catch (err: any) {
@@ -144,9 +159,17 @@ export default function Transaction() {
   );
 }
 
-function ApercuTab({ tx, property, primaryMedia, logs, isBuyer }: {
+function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, onMakeOffer, onFinalizeDeal, onSubmitFeedback, isMakingOffer, isFinalizing, isSubmittingFeedback }: {
   tx: WfTransaction; property: any; primaryMedia: any; logs: any; isBuyer: boolean;
+  onMakeOffer: (args: { offerType: string; amount: number; details?: string }) => Promise<any>;
+  onFinalizeDeal: () => Promise<any>;
+  onSubmitFeedback: (fb: Record<string, any>) => Promise<any>;
+  isMakingOffer: boolean;
+  isFinalizing: boolean;
+  isSubmittingFeedback: boolean;
 }) {
+  const status = tx.status as TxStatus;
+
   return (
     <div className="space-y-4 p-4">
       {/* Property card */}
@@ -165,8 +188,12 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer }: {
               {property.prix?.toLocaleString()} {property.prix_currency}
             </p>
             <div className="flex gap-3 mt-2 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property.chambres}</span>
-              <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.salles_bain}</span>
+              {property.chambres > 0 && (
+                <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property.chambres}</span>
+              )}
+              {property.salles_bain > 0 && (
+                <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.salles_bain}</span>
+              )}
               {property.surface && <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property.surface}m²</span>}
             </div>
           </div>
@@ -188,6 +215,49 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer }: {
 
       {/* Security */}
       <SecurityBanner type="anti_scam" />
+
+      {/* Offer form - shown when intention is 'offer' */}
+      {status === 'intention_expressed' && isBuyer && tx.buyer_intention === 'offer' && (
+        <OfferForm
+          transaction={tx}
+          onMakeOffer={onMakeOffer}
+          isLoading={isMakingOffer}
+        />
+      )}
+
+      {/* Offer summary */}
+      {(status === 'offer_made' || status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
+        <div className="bg-card rounded-xl p-4 border border-border space-y-2">
+          <h3 className="font-semibold text-foreground text-sm">Offre</h3>
+          <p className="text-primary font-bold text-lg">{tx.offer_amount.toLocaleString()} {property?.prix_currency || 'XOF'}</p>
+          {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
+          {tx.offer_details && <p className="text-xs text-muted-foreground">{tx.offer_details}</p>}
+        </div>
+      )}
+
+      {/* Deal finalization */}
+      {status === 'in_validation' && (
+        <DealFinalization
+          transaction={tx}
+          onFinalize={onFinalizeDeal}
+          isLoading={isFinalizing}
+        />
+      )}
+
+      {/* Deal finalized celebration + Feedback */}
+      {status === 'deal_finalized' && (
+        <>
+          <DealFinalization
+            transaction={tx}
+            onFinalize={onFinalizeDeal}
+            isLoading={false}
+          />
+          <FeedbackQuestionnaire
+            onSubmit={onSubmitFeedback}
+            isLoading={isSubmittingFeedback}
+          />
+        </>
+      )}
 
       {/* Timeline */}
       <div className="bg-card rounded-xl p-4 border border-border">
@@ -236,12 +306,12 @@ function DocumentsTab({
               </div>
               <div className="flex gap-1">
                 {doc.buyer_validated && (
-                  <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" /> Acheteur
                   </span>
                 )}
                 {doc.seller_validated && (
-                  <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" /> Vendeur
                   </span>
                 )}

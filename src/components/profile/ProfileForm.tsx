@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
 
 export function ProfileForm() {
   const navigate = useNavigate();
@@ -102,6 +103,7 @@ export function ProfileForm() {
         />
         <h2 className="text-xl font-bold text-foreground mt-4">{displayName} 👋</h2>
         <p className="text-sm text-muted-foreground">✨ Membre SomaGate</p>
+        {userScore?.certified && <CertifiedBadge size="md" className="mt-2" />}
       </div>
 
       {/* Bio */}

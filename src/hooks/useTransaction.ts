@@ -113,6 +113,17 @@ export function useTransaction(transactionId: string) {
     onSuccess: invalidateAll,
   });
 
+  const finalizeDeal = useMutation({
+    mutationFn: () => WorkflowService.finalizeDeal(transactionId, user!.id),
+    onSuccess: invalidateAll,
+  });
+
+  const submitFeedback = useMutation({
+    mutationFn: (feedback: Record<string, any>) =>
+      WorkflowService.submitFeedback(transactionId, user!.id, feedback),
+    onSuccess: invalidateAll,
+  });
+
   const sendMessage = useMutation({
     mutationFn: async (content: string) => {
       const tx = transaction.data;
@@ -136,6 +147,8 @@ export function useTransaction(transactionId: string) {
     completeVisit,
     expressIntention,
     makeOffer,
+    finalizeDeal,
+    submitFeedback,
     sendMessage,
   };
 }

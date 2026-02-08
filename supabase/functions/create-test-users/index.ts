@@ -7,97 +7,101 @@ const corsHeaders = {
 
 const PROPERTY_DATA = [
   {
-    adresse: 'Jl. Raya Ubud No. 45, Ubud, Bali',
+    adresse: 'Rue des Almadies, Dakar',
     type: 'villa' as const,
     operations: 'vente' as const,
-    prix: 4500000000,
-    prix_currency: 'IDR',
+    prix: 320000000,
+    prix_currency: 'XOF',
     chambres: 4,
     salles_bain: 3,
     surface: 320,
-    secteur: 'Ubud',
-    description: 'Villa tropicale avec piscine privée, entourée de rizières. 4 chambres, design balinais moderne.',
-    latitude: -8.5069,
-    longitude: 115.2624,
+    secteur: 'Almadies',
+    description: 'Villa luxueuse avec piscine privée aux Almadies. 4 chambres, design contemporain, jardin tropical.',
+    latitude: 14.7410,
+    longitude: -17.5130,
   },
   {
-    adresse: 'Jl. Pantai Berawa No. 12, Canggu, Bali',
-    type: 'villa' as const,
-    operations: 'location' as const,
-    prix: 85000000,
-    prix_currency: 'IDR',
-    chambres: 3,
-    salles_bain: 2,
-    surface: 200,
-    secteur: 'Canggu',
-    description: 'Villa moderne à 5 minutes de la plage de Berawa. Parfait pour les digital nomads.',
-    latitude: -8.6478,
-    longitude: 115.1385,
-  },
-  {
-    adresse: 'Jl. Sunset Road No. 88, Seminyak, Bali',
+    adresse: 'Boulevard du Plateau, Abidjan',
     type: 'appartement' as const,
-    operations: 'vente' as const,
-    prix: 2200000000,
-    prix_currency: 'IDR',
-    chambres: 2,
-    salles_bain: 2,
-    surface: 120,
-    secteur: 'Seminyak',
-    description: 'Appartement de luxe dans un complexe premium avec rooftop pool et vue mer.',
-    latitude: -8.6905,
-    longitude: 115.1685,
-  },
-  {
-    adresse: 'Jl. Bypass Ngurah Rai No. 200, Sanur, Bali',
-    type: 'maison' as const,
-    operations: 'vente' as const,
-    prix: 3200000000,
-    prix_currency: 'IDR',
+    operations: 'location' as const,
+    prix: 850000,
+    prix_currency: 'XOF',
     chambres: 3,
     salles_bain: 2,
     surface: 180,
-    secteur: 'Sanur',
-    description: 'Maison familiale dans quartier calme de Sanur. Jardin tropical, proche de la plage.',
-    latitude: -8.6783,
-    longitude: 115.2627,
+    secteur: 'Plateau',
+    description: 'Appartement haut standing au cœur du Plateau. Vue panoramique, parking sécurisé.',
+    latitude: 5.3200,
+    longitude: -4.0200,
   },
   {
-    adresse: 'Jl. Raya Kuta No. 15, Kuta, Bali',
-    type: 'studio' as const,
-    operations: 'location' as const,
-    prix: 25000000,
-    prix_currency: 'IDR',
-    chambres: 1,
-    salles_bain: 1,
-    surface: 45,
-    secteur: 'Kuta',
-    description: 'Studio meublé moderne, idéal pour expatriés. Centre-ville, proche aéroport.',
-    latitude: -8.7220,
-    longitude: 115.1697,
-  },
-  {
-    adresse: 'Jl. Mertanadi No. 30, Kerobokan, Bali',
+    adresse: 'Cocody Riviera Golf, Abidjan',
     type: 'villa' as const,
-    operations: 'location' as const,
-    prix: 120000000,
-    prix_currency: 'IDR',
+    operations: 'vente' as const,
+    prix: 550000000,
+    prix_currency: 'XOF',
     chambres: 5,
     salles_bain: 4,
     surface: 450,
-    secteur: 'Kerobokan',
-    description: 'Grande villa familiale avec pool de 15m, jardin luxuriant et staff inclus.',
-    latitude: -8.6605,
-    longitude: 115.1555,
+    secteur: 'Cocody',
+    description: 'Villa de prestige à Riviera Golf. 5 chambres, piscine, staff house, jardin arboré.',
+    latitude: 5.3550,
+    longitude: -3.9750,
+  },
+  {
+    adresse: 'Quartier Ngor, Dakar',
+    type: 'terrain' as const,
+    operations: 'vente' as const,
+    prix: 180000000,
+    prix_currency: 'XOF',
+    chambres: 0,
+    salles_bain: 0,
+    surface: 500,
+    secteur: 'Ngor',
+    description: 'Terrain viabilisé à Ngor, proche plage. Titre foncier en règle. Idéal pour projet immobilier.',
+    latitude: 14.7510,
+    longitude: -17.5180,
+    droit: 'titre_foncier' as const,
+  },
+  {
+    adresse: 'Mermoz Sacré-Cœur, Dakar',
+    type: 'studio' as const,
+    operations: 'location' as const,
+    prix: 350000,
+    prix_currency: 'XOF',
+    chambres: 1,
+    salles_bain: 1,
+    surface: 35,
+    secteur: 'Mermoz',
+    description: 'Studio meublé moderne à Mermoz. Idéal expatriés et jeunes actifs. Internet fibre inclus.',
+    latitude: 14.7050,
+    longitude: -17.4680,
+  },
+  {
+    adresse: 'Zone 4, Marcory, Abidjan',
+    type: 'bureau' as const,
+    operations: 'location' as const,
+    prix: 1200000,
+    prix_currency: 'XOF',
+    chambres: 0,
+    salles_bain: 2,
+    surface: 200,
+    secteur: 'Marcory',
+    description: 'Bureau open space en Zone 4. Climatisation centrale, 6 places parking, accès sécurisé 24/7.',
+    latitude: 5.3050,
+    longitude: -3.9900,
   },
 ]
 
 const TEST_USERS = [
-  { email: 'buyer1@somagate.test', password: 'Test1234!', full_name: 'Adi Pratama', role: 'user' },
-  { email: 'buyer2@somagate.test', password: 'Test1234!', full_name: 'Sari Dewi', role: 'user' },
-  { email: 'owner1@somagate.test', password: 'Test1234!', full_name: 'Wayan Sudhana', role: 'owner' },
-  { email: 'owner2@somagate.test', password: 'Test1234!', full_name: 'Ketut Agung', role: 'owner' },
-  { email: 'notaire1@somagate.test', password: 'Test1234!', full_name: 'Notaris Budi', role: 'notaire' },
+  { email: 'acheteur@test.com', password: 'Test123!', full_name: 'Amadou Diallo', role: 'user' },
+  { email: 'vendeur@test.com', password: 'Test123!', full_name: 'Fatou Sall', role: 'owner' },
+  { email: 'admin@test.com', password: 'Test123!', full_name: 'Admin SomaGate', role: 'admin' },
+  { email: 'buyer1@somagate.test', password: 'Test1234!', full_name: 'Moussa Konaté', role: 'user' },
+  { email: 'buyer2@somagate.test', password: 'Test1234!', full_name: 'Awa Traoré', role: 'user' },
+  { email: 'owner1@somagate.test', password: 'Test1234!', full_name: 'Ibrahim Ndiaye', role: 'owner' },
+  { email: 'owner2@somagate.test', password: 'Test1234!', full_name: 'Mariama Bâ', role: 'owner' },
+  { email: 'notaire1@somagate.test', password: 'Test1234!', full_name: 'Maître Ousmane Sy', role: 'notaire' },
   { email: 'admin1@somagate.test', password: 'Test1234!', full_name: 'Admin SomaGate', role: 'admin' },
 ]
 
@@ -126,7 +130,6 @@ Deno.serve(async (req) => {
       })
 
       if (authError) {
-        // User might already exist
         if (authError.message.includes('already been registered')) {
           const { data: existingUsers } = await supabase.auth.admin.listUsers()
           const existing = existingUsers?.users?.find((eu: any) => eu.email === u.email)
@@ -147,24 +150,28 @@ Deno.serve(async (req) => {
       await supabase.from('user_roles').insert({ user_id: userId, role: u.role })
 
       // Update profile
+      const names = u.full_name.split(' ')
       await supabase.from('profiles').update({
         full_name: u.full_name,
-        first_name: u.full_name.split(' ')[0],
-        last_name: u.full_name.split(' ').slice(1).join(' '),
+        first_name: names[0],
+        last_name: names.slice(1).join(' '),
       }).eq('id', userId)
+
+      // Initialize user score
+      await supabase.from('wf_user_scores').insert({ user_id: userId }).select()
 
       results.push({ email: u.email, status: 'created', id: userId, role: u.role })
     }
 
-    // 2. Create properties for owners
-    const owner1Id = userIds['owner1@somagate.test']
-    const owner2Id = userIds['owner2@somagate.test']
+    // 2. Create properties for owner accounts
+    const ownerEmails = TEST_USERS.filter(u => u.role === 'owner').map(u => u.email)
+    const ownerIds = ownerEmails.map(e => userIds[e]).filter(Boolean)
 
-    if (owner1Id && owner2Id) {
+    if (ownerIds.length > 0) {
       const propertyIds: string[] = []
 
       for (let i = 0; i < PROPERTY_DATA.length; i++) {
-        const ownerId = i % 2 === 0 ? owner1Id : owner2Id
+        const ownerId = ownerIds[i % ownerIds.length]
         const { data: prop, error: propError } = await supabase
           .from('properties')
           .insert({ ...PROPERTY_DATA[i], owner_id: ownerId, is_published: true, status: 'available' })
@@ -179,17 +186,18 @@ Deno.serve(async (req) => {
         results.push({ property: PROPERTY_DATA[i].adresse, status: 'created', id: prop.id })
       }
 
-      // 3. Create some swipes, matches and transactions
-      const buyer1Id = userIds['buyer1@somagate.test']
-      const buyer2Id = userIds['buyer2@somagate.test']
+      // 3. Create matches & transactions for buyer accounts
+      const buyerEmails = TEST_USERS.filter(u => u.role === 'user').map(u => u.email)
+      const buyerIds = buyerEmails.map(e => userIds[e]).filter(Boolean)
 
-      if (buyer1Id && propertyIds.length >= 2) {
-        // buyer1 likes property 0 and 1
+      if (buyerIds.length > 0 && propertyIds.length >= 2) {
+        // First buyer: match with first 2 properties
+        const buyer1Id = buyerIds[0]
         for (const pid of propertyIds.slice(0, 2)) {
+          const propIndex = propertyIds.indexOf(pid)
+          const ownerId = ownerIds[propIndex % ownerIds.length]
+
           await supabase.from('swipes').insert({ user_id: buyer1Id, property_id: pid, direction: 'right' })
-          
-          const ownerId = PROPERTY_DATA[propertyIds.indexOf(pid)] ? 
-            (propertyIds.indexOf(pid) % 2 === 0 ? owner1Id : owner2Id) : owner1Id
 
           const { data: match } = await supabase
             .from('matches')
@@ -214,41 +222,43 @@ Deno.serve(async (req) => {
             })
           }
         }
-        results.push({ action: 'matches_created', buyer: 'buyer1', count: 2 })
-      }
+        results.push({ action: 'matches_created', buyer: buyerEmails[0], count: 2 })
 
-      if (buyer2Id && propertyIds.length >= 4) {
-        // buyer2 likes property 2 and 3
-        for (const pid of propertyIds.slice(2, 4)) {
-          await supabase.from('swipes').insert({ user_id: buyer2Id, property_id: pid, direction: 'right' })
+        // Second buyer if exists: match with properties 2-3
+        if (buyerIds.length > 1 && propertyIds.length >= 4) {
+          const buyer2Id = buyerIds[1]
+          for (const pid of propertyIds.slice(2, 4)) {
+            const propIndex = propertyIds.indexOf(pid)
+            const ownerId = ownerIds[propIndex % ownerIds.length]
 
-          const ownerId = propertyIds.indexOf(pid) % 2 === 0 ? owner1Id : owner2Id
+            await supabase.from('swipes').insert({ user_id: buyer2Id, property_id: pid, direction: 'right' })
 
-          const { data: match } = await supabase
-            .from('matches')
-            .insert({ user_id: buyer2Id, property_id: pid, owner_id: ownerId })
-            .select()
-            .single()
+            const { data: match } = await supabase
+              .from('matches')
+              .insert({ user_id: buyer2Id, property_id: pid, owner_id: ownerId })
+              .select()
+              .single()
 
-          if (match) {
-            await supabase.from('conversations').insert({
-              buyer_id: buyer2Id,
-              owner_id: ownerId,
-              property_id: pid,
-              match_id: match.id,
-            })
+            if (match) {
+              await supabase.from('conversations').insert({
+                buyer_id: buyer2Id,
+                owner_id: ownerId,
+                property_id: pid,
+                match_id: match.id,
+              })
 
-            await supabase.from('wf_transactions').insert({
-              property_id: pid,
-              buyer_id: buyer2Id,
-              seller_id: ownerId,
-              status: 'visit_requested',
-              matched_at: new Date().toISOString(),
-              visit_requested_at: new Date().toISOString(),
-            })
+              await supabase.from('wf_transactions').insert({
+                property_id: pid,
+                buyer_id: buyer2Id,
+                seller_id: ownerId,
+                status: 'visit_requested',
+                matched_at: new Date().toISOString(),
+                visit_requested_at: new Date().toISOString(),
+              })
+            }
           }
+          results.push({ action: 'matches_created', buyer: buyerEmails[1], count: 2 })
         }
-        results.push({ action: 'matches_created', buyer: 'buyer2', count: 2 })
       }
     }
 
