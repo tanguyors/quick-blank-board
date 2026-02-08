@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useMyTransactions } from '@/hooks/useTransaction';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { useAuth } from '@/hooks/useAuth';
@@ -14,9 +15,14 @@ export default function MyTransactions() {
   const navigate = useNavigate();
 
   return (
-    <AppLayout>
+    <AppLayout hideHeader>
+      <PageTopBar>
+        <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
+          <FileText className="h-4 w-4 text-primary" />
+          <span className="text-foreground font-semibold">Mes Transactions</span>
+        </div>
+      </PageTopBar>
       <div className="p-4 max-w-lg mx-auto">
-        <h1 className="text-xl font-bold text-foreground mb-4">Mes Transactions</h1>
 
         {isLoading ? (
           <div className="flex items-center justify-center p-8">

@@ -1,4 +1,5 @@
 import { AppLayout } from '@/components/layout/AppLayout';
+import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Check, CheckCheck } from 'lucide-react';
@@ -11,10 +12,16 @@ export default function Notifications() {
   const navigate = useNavigate();
 
   return (
-    <AppLayout>
+    <AppLayout hideHeader>
+      <PageTopBar>
+        <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
+          <Bell className="h-4 w-4 text-primary" />
+          <span className="text-foreground font-semibold">Notifications</span>
+        </div>
+      </PageTopBar>
       <div className="max-w-lg mx-auto p-4">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-foreground">Notifications</h1>
+          <span />
           <Button
             variant="ghost"
             size="sm"
