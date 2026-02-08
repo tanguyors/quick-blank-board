@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Home, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import logoSoma from '@/assets/logo-soma.png';
 
 export function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -75,7 +76,7 @@ export function AuthForm() {
         {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
           <div className="w-20 h-20 rounded-2xl bg-primary/20 flex items-center justify-center mb-4">
-            <span className="text-primary text-4xl font-bold">𝔫</span>
+            <img src={logoSoma} alt="SomaGate" className="w-14 h-14 object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">
             {isLogin ? 'Connexion' : 'Créer un compte'}
