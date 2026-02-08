@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { OwnerProfileHeader } from '@/components/dashboard/OwnerProfileHeader';
@@ -20,11 +19,9 @@ type TabId = (typeof TABS)[number]['id'];
 
 export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const tabParam = searchParams.get('tab') as TabId | null;
-  const [activeTab, setActiveTab] = useState<TabId>(tabParam || 'biens');
+  const activeTab = (searchParams.get('tab') as TabId) || 'biens';
 
   const handleTabChange = (tab: TabId) => {
-    setActiveTab(tab);
     setSearchParams({ tab });
   };
 
