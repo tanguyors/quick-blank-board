@@ -11,8 +11,8 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
   const primaryMedia = property.property_media?.find((m: any) => m.is_primary) || property.property_media?.[0];
 
   return (
-    <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-2xl">
-      <div className="relative aspect-[3/4] max-h-[55vh]">
+    <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-2xl w-full">
+      <div className="relative aspect-[3/4] w-full">
         {primaryMedia ? (
           <img src={primaryMedia.url} alt="" className="w-full h-full object-cover" draggable={false} />
         ) : (
