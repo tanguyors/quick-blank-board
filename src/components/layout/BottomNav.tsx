@@ -8,7 +8,6 @@ const buyerLinks = [
   { to: '/buyer', icon: LayoutDashboard, label: 'Accueil' },
   { to: '/explore', icon: Flame, label: 'Découvrir' },
   { to: '/matches', icon: Heart, label: 'Matches' },
-  { to: '/favorites', icon: Star, label: 'Favoris' },
   { to: '/messages', icon: MessageSquare, label: 'Messages' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
