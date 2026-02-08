@@ -1,104 +1,203 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { useCreateProperty, useUpdateProperty } from '@/hooks/useProperties';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { Upload, X, Star } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Tables } from '@/integrations/supabase/types';
 
-const PROPERTY_TYPES = ['villa', 'appartement', 'terrain', 'studio', 'maison', 'bureau', 'commerce', 'entrepot'] as const;
-const OPERATIONS = ['vente', 'location'] as const;
-const DROITS = ['titre_foncier', 'bail', 'deliberation'] as const;
-const CURRENCIES = ['EUR', 'XOF', 'USD'];
+/* ── Type mappings ── */
+const PROPERTY_TYPES = [
+  { value: 'appartement', label: 'Appartement' },
+  { value: 'villa', label: 'Villa' },
+  { value: 'terrain', label: 'Terrain' },
+  { value: 'commercial', label: 'Commercial' },
+  { value: 'construction', label: 'Construction' },
+  { value: 'maison_a_renover', label: 'Maison à rénover' },
+  { value: 'colocation_longue', label: 'Colocation longue durée' },
+  { value: 'colocation_courte', label: 'Colocation courte durée' },
+  { value: 'hebergement_service', label: 'Hébergement contre service' },
+  { value: 'hebergement_animaux', label: 'Hébergement pour animaux' },
+  { value: 'guesthouse', label: 'Guesthouse' },
+] as const;
 
-// Types that don't have bedrooms
-const TYPES_WITHOUT_BEDROOMS = ['terrain', 'bureau', 'commerce', 'entrepot'];
-// Types that don't have bathrooms
-const TYPES_WITHOUT_BATHROOMS = ['terrain'];
-// Types where bedrooms are fixed to 1
-const TYPES_FIXED_ONE_BEDROOM = ['studio'];
+const DROITS = [
+  { value: 'freehold', label: 'Freehold (Propriété totale)' },
+  { value: 'leasehold', label: 'Leasehold (Bail)' },
+] as const;
 
-const EQUIPEMENTS_RESIDENTIAL = ['Climatisation', 'Piscine', 'Jardin', 'Garage', 'Ascenseur', 'Balcon', 'Terrasse', 'Meublé', 'Gardien', 'Parking'];
-const EQUIPEMENTS_TERRAIN = ['Clôturé', 'Viabilisé', 'Accès goudronné', 'Eau courante', 'Électricité', 'Gardien'];
-const EQUIPEMENTS_COMMERCIAL = ['Climatisation', 'Parking', 'Ascenseur', 'Gardien', 'Alarme', 'Accès handicapé', 'Entrepôt', 'Bureau meublé'];
+const OPERATIONS = [
+  { value: 'achat', label: 'Achat' },
+  { value: 'location', label: 'Location' },
+  { value: 'vente', label: 'Vente' },
+] as const;
 
-function getEquipements(type: string) {
-  if (type === 'terrain') return EQUIPEMENTS_TERRAIN;
-  if (['bureau', 'commerce', 'entrepot'].includes(type)) return EQUIPEMENTS_COMMERCIAL;
-  return EQUIPEMENTS_RESIDENTIAL;
-}
+const CURRENCIES = ['EUR', 'USD', 'GBP'];
+
+/* ── Conditional logic helpers ── */
+const TYPES_WITHOUT_BEDROOMS = ['terrain', 'construction', 'hebergement_animaux', 'commercial'];
+const TYPES_WITHOUT_BATHROOMS = ['terrain', 'construction', 'hebergement_animaux'];
 
 function hasRooms(type: string) {
   return !TYPES_WITHOUT_BEDROOMS.includes(type);
 }
-
 function hasBathrooms(type: string) {
   return !TYPES_WITHOUT_BATHROOMS.includes(type);
 }
 
-function isFixedOneBedroom(type: string) {
-  return TYPES_FIXED_ONE_BEDROOM.includes(type);
-}
+/* ── Equipment categories ── */
+const EQUIPMENT_CATEGORIES = [
+  {
+    title: 'Très demandés',
+    items: ['Jacuzzi', 'Lave-linge', 'Cuisine', 'Wifi', 'Barbecue', 'Piscine'],
+  },
+  {
+    title: 'Produits et services de base',
+    items: ['Sèche-linge', 'Climatisation', 'Chauffage', 'Espace de travail dédié', 'Télévision', 'Sèche-cheveux', 'Fer à repasser'],
+  },
+  {
+    title: 'Caractéristiques',
+    items: ['Parking gratuit', 'Station de recharge pour véhicules électriques', 'Lit pour bébé', 'Lit king size', 'Salle de sport', 'Petit déjeuner', 'Cheminée', 'Logement fumeur'],
+  },
+  {
+    title: 'Sécurité',
+    items: ['Détecteur de fumée', 'Détecteur de monoxyde de carbone'],
+  },
+];
 
+/* ── Props ── */
 interface PropertyFormProps {
   property?: Tables<'properties'> | null;
+  existingMedia?: any[];
   onSuccess?: (id: string) => void;
 }
 
-export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
+export function PropertyForm({ property, existingMedia = [], onSuccess }: PropertyFormProps) {
   const { user } = useAuth();
   const createProperty = useCreateProperty();
   const updateProperty = useUpdateProperty();
-  const [step, setStep] = useState(1);
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState({
-    type: (property?.type || 'villa') as any,
-    operations: (property?.operations || 'vente') as any,
-    adresse: property?.adresse || '',
+    type: (property?.type || 'appartement') as string,
+    droit: (property?.droit || '') as string,
     secteur: property?.secteur || '',
-    surface: property?.surface?.toString() || '',
-    chambres: property?.chambres?.toString() || '0',
-    salles_bain: property?.salles_bain?.toString() || '0',
+    adresse: property?.adresse || '',
     prix: property?.prix?.toString() || '',
-    prix_currency: property?.prix_currency || 'XOF',
-    droit: (property?.droit || '') as any,
+    prix_currency: property?.prix_currency || 'EUR',
+    surface: property?.surface?.toString() || '',
+    chambres: property?.chambres?.toString() || '1',
+    salles_bain: property?.salles_bain?.toString() || '1',
     description: property?.description || '',
+    operations: (property?.operations || 'vente') as string,
     equipements: (property?.equipements as string[]) || [],
-    latitude: property?.latitude?.toString() || '',
-    longitude: property?.longitude?.toString() || '',
+    is_published: property?.is_published ?? false,
   });
+
+  const [media, setMedia] = useState<any[]>(existingMedia);
+  const [uploading, setUploading] = useState(false);
 
   const update = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
 
   const handleTypeChange = (type: string) => {
     setForm(prev => {
       const newForm = { ...prev, type };
-      if (TYPES_WITHOUT_BEDROOMS.includes(type)) newForm.chambres = '0';
-      if (TYPES_WITHOUT_BATHROOMS.includes(type)) newForm.salles_bain = '0';
-      if (TYPES_FIXED_ONE_BEDROOM.includes(type)) newForm.chambres = '1';
-      const validEquipements = getEquipements(type);
-      newForm.equipements = prev.equipements.filter((eq: string) => validEquipements.includes(eq));
+      if (!hasRooms(type)) newForm.chambres = '0';
+      if (!hasBathrooms(type)) newForm.salles_bain = '0';
       return newForm;
     });
   };
 
+  /* ── Media upload ── */
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length || !property) return;
+    setUploading(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = file.name.split('.').pop();
+        const path = `${property.id}/${Date.now()}-${i}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from('property-media').upload(path, file);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from('property-media').getPublicUrl(path);
+        const { data, error } = await supabase
+          .from('property_media')
+          .insert({
+            property_id: property.id,
+            url: publicUrl,
+            type: file.type.startsWith('image/') ? 'image' as const : 'video' as const,
+            position: media.length + i,
+            is_primary: media.length === 0 && i === 0,
+          })
+          .select().single();
+        if (error) throw error;
+        setMedia(prev => [...prev, data]);
+      }
+      toast.success('Photos uploadées');
+      queryClient.invalidateQueries({ queryKey: ['property', property.id] });
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
+  const handleDeleteMedia = async (mediaItem: any) => {
+    try {
+      await supabase.from('property_media').delete().eq('id', mediaItem.id);
+      setMedia(prev => prev.filter(m => m.id !== mediaItem.id));
+      toast.success('Photo supprimée');
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleSetPrimary = async (mediaItem: any) => {
+    if (!property) return;
+    try {
+      await supabase.from('property_media').update({ is_primary: false }).eq('property_id', property.id);
+      await supabase.from('property_media').update({ is_primary: true }).eq('id', mediaItem.id);
+      setMedia(prev => prev.map(m => ({ ...m, is_primary: m.id === mediaItem.id })));
+      toast.success('Image principale définie');
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  /* ── Submit ── */
   const handleSubmit = async () => {
+    if (!form.adresse.trim()) { toast.error('L\'adresse est requise'); return; }
+    if (!form.prix || Number(form.prix) <= 0) { toast.error('Le prix est requis'); return; }
+    if (!form.secteur.trim()) { toast.error('Le secteur est requis'); return; }
+
     try {
       const payload = {
-        type: form.type, operations: form.operations, adresse: form.adresse,
-        secteur: form.secteur || null, surface: form.surface ? Number(form.surface) : null,
-        chambres: isFixedOneBedroom(form.type) ? 1 : (hasRooms(form.type) ? Number(form.chambres) : 0),
+        type: form.type as any,
+        operations: form.operations as any,
+        adresse: form.adresse,
+        secteur: form.secteur || null,
+        surface: form.surface ? Number(form.surface) : null,
+        chambres: hasRooms(form.type) ? Number(form.chambres) : 0,
         salles_bain: hasBathrooms(form.type) ? Number(form.salles_bain) : 0,
-        prix: Number(form.prix), prix_currency: form.prix_currency,
-        droit: form.droit || null, description: form.description || null,
+        prix: Number(form.prix),
+        prix_currency: form.prix_currency,
+        droit: (form.droit || null) as any,
+        description: form.description || null,
         equipements: form.equipements,
-        latitude: form.latitude ? Number(form.latitude) : null,
-        longitude: form.longitude ? Number(form.longitude) : null,
+        is_published: form.is_published,
       };
+
       if (property) {
         await updateProperty.mutateAsync({ id: property.id, ...payload });
         toast.success('Bien mis à jour');
@@ -113,99 +212,117 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
     }
   };
 
+  const isPending = createProperty.isPending || updateProperty.isPending;
+
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <div className="flex gap-2 mb-6">
-        {[1, 2, 3].map(s => (
-          <div key={s} className={`flex-1 h-2 rounded-full transition-colors ${s <= step ? 'bg-primary' : 'bg-muted'}`} />
-        ))}
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
+      {/* Type de bien */}
+      <div>
+        <Label className="text-sm font-semibold">Type de bien *</Label>
+        <Select value={form.type} onValueChange={handleTypeChange}>
+          <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {PROPERTY_TYPES.map(t => (
+              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      {step === 1 && (
-        <div className="space-y-4">
-          <div>
-            <Label>Type de bien</Label>
-            <Select value={form.type} onValueChange={handleTypeChange}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {PROPERTY_TYPES.map(t => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Opération</Label>
-            <div className="flex gap-2">
-              {OPERATIONS.map(op => (
-                <Button key={op} type="button" variant={form.operations === op ? 'default' : 'outline'} className="flex-1" onClick={() => update('operations', op)}>
-                  {op === 'vente' ? 'Vente' : 'Location'}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div><Label>Adresse</Label><Input value={form.adresse} onChange={e => update('adresse', e.target.value)} required /></div>
-          <div><Label>Secteur</Label><Input value={form.secteur} onChange={e => update('secteur', e.target.value)} /></div>
+      {/* Droit */}
+      <div>
+        <Label className="text-sm font-semibold">Droit</Label>
+        <Select value={form.droit} onValueChange={v => update('droit', v)}>
+          <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
+          <SelectContent>
+            {DROITS.map(d => (
+              <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Secteur */}
+      <div>
+        <Label className="text-sm font-semibold">Secteur *</Label>
+        <Input className="mt-1" value={form.secteur} onChange={e => update('secteur', e.target.value)} placeholder="Ex: Plateau, Cocody, Dakar..." />
+      </div>
+
+      {/* Adresse */}
+      <div>
+        <Label className="text-sm font-semibold">Adresse</Label>
+        <Input className="mt-1" value={form.adresse} onChange={e => update('adresse', e.target.value)} placeholder="Adresse complète" />
+      </div>
+
+      {/* Prix + Devise */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="text-sm font-semibold">Prix *</Label>
+          <Input className="mt-1" type="number" value={form.prix} onChange={e => update('prix', e.target.value)} placeholder="0" />
         </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>Surface (m²)</Label><Input type="number" value={form.surface} onChange={e => update('surface', e.target.value)} /></div>
-            <div><Label>Prix</Label><Input type="number" value={form.prix} onChange={e => update('prix', e.target.value)} required /></div>
-          </div>
-
-          {/* Chambres & Salles de bain - conditionnels selon le type */}
-          {(hasRooms(form.type) || hasBathrooms(form.type)) && (
-            <div className="grid grid-cols-2 gap-4">
-              {hasRooms(form.type) && (
-                <div>
-                  <Label>Chambres</Label>
-                  {isFixedOneBedroom(form.type) ? (
-                    <Input type="number" value="1" disabled className="opacity-60" />
-                  ) : (
-                    <Input type="number" value={form.chambres} onChange={e => update('chambres', e.target.value)} />
-                  )}
-                </div>
-              )}
-              {hasBathrooms(form.type) && (
-                <div><Label>Salles de bain</Label><Input type="number" value={form.salles_bain} onChange={e => update('salles_bain', e.target.value)} /></div>
-              )}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Devise</Label>
-              <Select value={form.prix_currency} onValueChange={v => update('prix_currency', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{CURRENCIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            {/* Droit foncier uniquement pour la vente */}
-            {form.operations === 'vente' && (
-              <div>
-                <Label>Droit foncier</Label>
-                <Select value={form.droit} onValueChange={v => update('droit', v)}>
-                  <SelectTrigger><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                  <SelectContent>{DROITS.map(d => <SelectItem key={d} value={d}>{d.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>Latitude</Label><Input type="number" step="any" value={form.latitude} onChange={e => update('latitude', e.target.value)} /></div>
-            <div><Label>Longitude</Label><Input type="number" step="any" value={form.longitude} onChange={e => update('longitude', e.target.value)} /></div>
-          </div>
+        <div>
+          <Label className="text-sm font-semibold">Devise</Label>
+          <Select value={form.prix_currency} onValueChange={v => update('prix_currency', v)}>
+            <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {CURRENCIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+      </div>
 
-      {step === 3 && (
-        <div className="space-y-4">
-          <div><Label>Description</Label><Textarea value={form.description} onChange={e => update('description', e.target.value)} rows={4} /></div>
+      {/* Surface / Chambres / Salles de bain */}
+      <div className={`grid gap-4 ${hasRooms(form.type) && hasBathrooms(form.type) ? 'grid-cols-3' : hasRooms(form.type) || hasBathrooms(form.type) ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        <div>
+          <Label className="text-sm font-semibold">Surface (m²)</Label>
+          <Input className="mt-1" type="number" value={form.surface} onChange={e => update('surface', e.target.value)} placeholder="0" />
+        </div>
+        {hasRooms(form.type) && (
           <div>
-            <Label>Équipements</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {getEquipements(form.type).map(eq => (
+            <Label className="text-sm font-semibold">Chambres</Label>
+            <Input className="mt-1" type="number" value={form.chambres} onChange={e => update('chambres', e.target.value)} placeholder="0" />
+          </div>
+        )}
+        {hasBathrooms(form.type) && (
+          <div>
+            <Label className="text-sm font-semibold">Salles de bain</Label>
+            <Input className="mt-1" type="number" value={form.salles_bain} onChange={e => update('salles_bain', e.target.value)} placeholder="0" />
+          </div>
+        )}
+      </div>
+
+      {/* Description */}
+      <div>
+        <Label className="text-sm font-semibold">Description</Label>
+        <Textarea className="mt-1" value={form.description} onChange={e => update('description', e.target.value)} rows={4} placeholder="Description détaillée du bien" />
+      </div>
+
+      {/* Opérations */}
+      <div>
+        <Label className="text-sm font-semibold">Opérations *</Label>
+        <div className="flex gap-6 mt-2">
+          {OPERATIONS.map(op => (
+            <label key={op.value} className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.operations === op.value}
+                onCheckedChange={(checked) => {
+                  if (checked) update('operations', op.value);
+                }}
+              />
+              {op.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Équipements par catégorie */}
+      <div>
+        <Label className="text-lg font-bold">Équipements</Label>
+        {EQUIPMENT_CATEGORIES.map(cat => (
+          <div key={cat.title} className="mt-4">
+            <h4 className="text-sm font-semibold mb-2">{cat.title}</h4>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+              {cat.items.map(eq => (
                 <label key={eq} className="flex items-center gap-2 text-sm">
                   <Checkbox
                     checked={form.equipements.includes(eq)}
@@ -219,19 +336,58 @@ export function PropertyForm({ property, onSuccess }: PropertyFormProps) {
               ))}
             </div>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      <div className="flex gap-2 mt-6">
-        {step > 1 && <Button type="button" variant="outline" onClick={() => setStep(s => s - 1)} className="flex-1">Précédent</Button>}
-        {step < 3 ? (
-          <Button type="button" onClick={() => setStep(s => s + 1)} className="flex-1">Suivant</Button>
+      {/* Photos du bien */}
+      <div>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-semibold">Photos du bien</Label>
+          {property && (
+            <>
+              <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleUpload} />
+              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                <Upload className="h-4 w-4 mr-2" />{uploading ? 'Upload...' : 'Ajouter des photos'}
+              </Button>
+            </>
+          )}
+        </div>
+        {!property && (
+          <p className="text-sm text-muted-foreground mt-2">Les photos pourront être ajoutées après la création du bien.</p>
+        )}
+        {media.length > 0 ? (
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            {media.map((m: any) => (
+              <div key={m.id} className="relative aspect-square rounded-lg overflow-hidden group">
+                <img src={m.url} alt="" className="w-full h-full object-cover" />
+                {m.is_primary && <div className="absolute top-1 left-1"><Star className="h-4 w-4 text-accent fill-accent" /></div>}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-primary-foreground" onClick={() => handleSetPrimary(m)}><Star className="h-4 w-4" /></Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-primary-foreground" onClick={() => handleDeleteMedia(m)}><X className="h-4 w-4" /></Button>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
-          <Button type="button" onClick={handleSubmit} className="flex-1" disabled={createProperty.isPending || updateProperty.isPending}>
-            {property ? 'Mettre à jour' : 'Créer le bien'}
-          </Button>
+          <div className="mt-3 rounded-lg bg-muted/50 p-6 text-center text-sm text-muted-foreground">
+            Aucune photo
+          </div>
         )}
       </div>
+
+      {/* Publié toggle */}
+      <div className="flex items-center justify-between py-2">
+        <div>
+          <Label className="text-sm font-semibold">Publié</Label>
+          <p className="text-xs text-muted-foreground">Le bien sera visible aux utilisateurs</p>
+        </div>
+        <Switch checked={form.is_published} onCheckedChange={v => update('is_published', v)} />
+      </div>
+
+      {/* Submit */}
+      <Button type="button" onClick={handleSubmit} className="w-full" size="lg" disabled={isPending}>
+        {isPending ? 'En cours...' : property ? 'Mettre à jour' : 'Créer le bien'}
+      </Button>
     </div>
   );
 }
