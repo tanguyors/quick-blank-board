@@ -1,4 +1,4 @@
-import { MapPin, BedDouble, Bath, Maximize2 } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize2, Info } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 
 interface SwipeCardProps {
@@ -19,16 +19,6 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
           <div className="w-full h-full bg-secondary flex items-center justify-center text-muted-foreground">
             Pas de photo
           </div>
-        )}
-
-        {/* Info button */}
-        {onInfoClick && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onInfoClick(); }}
-            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center text-foreground"
-          >
-            <span className="text-xl">ⓘ</span>
-          </button>
         )}
 
         {/* Bottom overlay */}
@@ -60,6 +50,21 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
               {displayPrice(property.prix, property.prix_currency)}
             </span>
           </div>
+
+          {/* Detail button */}
+          {onInfoClick && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onInfoClick();
+              }}
+              className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 bg-foreground/10 backdrop-blur-md rounded-xl text-foreground text-sm font-medium hover:bg-foreground/20 transition-colors"
+            >
+              <Info className="h-4 w-4" />
+              Voir les détails
+            </button>
+          )}
         </div>
       </div>
     </div>

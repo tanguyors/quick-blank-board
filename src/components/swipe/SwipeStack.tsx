@@ -5,6 +5,7 @@ import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
 import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
+import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
 import { X, Star, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
@@ -18,9 +19,10 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const swipe = useSwipe();
   const navigate = useNavigate();
   const { needsPreferences } = useBuyerPreferences();
-  const { addFavorite } = useFavorites();
+  const { addFavorite, isFavorite } = useFavorites();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -149,7 +151,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
         >
-          <SwipeCard property={currentProperty} />
+          <SwipeCard property={currentProperty} onInfoClick={() => setShowDetail(true)} />
         </div>
       </div>
 
@@ -201,6 +203,19 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           }
         }} />
       )}
+
+      <PropertyDetailSheet
+        property={currentProperty}
+        open={showDetail}
+        onClose={() => setShowDetail(false)}
+        showBuyerActions
+        onLike={() => {
+          setShowDetail(false);
+          handleMatch();
+        }}
+        onToggleFavorite={() => handleFavorite()}
+        isFavorite={(id) => isFavorite(id)}
+      />
     </div>
   );
 }
