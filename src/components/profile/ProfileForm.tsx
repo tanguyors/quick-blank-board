@@ -9,17 +9,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Eye, Heart, CalendarDays, MessageSquare, ArrowRight, User, Pencil, Coins, SlidersHorizontal } from 'lucide-react';
+import { Flame, Heart, Star, CalendarDays, Eye, TrendingUp, ArrowRight, User, Pencil, Coins, SlidersHorizontal, MessageSquare } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
 import { CURRENCIES } from '@/lib/currencies';
 import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useVisits } from '@/hooks/useVisits';
 
 export function ProfileForm() {
   const navigate = useNavigate();
   const { roles, refreshProfile, user } = useAuth();
   const { profile, updateProfile } = useProfile();
   const { preferences } = useBuyerPreferences();
+  const { favorites } = useFavorites();
+  const { visits } = useVisits();
   const [editingBio, setEditingBio] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -95,6 +99,8 @@ export function ProfileForm() {
   const scoreValue = userScore?.score ?? 50;
   const scoreLevel = scoreValue >= 80 ? 'Expert' : scoreValue >= 60 ? 'Actif' : scoreValue >= 40 ? 'Observateur' : 'Débutant';
   const scoreEmoji = scoreValue >= 80 ? '🔥' : scoreValue >= 60 ? '⭐' : scoreValue >= 40 ? '🌱' : '🌱';
+
+  const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
 
   return (
     <div className="max-w-lg mx-auto pb-8">
@@ -173,30 +179,65 @@ export function ProfileForm() {
         </div>
       </div>
 
-      {/* Stats grid */}
-      <div className="mx-4 mb-4 grid grid-cols-2 gap-3">
-        <div className="bg-card rounded-xl p-4 border border-border">
-          <Eye className="h-5 w-5 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">Biens vus</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{stats?.biens_vus ?? 0}</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 border border-border">
-          <Heart className="h-5 w-5 text-primary mb-2" />
-          <p className="text-sm text-muted-foreground">Matches</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{stats?.matches ?? 0}</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 border border-border">
-          <CalendarDays className="h-5 w-5 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">Visites</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{stats?.visites ?? 0}</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 border border-border" onClick={() => navigate('/messages')} style={{ cursor: 'pointer' }}>
-          <MessageSquare className="h-5 w-5 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">Messages</p>
-          <div className="flex items-center justify-between mt-1">
-            <ArrowRight className="h-5 w-5 text-foreground" />
-          </div>
-        </div>
+      {/* Quick Actions */}
+      <div className="mx-4 mb-3 grid grid-cols-3 gap-3">
+        <button
+          onClick={() => navigate('/explore')}
+          className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
+        >
+          <Flame className="h-6 w-6 text-primary mb-2" />
+          <p className="font-semibold text-foreground text-sm">Explorer</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Swiper</p>
+        </button>
+        <button
+          onClick={() => navigate('/matches')}
+          className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
+        >
+          <Heart className="h-6 w-6 text-primary mb-2" />
+          <p className="font-semibold text-foreground text-sm">Matches</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{stats?.matches ?? 0}</p>
+        </button>
+        <button
+          onClick={() => navigate('/favorites')}
+          className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-left transition-colors active:bg-amber-500/20"
+        >
+          <Star className="h-6 w-6 text-amber-500 mb-2" />
+          <p className="font-semibold text-foreground text-sm">Favoris</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{favorites.data?.length ?? 0}</p>
+        </button>
+      </div>
+
+      {/* Stats row */}
+      <div className="mx-4 mb-4 grid grid-cols-3 gap-2">
+        <button
+          onClick={() => navigate('/explore')}
+          className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
+        >
+          <Eye className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+          <p className="text-lg font-bold text-foreground">{stats?.biens_vus ?? 0}</p>
+          <p className="text-[10px] text-muted-foreground">Vus</p>
+        </button>
+        <button
+          onClick={() => navigate('/visits')}
+          className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors relative"
+        >
+          <CalendarDays className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+          <p className="text-lg font-bold text-foreground">{stats?.visites ?? 0}</p>
+          <p className="text-[10px] text-muted-foreground">Visites</p>
+          {pendingVisitsCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
+              {pendingVisitsCount}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => navigate('/mes-transactions')}
+          className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
+        >
+          <TrendingUp className="h-4 w-4 text-primary mx-auto mb-1" />
+          <p className="text-lg font-bold text-foreground">{Math.round(scoreValue / 10)}<span className="text-xs text-muted-foreground">/10</span></p>
+          <p className="text-[10px] text-muted-foreground">Score</p>
+        </button>
       </div>
 
       {/* Buyer Preferences */}
