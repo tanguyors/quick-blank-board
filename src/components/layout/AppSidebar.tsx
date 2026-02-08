@@ -32,10 +32,18 @@ const notaireLinks = [
   { to: '/notifications', icon: Bell, label: 'Notifications' },
 ];
 
-const adminLink = { to: '/admin', icon: Shield, label: 'Administration' };
+const adminLinks = [
+  { to: '/admin', icon: Shield, label: 'Vue globale' },
+  { to: '/admin?tab=users', icon: LayoutDashboard, label: 'Utilisateurs' },
+  { to: '/admin?tab=properties', icon: Home, label: 'Biens' },
+  { to: '/admin?tab=visits', icon: CalendarDays, label: 'Visites' },
+  { to: '/admin?tab=transactions', icon: Scale, label: 'Transactions' },
+  { to: '/admin?tab=map', icon: Flame, label: 'Carte' },
+  { to: '/notifications', icon: Bell, label: 'Notifications' },
+];
 
 export function AppSidebar() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const { roles, profile, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -43,10 +51,7 @@ export function AppSidebar() {
   const isAdmin = roles.includes('admin');
   const isNotaire = roles.includes('notaire');
 
-  let links = isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
-  if (isAdmin) {
-    links = [...links, adminLink];
-  }
+  let links = isAdmin ? adminLinks : isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,7 +69,10 @@ export function AppSidebar() {
       {/* Nav links */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {links.map(({ to, icon: Icon, label }) => {
-          const isActive = pathname === to || pathname.startsWith(to + '/');
+          const [linkPath, linkQuery] = to.split('?');
+          const isActive = linkQuery
+            ? pathname === linkPath && search === `?${linkQuery}`
+            : pathname === to || pathname.startsWith(to + '/');
           return (
             <Link
               key={to}
