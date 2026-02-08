@@ -16,23 +16,25 @@ import { PropertyDetailSheet } from './PropertyDetailSheet';
 
 function createPriceIcon(priceLabel: string) {
   return L.divIcon({
-    className: 'price-marker',
+    className: '',
     html: `<div style="
       background: hsl(43 74% 49%);
       color: white;
       font-weight: 700;
       font-size: 11px;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 8px;
       white-space: nowrap;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       border: 2px solid white;
       text-align: center;
       line-height: 1.3;
+      display: inline-block;
+      transform: translate(-50%, -50%);
     ">${priceLabel}</div>`,
     iconSize: [0, 0],
     iconAnchor: [0, 0],
-    popupAnchor: [0, -5],
+    popupAnchor: [0, -15],
   });
 }
 
