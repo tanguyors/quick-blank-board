@@ -4,5 +4,5 @@ import { useParams } from 'react-router-dom';
 
 export default function PropertyView() {
   const { id } = useParams();
-  return <AppLayout><PropertyDetail propertyId={id!} /></AppLayout>;
+  return <AppLayout hideHeader><PropertyDetail propertyId={id!} /></AppLayout>;
 }
