@@ -19,9 +19,14 @@ import { CURRENCIES, convertCurrency, getCurrencyInfo } from '@/lib/currencies';
 /* ── Type mappings ── */
 const PROPERTY_TYPES = [
   { value: 'appartement', label: 'Appartement' },
+  { value: 'studio', label: 'Studio' },
   { value: 'villa', label: 'Villa' },
+  { value: 'maison', label: 'Maison' },
   { value: 'terrain', label: 'Terrain' },
-  { value: 'commercial', label: 'Commercial' },
+  { value: 'bureau', label: 'Bureau' },
+  { value: 'commerce', label: 'Commerce' },
+  { value: 'entrepot', label: 'Entrepôt' },
+  { value: 'commercial', label: 'Local commercial' },
   { value: 'construction', label: 'Construction' },
   { value: 'maison_a_renover', label: 'Maison à rénover' },
   { value: 'colocation_longue', label: 'Colocation longue durée' },
@@ -90,9 +95,14 @@ const EQ_HEBERGEMENT_ANIMAUX: TypeConfig['equipementCategories'] = [
 
 const TYPE_CONFIGS: Record<string, TypeConfig> = {
   appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
+  studio:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
   villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
+  maison:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
   maison_a_renover:   { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
   terrain:            { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_TERRAIN,      allowedOperations: ['achat', 'vente'] },
+  bureau:             { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
+  commerce:           { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
+  entrepot:           { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
   commercial:         { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
   construction:       { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
   colocation_longue:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
