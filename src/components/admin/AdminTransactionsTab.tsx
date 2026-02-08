@@ -3,12 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { TransactionStatusBadge, TransactionTimeline } from '@/components/workflow/TransactionStatus';
-import { Search, FileText } from 'lucide-react';
+import { Search, FileText, MessageSquare, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { TransactionStatus } from '@/types/workflow';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
 import { STATUS_LABELS } from '@/types/workflow';
 
 const TX_FILTERS = [
@@ -48,7 +50,7 @@ export function AdminTransactionsTab() {
   const [filter, setFilter] = useState('all');
   const { displayPrice } = useDisplayPrice();
   const [selectedTxId, setSelectedTxId] = useState<string | null>(null);
-
+  const [detailTab, setDetailTab] = useState<'details' | 'messages'>('details');
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['admin-all-transactions'],
     queryFn: async () => {
@@ -178,17 +180,38 @@ export function AdminTransactionsTab() {
       </div>
 
       {/* Transaction detail Sheet */}
-      <Sheet open={!!selectedTxId} onOpenChange={open => { if (!open) setSelectedTxId(null); }}>
+      <Sheet open={!!selectedTxId} onOpenChange={open => { if (!open) { setSelectedTxId(null); setDetailTab('details'); } }}>
         <SheetContent side="right" className="w-full sm:max-w-lg p-0 flex flex-col">
-          <SheetHeader className="px-4 pt-4 pb-2 border-b border-border flex-shrink-0">
-            <div className="flex items-center justify-between">
+          <SheetHeader className="px-4 pt-4 pb-0 border-b border-border flex-shrink-0">
+            <div className="flex items-center justify-between pb-2">
               <SheetTitle className="text-base">Détail transaction</SheetTitle>
               {selectedTx && <TransactionStatusBadge status={selectedTx.status as TransactionStatus} />}
+            </div>
+            <div className="flex">
+              <button
+                onClick={() => setDetailTab('details')}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors",
+                  detailTab === 'details' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
+                )}
+              >
+                <Info className="h-4 w-4" /> Détails
+              </button>
+              <button
+                onClick={() => setDetailTab('messages')}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors",
+                  detailTab === 'messages' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'
+                )}
+              >
+                <MessageSquare className="h-4 w-4" /> Messages
+              </button>
             </div>
           </SheetHeader>
 
           <ScrollArea className="flex-1">
-            {selectedTx && <TransactionDetailView tx={selectedTx} />}
+            {selectedTx && detailTab === 'details' && <TransactionDetailView tx={selectedTx} />}
+            {selectedTx && detailTab === 'messages' && <TransactionMessagesView tx={selectedTx} />}
           </ScrollArea>
         </SheetContent>
       </Sheet>
@@ -339,6 +362,95 @@ function TransactionDetailView({ tx }: { tx: any }) {
           logs={logs}
         />
       </div>
+    </div>
+  );
+}
+
+function TransactionMessagesView({ tx }: { tx: any }) {
+  const getName = (p: any) => p?.full_name || p?.email || 'Inconnu';
+
+  const { data: messages, isLoading } = useQuery({
+    queryKey: ['admin-tx-messages', tx.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('wf_messages')
+        .select('*')
+        .eq('transaction_id', tx.id)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: profiles } = useQuery({
+    queryKey: ['admin-tx-msg-profiles', tx.buyer_id, tx.seller_id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, avatar_url')
+        .in('id', [tx.buyer_id, tx.seller_id]);
+      return new Map(data?.map(p => [p.id, p]) || []);
+    },
+  });
+
+  if (isLoading) return (
+    <div className="flex items-center justify-center p-8">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    </div>
+  );
+
+  if (!messages || messages.length === 0) return (
+    <div className="text-center p-8">
+      <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+      <p className="text-muted-foreground text-sm">Aucun message échangé</p>
+    </div>
+  );
+
+  return (
+    <div className="p-4 space-y-1">
+      {/* Participants legend */}
+      <div className="flex gap-4 pb-3 mb-3 border-b border-border text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+          <span className="text-muted-foreground">Acheteur: {getName(tx.buyer_profile)}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-accent-foreground/60" />
+          <span className="text-muted-foreground">Vendeur: {getName(tx.seller_profile)}</span>
+        </div>
+      </div>
+
+      {messages.map(msg => {
+        const isBuyer = msg.sender_id === tx.buyer_id;
+        const senderProfile = profiles?.get(msg.sender_id);
+        const senderName = senderProfile?.full_name || senderProfile?.email || 'Inconnu';
+
+        return (
+          <div key={msg.id} className={cn("flex flex-col max-w-[85%] mb-2", isBuyer ? "items-start" : "items-end ml-auto")}>
+            <span className="text-[10px] text-muted-foreground mb-0.5 px-1">
+              {senderName} · {format(new Date(msg.created_at), 'dd MMM HH:mm', { locale: fr })}
+            </span>
+            <div className={cn(
+              "rounded-2xl px-3 py-2 text-sm",
+              isBuyer
+                ? "bg-primary/10 text-foreground rounded-tl-sm"
+                : "bg-secondary text-foreground rounded-tr-sm"
+            )}>
+              {msg.content}
+            </div>
+            {(msg.flagged_suspicious || msg.contains_phone_number) && (
+              <div className="flex gap-1 mt-0.5 px-1">
+                {msg.flagged_suspicious && (
+                  <span className="text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded">⚠ Suspect</span>
+                )}
+                {msg.contains_phone_number && (
+                  <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">📱 Téléphone</span>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
