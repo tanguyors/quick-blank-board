@@ -15,7 +15,6 @@ export const CURRENCIES: CurrencyInfo[] = [
   { code: 'EUR', label: 'EUR (€)', symbol: '€', rateToEur: 1 },
   { code: 'USD', label: 'USD ($)', symbol: '$', rateToEur: 1.08 },
   { code: 'GBP', label: 'GBP (£)', symbol: '£', rateToEur: 0.86 },
-  { code: 'XOF', label: 'XOF (FCFA)', symbol: 'FCFA', rateToEur: 655.957 },
   { code: 'IDR', label: 'IDR (Rp)', symbol: 'Rp', rateToEur: 17_200 },
 ];
 
