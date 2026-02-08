@@ -12,7 +12,7 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
 
   return (
     <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-2xl">
-      <div className="relative aspect-[3/4]">
+      <div className="relative aspect-[3/4] max-h-[55vh]">
         {primaryMedia ? (
           <img src={primaryMedia.url} alt="" className="w-full h-full object-cover" draggable={false} />
         ) : (

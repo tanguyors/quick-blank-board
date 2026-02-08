@@ -124,16 +124,16 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full">
+    <div className="relative flex flex-col items-center h-full">
       {/* Counter */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-2 right-4 z-10">
         <span className="bg-secondary/80 text-foreground text-sm px-3 py-1.5 rounded-full font-medium">
           {currentIndex + 1}/{totalCount}
         </span>
       </div>
 
       {/* Card */}
-      <div className="flex-1 flex items-center w-full px-4">
+      <div className="flex-1 flex items-center justify-center w-full px-4 pt-2 pb-0 min-h-0">
         <div
           className="w-full max-w-sm mx-auto touch-none"
           style={{
@@ -165,31 +165,31 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       )}
 
-      {/* Action buttons: X (pass) | ★ (favorite) | ❤️ (match) */}
-      <div className="flex items-center gap-6 py-6">
+      {/* Action buttons */}
+      <div className="flex items-center justify-center gap-6 py-3 flex-shrink-0">
         <button
           onClick={handlePass}
           disabled={swipe.isPending}
-          className="w-16 h-16 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          className="w-14 h-14 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
           aria-label="Passer"
         >
-          <X className="h-7 w-7" />
+          <X className="h-6 w-6" />
         </button>
         <button
           onClick={handleFavorite}
           disabled={addFavorite.isPending}
-          className="w-14 h-14 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
+          className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
           aria-label="Ajouter aux favoris"
         >
-          <Star className="h-6 w-6" />
+          <Star className="h-5 w-5" />
         </button>
         <button
           onClick={handleMatch}
           disabled={swipe.isPending}
-          className="w-16 h-16 rounded-full border-2 border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+          className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
           aria-label="Match"
         >
-          <Heart className="h-7 w-7" />
+          <Heart className="h-6 w-6" />
         </button>
       </div>
 
