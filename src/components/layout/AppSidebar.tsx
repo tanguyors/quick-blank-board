@@ -6,6 +6,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
+import logoSoma from '@/assets/logo-soma.png';
 
 const buyerLinks = [
   { to: '/buyer', icon: LayoutDashboard, label: 'Tableau de bord' },
@@ -55,7 +56,7 @@ export function AppSidebar() {
     <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-card h-screen sticky top-0" aria-label="Navigation principale">
       {/* Brand */}
       <Link to="/" className="flex items-center gap-2 px-6 py-5 border-b border-border">
-        <span className="text-primary font-bold text-2xl tracking-tight">𝔫</span>
+        <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
         <span className="text-foreground font-semibold text-lg">SomaGate</span>
       </Link>
 

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Settings, LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import logoSoma from '@/assets/logo-soma.png';
 
 export function Header() {
   const { signOut } = useAuth();
@@ -25,7 +26,7 @@ export function Header() {
         role="link"
         aria-label="Accueil SomaGate"
       >
-        <span className="text-primary font-bold text-2xl tracking-tight">𝔫</span>
+        <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
         <span className="text-foreground font-semibold text-lg">SomaGate</span>
       </div>
       <div className="flex items-center gap-1">
