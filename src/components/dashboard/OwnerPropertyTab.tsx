@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Eye } from 'lucide-react';
+import { Plus, Edit, Eye, MapPin } from 'lucide-react';
 import { convertCurrency, formatPrice } from '@/lib/currencies';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -29,9 +29,14 @@ export function OwnerPropertyTab() {
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-foreground">Mes biens</h2>
-        <Button onClick={() => navigate('/properties/new')} className="gap-2">
-          <Plus className="h-4 w-4" /> Ajouter un bien
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate('/map')} className="gap-2">
+            <MapPin className="h-4 w-4" /> Carte
+          </Button>
+          <Button onClick={() => navigate('/properties/new')} className="gap-2">
+            <Plus className="h-4 w-4" /> Ajouter
+          </Button>
+        </div>
       </div>
 
       {!properties?.length ? (
