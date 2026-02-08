@@ -11,6 +11,7 @@ import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Filter, X, ArrowLeft } from 'lucide-react';
+import logoSoma from '@/assets/logo-soma.png';
 
 const defaultIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -49,21 +50,24 @@ export function PropertyMap() {
   });
 
   return (
-    <div className="relative h-full w-full">
-      {/* Floating top bar */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-center justify-between">
+    <div className="relative h-full w-full flex flex-col">
+      {/* Top banner */}
+      <div className="flex items-center justify-between px-3 py-2.5 bg-background border-b border-border shrink-0">
         <Button
           size="sm"
-          variant="secondary"
-          className="shadow-lg"
+          variant="ghost"
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="h-4 w-4 mr-1" /> Retour
         </Button>
+        <div className="flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+          <img src={logoSoma} alt="SomaGate" className="h-7 w-7 object-contain" />
+          <span className="text-foreground font-semibold text-base">SomaGate</span>
+        </div>
         <Button
           size="sm"
-          variant={showFilters ? 'default' : 'secondary'}
-          className="shadow-lg gap-1.5"
+          variant={showFilters ? 'default' : 'ghost'}
+          className="gap-1.5"
           onClick={() => setShowFilters(!showFilters)}
         >
           <Filter className="h-4 w-4" />
@@ -76,9 +80,8 @@ export function PropertyMap() {
         </Button>
       </div>
 
-      {/* Floating filter panel */}
       {showFilters && (
-        <div className="absolute top-14 right-3 z-[1000] bg-card border border-border rounded-xl shadow-xl p-4 w-72 space-y-3">
+        <div className="absolute top-[calc(2.75rem+1px)] right-3 z-[1000] bg-card border border-border rounded-xl shadow-xl p-4 w-72 space-y-3">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-sm text-foreground">Filtres</span>
             <button onClick={() => setShowFilters(false)} className="text-muted-foreground hover:text-foreground">
@@ -122,7 +125,8 @@ export function PropertyMap() {
       )}
 
       {/* Full-screen map */}
-      <MapContainer center={[-8.45, 115.26]} zoom={10} className="h-full w-full" style={{ minHeight: '100%' }}>
+      <div className="flex-1 relative">
+        <MapContainer center={[-8.45, 115.26]} zoom={10} className="h-full w-full" style={{ minHeight: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -155,6 +159,7 @@ export function PropertyMap() {
           )
         ))}
       </MapContainer>
+      </div>
     </div>
   );
 }
