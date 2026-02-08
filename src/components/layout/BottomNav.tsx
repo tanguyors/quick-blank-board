@@ -1,13 +1,13 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale, LayoutDashboard } from 'lucide-react';
+import { Flame, Heart, MessageSquare, User, Home, CalendarDays, Shield, Scale } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const buyerLinks = [
-  { to: '/buyer', icon: LayoutDashboard, label: 'Accueil' },
   { to: '/explore', icon: Flame, label: 'Découvrir' },
   { to: '/matches', icon: Heart, label: 'Matches' },
   { to: '/messages', icon: MessageSquare, label: 'Messages' },
+  { to: '/visits', icon: CalendarDays, label: 'Visites' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
