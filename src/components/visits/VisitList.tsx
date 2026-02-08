@@ -1,17 +1,24 @@
 import { useVisits } from '@/hooks/useVisits';
 import { useAuth } from '@/hooks/useAuth';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
+import { useConversations } from '@/hooks/useConversations';
 import { VisitStatusBadge } from './VisitStatusBadge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
-import { Check, X, CalendarDays, MapPin } from 'lucide-react';
+import { Check, X, CalendarDays, MapPin, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function VisitList() {
   const { visits, updateVisitStatus } = useVisits();
   const { user, roles } = useAuth();
   const { displayPrice } = useDisplayPrice();
+  const { data: conversations } = useConversations();
+  const navigate = useNavigate();
   const isOwner = roles.includes('owner');
+
+  const findConversation = (propertyId: string) =>
+    conversations?.find((c: any) => c.property_id === propertyId);
 
   if (visits.isLoading) return (
     <div className="flex items-center justify-center p-8">
@@ -110,6 +117,21 @@ export function VisitList() {
                 <X className="h-4 w-4 mr-1" /> Annuler ma demande
               </Button>
             )}
+
+            {/* Chat button */}
+            {(() => {
+              const conv = findConversation(visit.property_id);
+              return conv ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="mt-2 w-full text-muted-foreground hover:text-primary"
+                  onClick={() => navigate(`/messages/${conv.id}`)}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" /> Ouvrir le chat
+                </Button>
+              ) : null;
+            })()}
           </div>
         );
       })}

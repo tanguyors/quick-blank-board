@@ -15,6 +15,15 @@ export function useVisits() {
         .or(`buyer_id.eq.${user!.id},owner_id.eq.${user!.id}`)
         .order('proposed_date', { ascending: true });
       if (error) throw error;
+      // Sort: confirmed first, then pending, then others — each group by nearest date
+      const statusOrder: Record<string, number> = { confirmed: 0, pending: 1, completed: 2, cancelled: 3 };
+      return (data || []).sort((a, b) => {
+        const sa = statusOrder[a.status] ?? 99;
+        const sb = statusOrder[b.status] ?? 99;
+        if (sa !== sb) return sa - sb;
+        return new Date(a.proposed_date).getTime() - new Date(b.proposed_date).getTime();
+      });
+      if (error) throw error;
       return data;
     },
     enabled: !!user,
