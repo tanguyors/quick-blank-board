@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
 import beachImg from '@/assets/onboarding-beach-3.jpg';
+import logoSoma from '@/assets/logo-soma.png';
 
 // Fake property cards to demo the swipe concept
 const DEMO_CARDS = [
@@ -105,7 +106,7 @@ export default function Home() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 pt-5 pb-2 z-10 relative">
         <div className="flex items-center gap-2">
-          <span className="text-primary font-bold text-2xl tracking-tight">𝔫</span>
+          <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
           <span className="font-semibold text-lg text-foreground">SomaGate</span>
         </div>
         <button

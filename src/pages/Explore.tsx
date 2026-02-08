@@ -4,6 +4,7 @@ import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
 import { LayoutGrid, Map } from 'lucide-react';
+import logoSoma from '@/assets/logo-soma.png';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
@@ -18,7 +19,7 @@ export default function Explore() {
         {/* Top bar with toggle */}
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="text-primary font-bold text-2xl">𝔫</span>
+            <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
             <span className="text-foreground font-semibold">SomaGate</span>
           </div>
 
