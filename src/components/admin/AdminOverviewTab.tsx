@@ -151,18 +151,20 @@ export function AdminOverviewTab({ onNavigate }: OverviewTabProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="bg-card border border-border rounded-xl divide-y divide-border">
           {periodCards.map(card => (
-            <div key={card.label} className="bg-card border border-border rounded-xl p-4">
-              <card.icon className="h-5 w-5 text-primary mb-2" />
-              <div className="text-2xl font-bold text-foreground">
+            <div key={card.label} className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                <card.icon className="h-4 w-4 text-primary" />
+                <span className="text-sm text-muted-foreground">{card.label}</span>
+              </div>
+              <span className="text-lg font-bold text-foreground">
                 {periodStats.isLoading ? (
-                  <span className="inline-block w-6 h-6 rounded bg-muted animate-pulse" />
+                  <span className="inline-block w-5 h-5 rounded bg-muted animate-pulse" />
                 ) : (
                   card.value ?? '—'
                 )}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">{card.label}</div>
+              </span>
             </div>
           ))}
         </div>
