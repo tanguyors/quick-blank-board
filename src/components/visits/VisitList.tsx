@@ -9,7 +9,11 @@ import { fr } from 'date-fns/locale/fr';
 import { Check, X, CalendarDays, MapPin, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export function VisitList() {
+interface VisitListProps {
+  statusFilter?: string;
+}
+
+export function VisitList({ statusFilter = 'all' }: VisitListProps) {
   const { visits, updateVisitStatus } = useVisits();
   const { user, roles } = useAuth();
   const { displayPrice } = useDisplayPrice();
@@ -35,10 +39,20 @@ export function VisitList() {
       </p>
     </div>
   );
+  const filtered = statusFilter === 'all'
+    ? visits.data
+    : visits.data.filter(v => v.status === statusFilter);
+
+  if (!filtered.length) return (
+    <div className="text-center p-8">
+      <CalendarDays className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+      <p className="text-muted-foreground">Aucune visite</p>
+    </div>
+  );
 
   return (
     <div className="p-4 space-y-3 max-w-lg mx-auto">
-      {visits.data.map(visit => {
+      {filtered.map(visit => {
         const property = (visit as any).properties;
         return (
           <div key={visit.id} className="bg-card border border-border rounded-xl p-4">
