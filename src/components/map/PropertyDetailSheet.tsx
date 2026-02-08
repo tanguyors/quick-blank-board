@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MapPin, BedDouble, Bath, Ruler, CalendarDays, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Ruler, CalendarDays, ChevronLeft, ChevronRight, X, Heart, Star, MessageCircle } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
@@ -30,6 +30,10 @@ interface PropertyDetailSheetProps {
   property: PropertyData | null;
   open: boolean;
   onClose: () => void;
+  showBuyerActions?: boolean;
+  onLike?: (property: PropertyData) => void;
+  onToggleFavorite?: (propertyId: string) => void;
+  isFavorite?: (propertyId: string) => boolean;
 }
 
 const typeLabels: Record<string, string> = {
@@ -46,7 +50,15 @@ const droitLabels: Record<string, string> = {
   freehold: 'Freehold', leasehold: 'Leasehold',
 };
 
-export function PropertyDetailSheet({ property, open, onClose }: PropertyDetailSheetProps) {
+export function PropertyDetailSheet({
+  property,
+  open,
+  onClose,
+  showBuyerActions = false,
+  onLike,
+  onToggleFavorite,
+  isFavorite,
+}: PropertyDetailSheetProps) {
   const { displayPrice } = useDisplayPrice();
   const { user, roles } = useAuth();
   const [currentImage, setCurrentImage] = useState(0);
@@ -58,43 +70,30 @@ export function PropertyDetailSheet({ property, open, onClose }: PropertyDetailS
   const isOwner = property.owner_id === user?.id;
   const isViewerOwnerRole = roles.includes('owner');
   const hideActions = isViewerOwnerRole && !isOwner;
+  const fav = isFavorite ? isFavorite(property.id) : false;
 
   const nextImage = () => setCurrentImage(i => (i + 1) % images.length);
   const prevImage = () => setCurrentImage(i => (i - 1 + images.length) % images.length);
 
   return (
-    <Sheet open={open} onOpenChange={v => { if (!v) onClose(); }}>
+    <Sheet open={open} onOpenChange={v => { if (!v) { onClose(); setCurrentImage(0); setShowVisitForm(false); } }}>
       <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl p-0 z-[1200]">
         <ScrollArea className="h-full">
           {/* Image gallery */}
           {images.length > 0 ? (
             <div className="relative aspect-video bg-muted">
-              <img
-                src={images[currentImage]?.url}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img src={images[currentImage]?.url} alt="" className="w-full h-full object-cover" />
               {images.length > 1 && (
                 <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors"
-                  >
+                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors">
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors"
-                  >
+                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors">
                     <ChevronRight className="h-5 w-5" />
                   </button>
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                     {images.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentImage(i)}
-                        className={`w-2 h-2 rounded-full transition-colors ${i === currentImage ? 'bg-primary' : 'bg-background/50'}`}
-                      />
+                      <button key={i} onClick={() => setCurrentImage(i)} className={`w-2 h-2 rounded-full transition-colors ${i === currentImage ? 'bg-primary' : 'bg-background/50'}`} />
                     ))}
                   </div>
                   <span className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm text-foreground text-xs font-medium px-2 py-1 rounded-full">
@@ -102,20 +101,14 @@ export function PropertyDetailSheet({ property, open, onClose }: PropertyDetailS
                   </span>
                 </>
               )}
-              <button
-                onClick={onClose}
-                className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors"
-              >
+              <button onClick={onClose} className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
           ) : (
             <div className="aspect-video bg-muted flex items-center justify-center text-muted-foreground relative">
               Pas de photo
-              <button
-                onClick={onClose}
-                className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors"
-              >
+              <button onClick={onClose} className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -125,11 +118,7 @@ export function PropertyDetailSheet({ property, open, onClose }: PropertyDetailS
           {images.length > 1 && (
             <div className="flex gap-1.5 px-4 pt-3 overflow-x-auto">
               {images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentImage(i)}
-                  className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-colors ${i === currentImage ? 'border-primary' : 'border-transparent'}`}
-                >
+                <button key={i} onClick={() => setCurrentImage(i)} className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-colors ${i === currentImage ? 'border-primary' : 'border-transparent'}`}>
                   <img src={img.url} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
@@ -184,8 +173,30 @@ export function PropertyDetailSheet({ property, open, onClose }: PropertyDetailS
               </div>
             )}
 
+            {/* Buyer action buttons */}
+            {showBuyerActions && !isOwner && (
+              <div className="flex gap-2">
+                <Button
+                  className="flex-1"
+                  variant="destructive"
+                  onClick={() => onLike?.(property)}
+                >
+                  <Heart className="h-4 w-4 mr-2" /> Matcher
+                </Button>
+                <Button
+                  className="flex-1"
+                  variant={fav ? 'default' : 'secondary'}
+                  onClick={() => onToggleFavorite?.(property.id)}
+                >
+                  <Star className={`h-4 w-4 mr-2 ${fav ? 'fill-current' : ''}`} />
+                  {fav ? 'Favori ✓' : 'Favori'}
+                </Button>
+              </div>
+            )}
+
+            {/* Visit request for non-owner buyers */}
             {!isOwner && !hideActions && (
-              <Button className="w-full" onClick={() => setShowVisitForm(true)}>
+              <Button className="w-full" variant="outline" onClick={() => setShowVisitForm(true)}>
                 <CalendarDays className="h-4 w-4 mr-2" /> Demander une visite
               </Button>
             )}
