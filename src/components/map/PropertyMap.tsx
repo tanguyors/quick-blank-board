@@ -3,14 +3,14 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, ArrowLeft } from 'lucide-react';
 
 const defaultIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -50,8 +50,16 @@ export function PropertyMap() {
 
   return (
     <div className="relative h-full w-full">
-      {/* Floating filter button */}
-      <div className="absolute top-3 right-3 z-[1000] flex gap-2">
+      {/* Floating top bar */}
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-center justify-between">
+        <Button
+          size="sm"
+          variant="secondary"
+          className="shadow-lg"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" /> Retour
+        </Button>
         <Button
           size="sm"
           variant={showFilters ? 'default' : 'secondary'}
