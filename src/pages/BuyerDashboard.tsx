@@ -5,7 +5,10 @@ import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyTransactions } from '@/hooks/useTransaction';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useVisits } from '@/hooks/useVisits';
+import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
+import { VisitStatusBadge } from '@/components/visits/VisitStatusBadge';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Flame, Heart, Star, CalendarDays, FileText, MapPin, ArrowRight,
@@ -20,19 +23,19 @@ export default function BuyerDashboard() {
   const navigate = useNavigate();
   const { data: transactions, isLoading: txLoading } = useMyTransactions();
   const { favorites } = useFavorites();
+  const { visits } = useVisits();
+  const { displayPrice } = useDisplayPrice();
 
   const { data: stats } = useQuery({
     queryKey: ['buyer-dashboard-stats', user?.id],
     queryFn: async () => {
-      const [swipesRes, matchesRes, visitsRes] = await Promise.all([
+      const [swipesRes, matchesRes] = await Promise.all([
         supabase.from('swipes').select('id', { count: 'exact', head: true }).eq('user_id', user!.id),
         supabase.from('matches').select('id', { count: 'exact', head: true }).eq('user_id', user!.id),
-        supabase.from('visits').select('id', { count: 'exact', head: true }).eq('buyer_id', user!.id).eq('status', 'confirmed'),
       ]);
       return {
         swipes: swipesRes.count || 0,
         matches: matchesRes.count || 0,
-        upcomingVisits: visitsRes.count || 0,
       };
     },
     enabled: !!user,
@@ -55,13 +58,16 @@ export default function BuyerDashboard() {
     !['deal_finalized', 'deal_cancelled', 'archived'].includes(t.status)
   ) || [];
 
+  // Recent visits (last 5)
+  const recentVisits = (visits.data || []).slice(0, 5);
+  const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
+
   const displayName = profile?.full_name || profile?.first_name || 'Acheteur';
   const scoreVal = userScore?.score ?? 50;
 
   return (
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
-        {/* Header */}
         <PageTopBar>
           <div>
             <p className="text-lg font-bold text-foreground">Bonjour, {displayName} 👋</p>
@@ -98,24 +104,77 @@ export default function BuyerDashboard() {
             </button>
           </div>
 
-          {/* Stats row */}
+          {/* Stats row - all clickable */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <button
+              onClick={() => navigate('/explore')}
+              className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
+            >
               <Eye className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{stats?.swipes ?? 0}</p>
               <p className="text-[10px] text-muted-foreground">Vus</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
+            </button>
+            <button
+              onClick={() => navigate('/visits')}
+              className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors relative"
+            >
               <CalendarDays className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-lg font-bold text-foreground">{stats?.upcomingVisits ?? 0}</p>
+              <p className="text-lg font-bold text-foreground">{recentVisits.length}</p>
               <p className="text-[10px] text-muted-foreground">Visites</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
+              {pendingVisitsCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                  {pendingVisitsCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => navigate('/mes-transactions')}
+              className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
+            >
               <TrendingUp className="h-4 w-4 text-primary mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{Math.round(scoreVal / 10)}<span className="text-xs text-muted-foreground">/10</span></p>
               <p className="text-[10px] text-muted-foreground">Score</p>
-            </div>
+            </button>
           </div>
+
+          {/* Visits Section */}
+          {recentVisits.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-foreground">Mes visites</h3>
+                <button
+                  onClick={() => navigate('/visits')}
+                  className="text-xs text-primary font-medium flex items-center gap-0.5"
+                >
+                  Tout voir <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {recentVisits.map(visit => {
+                  const property = (visit as any).properties;
+                  return (
+                    <button
+                      key={visit.id}
+                      onClick={() => navigate('/visits')}
+                      className="w-full bg-card border border-border rounded-xl p-3 text-left hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground capitalize truncate">
+                            {property?.type || 'Bien'} — {property?.adresse}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {format(new Date(visit.proposed_date), "d MMM yyyy 'à' HH:mm", { locale: fr })}
+                          </p>
+                        </div>
+                        <VisitStatusBadge status={visit.status} />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Active Transactions */}
           <div>
