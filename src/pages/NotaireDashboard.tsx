@@ -367,7 +367,7 @@ function NotaireTransactions() {
 
             {tx.offer_amount && (
               <p className="text-xs text-primary font-medium mt-1.5">
-                Offre: {tx.offer_amount.toLocaleString()} {tx.property?.prix_currency || 'XOF'}
+                Offre: {tx.offer_amount.toLocaleString()} {tx.property?.prix_currency || 'IDR'}
               </p>
             )}
           </button>

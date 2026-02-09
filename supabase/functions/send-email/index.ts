@@ -24,7 +24,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
             <div style="background: white; border-radius: 8px; padding: 16px; margin: 16px 0; border-left: 4px solid #667eea;">
               <p style="margin: 4px 0; color: #555;"><strong>Bien :</strong> ${data.property_type}</p>
               ${data.property_address ? `<p style="margin: 4px 0; color: #555;"><strong>Adresse :</strong> ${data.property_address}</p>` : ''}
-              ${data.property_price ? `<p style="margin: 4px 0; color: #555;"><strong>Prix :</strong> ${Number(data.property_price).toLocaleString('fr-FR')} ${data.property_currency || 'XOF'}</p>` : ''}
+              ${data.property_price ? `<p style="margin: 4px 0; color: #555;"><strong>Prix :</strong> ${Number(data.property_price).toLocaleString('fr-FR')} ${data.property_currency || 'IDR'}</p>` : ''}
             </div>
           ` : ''}
           <div style="text-align: center; margin-top: 24px;">
@@ -102,7 +102,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           <p style="font-size: 16px; color: #333;">Bonjour <strong>${data.recipient_name || 'cher utilisateur'}</strong>,</p>
           <p style="font-size: 16px; color: #333;">Vous avez reçu une offre pour votre bien !</p>
           <div style="background: white; border-radius: 8px; padding: 16px; margin: 16px 0; border-left: 4px solid #f2994a;">
-            ${data.offer_amount ? `<p style="margin: 4px 0; color: #555; font-size: 20px;"><strong>${Number(data.offer_amount).toLocaleString('fr-FR')} ${data.property_currency || 'XOF'}</strong></p>` : ''}
+            ${data.offer_amount ? `<p style="margin: 4px 0; color: #555; font-size: 20px;"><strong>${Number(data.offer_amount).toLocaleString('fr-FR')} ${data.property_currency || 'IDR'}</strong></p>` : ''}
             ${data.offer_type ? `<p style="margin: 4px 0; color: #555;"><strong>Type :</strong> ${data.offer_type}</p>` : ''}
             ${data.property_type ? `<p style="margin: 4px 0; color: #555;"><strong>Bien :</strong> ${data.property_type} — ${data.property_address || ''}</p>` : ''}
           </div>
