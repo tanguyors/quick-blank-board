@@ -28,14 +28,7 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, serviceRoleKey)
 
-    // Parse optional origin from request body (for absolute URLs)
-    let appOrigin = ''
-    try {
-      const body = await req.json()
-      appOrigin = body.origin || ''
-    } catch {
-      // No body, use relative paths
-    }
+  // Always use relative paths so images work on any domain
 
     // Get all properties that have NO media
     const { data: properties, error: propError } = await supabase
@@ -69,7 +62,7 @@ Deno.serve(async (req) => {
       const imageIndex = typeCounter[prop.type] % images.length
       typeCounter[prop.type]++
 
-      const imageUrl = appOrigin + images[imageIndex]
+      const imageUrl = images[imageIndex]
 
       const { error: insertError } = await supabase
         .from('property_media')
