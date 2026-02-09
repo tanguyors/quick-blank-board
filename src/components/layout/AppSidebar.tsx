@@ -39,7 +39,7 @@ const adminLinks = [
   { to: '/admin?tab=visits', icon: CalendarDays, label: 'Visites' },
   { to: '/admin?tab=transactions', icon: Scale, label: 'Transactions' },
   { to: '/admin?tab=map', icon: Flame, label: 'Carte' },
-  { to: '/notifications', icon: Bell, label: 'Notifications' },
+  { to: '/admin?tab=notifications', icon: Bell, label: 'Notifications' },
 ];
 
 export function AppSidebar() {
