@@ -55,15 +55,16 @@ export default function Admin() {
         <div className="flex border-b border-border overflow-x-auto scrollbar-hide">
           {tabs.map(tab => {
             const Icon = tab.icon;
+            const desktopOnly = tab.id === 'notifications';
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
                   activeTab === tab.id
                     ? 'text-primary border-b-2 border-primary'
                     : 'text-muted-foreground'
-                }`}
+                } ${desktopOnly ? 'hidden lg:flex' : 'flex'}`}
               >
                 <Icon className="h-4 w-4" />
                 {tab.label}
