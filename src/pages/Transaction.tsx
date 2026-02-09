@@ -252,7 +252,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
       {(status === 'offer_made' || status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
           <h3 className="font-semibold text-foreground text-sm">Offre</h3>
-          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'XOF')}</p>
+          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
           {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
           {tx.offer_details && <p className="text-xs text-muted-foreground">{tx.offer_details}</p>}
         </div>

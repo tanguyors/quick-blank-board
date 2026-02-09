@@ -166,7 +166,7 @@ export function AdminTransactionsTab() {
                   <span>MAJ: {new Date(tx.updated_at).toLocaleDateString('fr-FR')}</span>
                   {tx.offer_amount && (
                     <span className="text-primary font-medium">
-                      Offre: {displayPrice(tx.offer_amount, tx.property?.prix_currency || 'XOF')}
+                      Offre: {displayPrice(tx.offer_amount, tx.property?.prix_currency || 'IDR')}
                     </span>
                   )}
                   {tx.property?.prix && (
@@ -307,7 +307,7 @@ function TransactionDetailView({ tx }: { tx: any }) {
       {tx.offer_amount && (
         <div className="bg-card rounded-xl border border-border p-4 space-y-2">
           <h3 className="font-semibold text-foreground text-sm">Offre</h3>
-          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'XOF')}</p>
+          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
           {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
           {tx.offer_details && <p className="text-xs text-muted-foreground">{tx.offer_details}</p>}
         </div>

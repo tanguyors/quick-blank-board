@@ -93,7 +93,7 @@ export class TransactionExportService {
       lines.push('  OFFRE');
       lines.push('───────────────────────────────────────────────────────────');
       lines.push(`  Type : ${tx.offer_type || 'N/A'}`);
-      lines.push(`  Montant : ${tx.offer_amount?.toLocaleString('fr-FR')} ${property?.prix_currency || 'XOF'}`);
+      lines.push(`  Montant : ${tx.offer_amount?.toLocaleString('fr-FR')} ${property?.prix_currency || 'IDR'}`);
       if (tx.offer_details) lines.push(`  Détails : ${tx.offer_details}`);
       lines.push('');
     }

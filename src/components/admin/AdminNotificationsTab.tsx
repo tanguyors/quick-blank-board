@@ -38,13 +38,13 @@ const CHANNEL_TABS = [
 ] as const;
 
 const SAMPLE_VALUES: Record<string, string> = {
-  recipient_name: 'Jean Dupont',
+  recipient_name: 'John Smith',
   property_type: 'Villa',
-  property_address: 'Lot 42, Almadies, Dakar',
-  property_price: '150 000 000',
-  property_currency: 'XOF',
+  property_address: 'Jl. Pantai Berawa No. 42, Canggu, Bali',
+  property_price: '8 500 000 000',
+  property_currency: 'IDR',
   action_url: 'https://app.somagate.com/transaction/abc123',
-  visit_date_formatted: 'Samedi 15 Mars 2026 à 10h00',
+  visit_date_formatted: 'Saturday 15 March 2026 at 10:00',
   reminder_type: 'J-1',
   offer_amount: '145 000 000',
   offer_type: 'Offre ferme',

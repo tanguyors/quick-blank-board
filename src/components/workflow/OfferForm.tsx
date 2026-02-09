@@ -28,7 +28,7 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
 
   const property = transaction.properties;
   const askingPrice = property?.prix || 0;
-  const currency = property?.prix_currency || 'XOF';
+  const currency = property?.prix_currency || 'IDR';
 
   const handleSubmit = async () => {
     if (!offerType) {
