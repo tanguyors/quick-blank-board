@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Save, RotateCcw, Copy, Mail, MessageSquare, Eye, Code, PenLine } from 'lucide-react';
+import { Save, RotateCcw, Copy, Mail, MessageSquare, Eye, Code, PenLine, Palette, Pipette } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ── Step definitions ──
@@ -52,12 +52,32 @@ const SAMPLE_VALUES: Record<string, string> = {
 
 // ── Gradient presets for email header ──
 const GRADIENT_PRESETS = [
+  { label: 'Or SOMA', value: 'linear-gradient(135deg, #c8960c 0%, #e6b422 50%, #d4a017 100%)', border: '#c8960c' },
   { label: 'Violet', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: '#667eea' },
   { label: 'Vert', value: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', border: '#11998e' },
   { label: 'Rose', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', border: '#f5576c' },
   { label: 'Orange', value: 'linear-gradient(135deg, #f2994a 0%, #f2c94c 100%)', border: '#f2994a' },
   { label: 'Bleu', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', border: '#4facfe' },
+  { label: 'Indigo', value: 'linear-gradient(135deg, #5c6bc0 0%, #3949ab 100%)', border: '#5c6bc0' },
+  { label: 'Corail', value: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)', border: '#ff6b6b' },
+  { label: 'Turquoise', value: 'linear-gradient(135deg, #00b894 0%, #00cec9 100%)', border: '#00b894' },
+  { label: 'Nuit', value: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)', border: '#2c3e50' },
+  { label: 'Prune', value: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)', border: '#6c5ce7' },
+  { label: 'Menthe', value: 'linear-gradient(135deg, #55efc4 0%, #00b894 100%)', border: '#55efc4' },
 ];
+
+function hexToGradient(hex: string): { value: string; border: string } {
+  // Lighten for second stop
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const lighten = (v: number) => Math.min(255, Math.round(v + (255 - v) * 0.3));
+  const lighter = `#${lighten(r).toString(16).padStart(2, '0')}${lighten(g).toString(16).padStart(2, '0')}${lighten(b).toString(16).padStart(2, '0')}`;
+  return {
+    value: `linear-gradient(135deg, ${hex} 0%, ${lighter} 100%)`,
+    border: hex,
+  };
+}
 
 interface NotificationTemplate {
   id: string;
@@ -155,6 +175,8 @@ export function AdminNotificationsTab() {
   const [editorMode, setEditorMode] = useState<'simple' | 'html'>('simple');
   const [editSubject, setEditSubject] = useState('');
   const [editBody, setEditBody] = useState('');
+  const [customColor, setCustomColor] = useState('#c8960c');
+  const [showAllColors, setShowAllColors] = useState(false);
   const [visualFields, setVisualFields] = useState<VisualFields>({
     headerTitle: '', gradient: GRADIENT_PRESETS[0].value, borderColor: GRADIENT_PRESETS[0].border,
     greeting: '', mainMessage: '', infoItems: [], ctaText: '', ctaUrl: '{{action_url}}',
@@ -408,21 +430,65 @@ export function AdminNotificationsTab() {
           {isEmail && editorMode === 'simple' && (
             <div className="space-y-4">
               {/* Gradient/color picker */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Couleur du thème</label>
-                <div className="flex gap-2">
-                  {GRADIENT_PRESETS.map((preset) => (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Palette className="h-3.5 w-3.5" />
+                    Couleur du thème
+                  </label>
+                  <button
+                    onClick={() => setShowAllColors(!showAllColors)}
+                    className="text-[10px] text-primary hover:underline font-medium"
+                  >
+                    {showAllColors ? 'Moins de couleurs' : 'Plus de couleurs'}
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(showAllColors ? GRADIENT_PRESETS : GRADIENT_PRESETS.slice(0, 6)).map((preset) => (
                     <button
                       key={preset.label}
                       onClick={() => { updateVisual('gradient', preset.value); updateVisual('borderColor', preset.border); }}
-                      className={`w-8 h-8 rounded-full border-2 transition-all ${
-                        visualFields.gradient === preset.value ? 'border-foreground scale-110' : 'border-transparent'
+                      className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-105 ${
+                        visualFields.gradient === preset.value ? 'border-foreground scale-110 ring-2 ring-ring ring-offset-2 ring-offset-background' : 'border-muted'
                       }`}
                       style={{ background: preset.value }}
                       title={preset.label}
                     />
                   ))}
+                  {/* Custom color picker */}
+                  <div className="relative group">
+                    <label
+                      className={`flex items-center justify-center w-8 h-8 rounded-full border-2 border-dashed cursor-pointer transition-all hover:scale-105 ${
+                        !GRADIENT_PRESETS.some(p => p.value === visualFields.gradient) ? 'border-foreground scale-110 ring-2 ring-ring ring-offset-2 ring-offset-background' : 'border-muted-foreground/40'
+                      }`}
+                      style={{
+                        background: !GRADIENT_PRESETS.some(p => p.value === visualFields.gradient)
+                          ? visualFields.gradient
+                          : undefined,
+                      }}
+                      title="Couleur personnalisée"
+                    >
+                      <Pipette className={`h-3.5 w-3.5 ${!GRADIENT_PRESETS.some(p => p.value === visualFields.gradient) ? 'text-white' : 'text-muted-foreground'}`} />
+                      <input
+                        type="color"
+                        value={customColor}
+                        onChange={(e) => {
+                          const hex = e.target.value;
+                          setCustomColor(hex);
+                          const generated = hexToGradient(hex);
+                          updateVisual('gradient', generated.value);
+                          updateVisual('borderColor', generated.border);
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                    </label>
+                  </div>
                 </div>
+                {!GRADIENT_PRESETS.some(p => p.value === visualFields.gradient) && (
+                  <p className="text-[10px] text-muted-foreground">
+                    Couleur personnalisée : <code className="bg-secondary px-1 rounded">{customColor}</code>
+                  </p>
+                )}
               </div>
 
               {/* Header title */}
