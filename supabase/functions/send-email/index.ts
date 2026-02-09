@@ -8,8 +8,8 @@ const corsHeaders = {
 
 const EMAIL_FROM = 'SOMA <notifications@app.somagate.com>'
 
-// Email templates
-const templates: Record<string, (data: Record<string, any>) => { subject: string; html: string }> = {
+// ── Default (hardcoded) email templates ──
+const defaultTemplates: Record<string, (data: Record<string, any>) => { subject: string; html: string }> = {
   matched: (data) => ({
     subject: '🎉 Nouveau match — Un acheteur s\'intéresse à votre bien !',
     html: `
@@ -166,6 +166,15 @@ const templates: Record<string, (data: Record<string, any>) => { subject: string
   }),
 }
 
+// ── Replace {{variable}} placeholders in a template string ──
+function replaceVariables(text: string, data: Record<string, any>): string {
+  return text.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+    const val = data[key]
+    if (val === undefined || val === null) return ''
+    return String(val)
+  })
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -179,7 +188,7 @@ Deno.serve(async (req) => {
 
     const resend = new Resend(resendApiKey)
 
-    const { to, template, data } = await req.json()
+    const { to, template, data, recipient_role } = await req.json()
 
     if (!to || !template) {
       return new Response(
@@ -188,17 +197,55 @@ Deno.serve(async (req) => {
       )
     }
 
-    const templateFn = templates[template] || templates.generic
-    const { subject, html } = templateFn(data || {})
+    let subject: string
+    let html: string
+
+    // ── Try to fetch custom template from DB ──
+    const recipient = recipient_role || 'buyer'
+    let usedCustom = false
+
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      const supabase = createClient(supabaseUrl, serviceRoleKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+      })
+
+      const { data: customTemplate, error } = await supabase
+        .from('notification_templates')
+        .select('subject, body')
+        .eq('step', template)
+        .eq('channel', 'email')
+        .eq('recipient', recipient)
+        .eq('is_active', true)
+        .single()
+
+      if (!error && customTemplate?.body) {
+        // Use custom template with variable replacement
+        subject = replaceVariables(customTemplate.subject || '', data || {})
+        html = replaceVariables(customTemplate.body, data || {})
+        usedCustom = true
+      }
+    } catch (e) {
+      console.warn('[EMAIL] Failed to fetch custom template, falling back to default:', e)
+    }
+
+    // ── Fallback to hardcoded template ──
+    if (!usedCustom) {
+      const templateFn = defaultTemplates[template] || defaultTemplates.generic
+      const result = templateFn(data || {})
+      subject = result.subject
+      html = result.html
+    }
 
     const emailResponse = await resend.emails.send({
       from: EMAIL_FROM,
       to: Array.isArray(to) ? to : [to],
-      subject,
-      html,
+      subject: subject!,
+      html: html!,
     })
 
-    console.log(`[EMAIL] Template: ${template} | To: ${Array.isArray(to) ? to.join(', ') : to} | Subject: ${subject}`)
+    console.log(`[EMAIL] Template: ${template} | Custom: ${usedCustom} | To: ${Array.isArray(to) ? to.join(', ') : to} | Subject: ${subject!}`)
 
     // Optionally log email sent in notification
     if (data?.notification_id) {
