@@ -135,13 +135,33 @@ export function BuyerPreferencesWizard() {
   const progress = Math.round(((step + 1) / TOTAL_SECTIONS) * 100);
 
   const handleSave = async (complete = false) => {
+    if (complete) {
+      // Show patience screen before saving
+      setStep(TOTAL_SECTIONS); // go to patience screen
+      try {
+        await upsertPreferences.mutateAsync({
+          ...form,
+          budget_currency: currency,
+          is_complete: true,
+        });
+        // Wait 3 seconds then navigate
+        setTimeout(() => {
+          toast.success('Préférences enregistrées !');
+          navigate('/explore');
+        }, 3000);
+      } catch (e: any) {
+        toast.error(e.message || 'Erreur lors de la sauvegarde');
+        setStep(TOTAL_SECTIONS - 1);
+      }
+      return;
+    }
     try {
       await upsertPreferences.mutateAsync({
         ...form,
         budget_currency: currency,
-        is_complete: complete,
+        is_complete: false,
       });
-      toast.success(complete ? 'Préférences enregistrées !' : 'Brouillon sauvegardé');
+      toast.success('Brouillon sauvegardé');
       navigate('/profile');
     } catch (e: any) {
       toast.error(e.message || 'Erreur lors de la sauvegarde');
@@ -181,38 +201,60 @@ export function BuyerPreferencesWizard() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 pb-32">
-        <div className="bg-card border border-border rounded-2xl p-6 mt-4">
-          {step === 0 && <Step1 form={form} setForm={setForm} toggleArrayItem={toggleArrayItem} />}
-          {step === 1 && <Step2 form={form} setForm={setForm} toggleArrayItem={toggleArrayItem} />}
-          {step === 2 && <Step3 form={form} setForm={setForm} />}
-          {step === 3 && <Step4 form={form} setForm={setForm} currencySymbol={currencyInfo.symbol} />}
-          {step === 4 && <Step5 form={form} setForm={setForm} />}
-          {step === 5 && <Step6 form={form} setForm={setForm} />}
-        </div>
-      </div>
+        {step <= TOTAL_SECTIONS - 1 && (
+          <div className="bg-card border border-border rounded-2xl p-6 mt-4">
+            {step === 0 && <Step1 form={form} setForm={setForm} toggleArrayItem={toggleArrayItem} />}
+            {step === 1 && <Step2 form={form} setForm={setForm} toggleArrayItem={toggleArrayItem} />}
+            {step === 2 && <Step3 form={form} setForm={setForm} />}
+            {step === 3 && <Step4 form={form} setForm={setForm} currencySymbol={currencyInfo.symbol} />}
+            {step === 4 && <Step5 form={form} setForm={setForm} />}
+            {step === 5 && <Step6 form={form} setForm={setForm} />}
+          </div>
+        )}
 
-      {/* Footer nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-4 flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={() => step > 0 ? setStep(s => s - 1) : navigate(-1)}
-          className="gap-1"
-        >
-          <ChevronLeft className="h-4 w-4" /> Précédent
-        </Button>
-        <Button variant="ghost" onClick={() => handleSave(false)} className="gap-1">
-          <Save className="h-4 w-4" /> Sauvegarder
-        </Button>
-        {step < TOTAL_SECTIONS - 1 ? (
-          <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()} className="gap-1">
-            Suivant <ChevronRight className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button onClick={() => handleSave(true)} disabled={!canNext()} className="gap-1">
-            Terminer <Heart className="h-4 w-4" />
-          </Button>
+        {/* Patience / validation screen */}
+        {step === TOTAL_SECTIONS && (
+          <div className="flex flex-col items-center justify-center text-center mt-16 px-6">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-pulse">
+              <Heart className="h-12 w-12 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-3">
+              Toutes les maisons ne sont pas faites pour tout le monde.
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Nous cherchons votre future connexion.
+            </p>
+            <div className="mt-8">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            </div>
+          </div>
         )}
       </div>
+
+      {/* Footer nav — hidden on patience screen */}
+      {step < TOTAL_SECTIONS && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border px-4 py-4 flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => step > 0 ? setStep(s => s - 1) : navigate(-1)}
+            className="gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" /> Précédent
+          </Button>
+          <Button variant="ghost" onClick={() => handleSave(false)} className="gap-1">
+            <Save className="h-4 w-4" /> Sauvegarder
+          </Button>
+          {step < TOTAL_SECTIONS - 1 ? (
+            <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()} className="gap-1">
+              Suivant <ChevronRight className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={() => handleSave(true)} disabled={!canNext()} className="gap-1">
+              Terminer <Heart className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
