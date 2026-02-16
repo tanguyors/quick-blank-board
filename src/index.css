@@ -104,3 +104,19 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Force Leaflet map below modals/sheets/chatbot */
+.leaflet-container {
+  z-index: 0 !important;
+}
+.leaflet-pane,
+.leaflet-control {
+  z-index: auto;
+}
+
+/* Ensure overlays above map */
+[data-radix-popper-content-wrapper],
+[data-state="open"][role="dialog"],
+[vaul-drawer] {
+  z-index: 999 !important;
+}
