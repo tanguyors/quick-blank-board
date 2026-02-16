@@ -2,6 +2,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Flame, Heart, Star, MessageSquare, User, Home, CalendarDays,
   Shield, Scale, LayoutDashboard, LogOut, Settings, Bell,
+  Newspaper, HelpCircle, Lock, FileText,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -94,35 +95,87 @@ export function AppSidebar() {
 
       {/* Bottom section */}
       <div className="border-t border-border p-3 space-y-1">
+        {/* Utility links */}
         <Link
-          to="/profile"
+          to="/actualites"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-            pathname === '/profile'
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/actualites'
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
         >
-          <User className="h-5 w-5 shrink-0" />
-          <span className="truncate">{profile?.full_name || 'Profil'}</span>
+          <Newspaper className="h-4 w-4 shrink-0" />
+          <span>Actualités</span>
+        </Link>
+        <Link
+          to="/assistance"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/assistance'
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <HelpCircle className="h-4 w-4 shrink-0" />
+          <span>Obtenir de l'aide</span>
+        </Link>
+        <Link
+          to="/confidentialite"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/confidentialite'
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <Lock className="h-4 w-4 shrink-0" />
+          <span>Confidentialité</span>
+        </Link>
+        <Link
+          to="/cgv"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/cgv'
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <FileText className="h-4 w-4 shrink-0" />
+          <span>CGV</span>
         </Link>
 
-        <div className="flex items-center justify-between px-3 py-1">
-          <ThemeToggle />
-          <button
-            onClick={() => navigate('/profile')}
-            className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg"
-            aria-label="Paramètres"
+        <div className="border-t border-border mt-2 pt-2">
+          <Link
+            to="/profile"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+              pathname === '/profile'
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
           >
-            <Settings className="h-5 w-5" />
-          </button>
-          <button
-            onClick={handleSignOut}
-            className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-lg"
-            aria-label="Se déconnecter"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
+            <User className="h-5 w-5 shrink-0" />
+            <span className="truncate">{profile?.full_name || 'Profil'}</span>
+          </Link>
+
+          <div className="flex items-center justify-between px-3 py-1">
+            <ThemeToggle />
+            <button
+              onClick={() => navigate('/account-settings')}
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg"
+              aria-label="Paramètres"
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-lg"
+              aria-label="Se déconnecter"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

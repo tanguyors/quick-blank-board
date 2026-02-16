@@ -145,11 +145,13 @@ export default function Home() {
         </Button>
 
         {/* Footer links */}
-        <div className="flex justify-center gap-4 pt-2">
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
           <button onClick={() => navigate('/features')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</button>
           <button onClick={() => navigate('/how-it-works')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</button>
           <button onClick={() => navigate('/security')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Sécurité</button>
           <button onClick={() => navigate('/assistance')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Aide</button>
+          <button onClick={() => navigate('/cgv')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGV</button>
+          <button onClick={() => navigate('/confidentialite')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Confidentialité</button>
         </div>
 
         {/* Bottom slogan */}
