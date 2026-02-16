@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { ArrowLeft, User, Home, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Link } from 'react-router-dom';
 import logoSoma from '@/assets/logo-soma.png';
 
 export function AuthForm() {
@@ -15,6 +17,7 @@ export function AuthForm() {
   const [role, setRole] = useState<'user' | 'owner'>('user');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -195,11 +198,29 @@ export function AuthForm() {
             </button>
           </div>
 
+          {/* Legal consent for signup */}
+          {!isLogin && (
+            <div className="flex items-start gap-3 py-1">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="terms" className="text-sm text-muted-foreground leading-snug cursor-pointer">
+                J'accepte les{' '}
+                <Link to="/cgu" className="text-foreground underline" target="_blank">CGU</Link>
+                {' '}et la{' '}
+                <Link to="/confidentialite" className="text-foreground underline" target="_blank">Politique de confidentialité</Link>
+              </label>
+            </div>
+          )}
+
           {/* Submit */}
           <Button
             type="submit"
             className="w-full h-14 rounded-xl text-base font-semibold bg-secondary hover:bg-secondary/80 text-foreground"
-            disabled={loading}
+            disabled={loading || (!isLogin && !acceptedTerms)}
           >
             {loading ? 'Chargement...' : isLogin ? 'Se connecter' : 'Créer mon compte'}
           </Button>

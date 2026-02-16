@@ -39,7 +39,7 @@ export function MatchAnimation({ onClose }: MatchAnimationProps) {
           className="text-4xl font-bold text-white mb-2"
           style={{ fontFamily: "'DM Serif Display', serif" }}
         >
-          C'est un Match !
+          C'est un coup de cœur !
         </motion.h2>
 
         <motion.p
@@ -48,7 +48,7 @@ export function MatchAnimation({ onClose }: MatchAnimationProps) {
           transition={{ delay: 0.5 }}
           className="text-lg text-white/80 mb-8 max-w-xs mx-auto"
         >
-          Une connexion vient de naître. Vous pouvez maintenant échanger avec le propriétaire.
+          Nous prévenons le Propriétaire de votre coup de cœur pour son bien via Soma Gate.
         </motion.p>
 
         <motion.div

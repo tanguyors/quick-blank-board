@@ -426,6 +426,14 @@ function Step2({ form, setForm, toggleArrayItem }: { form: FormState; setForm: S
 }
 
 function Step3({ form, setForm }: { form: FormState; setForm: SetForm }) {
+  const MOVE_IN_OPTIONS = [
+    { value: 'tres_rapidement', label: 'Très rapidement' },
+    { value: 'semaines_a_venir', label: 'Dans les semaines à venir' },
+    { value: 'choisir_mois', label: 'Choisir un mois' },
+    { value: 'date_butoir', label: 'Date butoir précise' },
+    { value: 'flexible', label: 'Je suis flexible' },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -443,6 +451,21 @@ function Step3({ form, setForm }: { form: FormState; setForm: SetForm }) {
               onClick={() => setForm(f => ({ ...f, preferred_status: f.preferred_status === s.value ? null : s.value }))}
             >
               {s.label}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Date d'emménagement souhaitée</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {MOVE_IN_OPTIONS.map(o => (
+            <Chip
+              key={o.value}
+              selected={(form as any).move_in_date === o.value}
+              onClick={() => setForm(f => ({ ...f, move_in_date: (f as any).move_in_date === o.value ? null : o.value } as any))}
+            >
+              {o.label}
             </Chip>
           ))}
         </div>

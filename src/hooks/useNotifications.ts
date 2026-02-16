@@ -1,11 +1,29 @@
+import { useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import type { WfNotification } from '@/types/workflow';
 
+function playNotificationSound() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch { /* silent fail */ }
+}
+
 export function useNotifications() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const prevUnreadRef = useRef<number | null>(null);
 
   const notifications = useQuery({
     queryKey: ['notifications', user?.id],
@@ -37,6 +55,15 @@ export function useNotifications() {
     enabled: !!user,
     refetchInterval: 15000,
   });
+
+  // Play sound when new notifications arrive
+  useEffect(() => {
+    const count = unreadCount.data ?? 0;
+    if (prevUnreadRef.current !== null && count > prevUnreadRef.current) {
+      playNotificationSound();
+    }
+    prevUnreadRef.current = count;
+  }, [unreadCount.data]);
 
   const markAsRead = useMutation({
     mutationFn: async (notificationId: string) => {
