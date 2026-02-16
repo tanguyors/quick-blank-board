@@ -72,10 +72,10 @@ const CASH_OPTIONS = [
 ];
 
 const AVAILABILITY_OPTIONS = [
-  { value: 'matins', label: '🌅 Matins (8h-12h)' },
-  { value: 'apres_midi', label: '🌇 Après-midi/Soirs (14h-19h)' },
-  { value: 'weekends', label: '📅 Week-ends' },
-  { value: 'flexible', label: '✨ Je reste flexible' },
+  { value: 'matins', label: 'Matins (8h-12h)', icon: '☀️' },
+  { value: 'apres_midi', label: 'Après-midi/Soirs (14h-19h)', icon: '🌆' },
+  { value: 'weekends', label: 'Week-ends', icon: '📅' },
+  { value: 'flexible', label: 'Je reste flexible', icon: '✨' },
 ];
 
 const TOTAL_SECTIONS = 6;

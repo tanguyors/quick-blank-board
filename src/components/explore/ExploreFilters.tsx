@@ -48,7 +48,15 @@ const PROPERTY_TYPES = [
   { value: 'entrepot', label: 'Entrepôt' },
 ];
 
-const SECTORS = ['Ubud', 'Canggu', 'Seminyak', 'Kuta', 'Sanur', 'Kerobokan', 'Jimbaran', 'Nusa Dua', 'Uluwatu', 'Denpasar'];
+const SECTORS = [
+  'Amed', 'Balangan', 'Balian', 'Bangli', 'Batubelig', 'Batu Bolong', 'Berawa', 'Bingin',
+  'Bukit', 'Candidasa', 'Canggu', 'Denpasar', 'Echo Beach', 'Gianyar', 'Jatiluwih',
+  'Jimbaran', 'Karangasem', 'Keramas', 'Kerobokan', 'Klungkung', 'Kuta', 'Legian',
+  'Lembongan', 'Lovina', 'Medewi', 'Mengwi', 'Munduk', 'Negara', 'Nusa Ceningan',
+  'Nusa Dua', 'Nusa Penida', 'Padang Padang', 'Pecatu', 'Pemuteran', 'Pererenan',
+  'Sanur', 'Selemadeg', 'Seminyak', 'Sidemen', 'Singaraja', 'Tabanan', 'Tanah Lot',
+  'Tegallalang', 'Tibubeneng', 'Ubud', 'Uluwatu', 'Ungasan',
+];
 
 interface ExploreFiltersProps {
   filters: ExploreFilterValues;
@@ -184,21 +192,16 @@ export function ExploreFilters({ filters, onFiltersChange, activeCount }: Explor
           {/* Secteur */}
           <div>
             <label className="text-sm font-medium text-foreground mb-2 block">Secteur</label>
-            <div className="flex flex-wrap gap-2">
-              {SECTORS.map(s => (
-                <button
-                  key={s}
-                  onClick={() => setDraft(d => ({ ...d, secteur: d.secteur === s ? null : s }))}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-                    draft.secteur === s
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-secondary text-foreground border-border'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+            <Select value={draft.secteur || ''} onValueChange={v => setDraft(d => ({ ...d, secteur: v || null }))}>
+              <SelectTrigger>
+                <SelectValue placeholder="Tous les secteurs" />
+              </SelectTrigger>
+              <SelectContent>
+                {SECTORS.map(s => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
