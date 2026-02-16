@@ -7,6 +7,7 @@ import { MapPin, BedDouble, Bath, Ruler, CalendarDays, ChevronLeft, ChevronRight
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
+import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 
 interface PropertyData {
   id: string;
@@ -191,14 +192,7 @@ export function PropertyDetailSheet({
             )}
 
             {property.equipements && (property.equipements as string[]).length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2 text-foreground">Équipements</h3>
-                <div className="flex flex-wrap gap-2">
-                  {(property.equipements as string[]).map((eq: string) => (
-                    <Badge key={eq} variant="outline">{eq}</Badge>
-                  ))}
-                </div>
-              </div>
+              <EquipmentGrid equipments={property.equipements as string[]} />
             )}
 
             {/* Buyer action buttons */}
