@@ -3,6 +3,7 @@ import { BottomNav } from './BottomNav';
 import { AppSidebar } from './AppSidebar';
 import { useLocation } from 'react-router-dom';
 import { PageTransition } from '@/components/ui/PageTransition';
+import { ChatBot } from '@/components/chatbot/ChatBot';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export function AppLayout({ children, hideHeader }: AppLayoutProps) {
         </main>
         {!hideNav && <BottomNav />}
       </div>
+      {!hideNav && <ChatBot />}
     </div>
   );
 }
