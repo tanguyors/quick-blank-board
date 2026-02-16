@@ -38,8 +38,8 @@ export function useExplorableProperties(filters?: ExploreFilterValues) {
       if (filters?.chambresMin && filters.chambresMin > 0) {
         query = query.gte('chambres', filters.chambresMin);
       }
-      if (filters?.secteur) {
-        query = query.eq('secteur', filters.secteur);
+      if (filters?.secteurs?.length) {
+        query = query.in('secteur', filters.secteurs);
       }
 
       const { data, error } = await query;
