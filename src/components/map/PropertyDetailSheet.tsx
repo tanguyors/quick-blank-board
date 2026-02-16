@@ -155,6 +155,34 @@ export function PropertyDetailSheet({
               <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.salles_bain} sdb</span>
             </div>
 
+            {/* Disclaimer légal obligatoire */}
+            <div className="bg-amber-50 dark:bg-amber-500/10 border-2 border-amber-400 dark:border-amber-500/40 rounded-xl p-4 flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0 mt-0.5">⚠️</span>
+              <div>
+                <p className="text-base font-bold text-amber-800 dark:text-amber-200">Information importante</p>
+                <p className="text-sm text-amber-700 dark:text-amber-200/80 mt-1.5 leading-relaxed">
+                  Les informations et documents relatifs à ce bien sont fournis par le propriétaire.
+                  <br /><strong>SOMA GATE n'en vérifie pas l'authenticité ni la conformité légale.</strong>
+                </p>
+              </div>
+            </div>
+
+            {/* Badge statut des documents */}
+            <div className="bg-secondary/50 border border-border rounded-xl p-4">
+              <p className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">📄 Statut des documents</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="text-sm px-3 py-1.5 rounded-full bg-destructive/10 text-destructive border border-destructive/30 font-medium">
+                  ⬜ Non fournis
+                </span>
+                <span className="text-xs px-3 py-1.5 rounded-full bg-muted text-muted-foreground border border-border">
+                  ⬜ En cours
+                </span>
+                <span className="text-xs px-3 py-1.5 rounded-full bg-muted text-muted-foreground border border-border">
+                  ⬜ Fournis (non vérifiés)
+                </span>
+              </div>
+            </div>
+
             {property.description && (
               <div>
                 <h3 className="font-semibold mb-1 text-foreground">Description</h3>
