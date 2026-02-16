@@ -18,12 +18,26 @@ import { useSwipe } from '@/hooks/useSwipes';
 import { useFavorites } from '@/hooks/useFavorites';
 import { toast } from 'sonner';
 
-function createPriceIcon(priceLabel: string) {
+type MarkerColor = 'seen' | 'favorite' | 'default';
+
+function createPriceIcon(priceLabel: string, color: MarkerColor = 'default') {
+  const bgMap: Record<MarkerColor, string> = {
+    seen: '#9ca3af',
+    favorite: '#06b6d4',
+    default: '#faf7f2',
+  };
+  const textMap: Record<MarkerColor, string> = {
+    seen: '#ffffff',
+    favorite: '#ffffff',
+    default: '#1a1a1a',
+  };
+  const bg = bgMap[color];
+  const text = textMap[color];
   return L.divIcon({
     className: '',
     html: `<div style="
-      background: hsl(43 74% 49%);
-      color: white;
+      background: ${bg};
+      color: ${text};
       font-weight: 700;
       font-size: 11px;
       padding: 4px 10px;
@@ -61,6 +75,32 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
 
   const activeFilterCount = [filters.type, filters.operation, filters.minPrice, filters.maxPrice].filter(Boolean).length;
 
+  // Fetch user's swipes to know which properties were seen
+  const { data: userSwipes } = useQuery({
+    queryKey: ['user-swipes-map', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('swipes')
+        .select('property_id')
+        .eq('user_id', user!.id);
+      return new Set(data?.map(s => s.property_id) || []);
+    },
+    enabled: !!user,
+  });
+
+  // Fetch user's favorites
+  const { data: userFavIds } = useQuery({
+    queryKey: ['user-fav-ids-map', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('favorites')
+        .select('property_id')
+        .eq('user_id', user!.id);
+      return new Set(data?.map(f => f.property_id) || []);
+    },
+    enabled: !!user,
+  });
+
   const { data: properties } = useQuery({
     queryKey: ['map-properties', filters],
     queryFn: async () => {
@@ -81,14 +121,20 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
     },
   });
 
+  const getMarkerColor = (propertyId: string): MarkerColor => {
+    if (userFavIds?.has(propertyId)) return 'favorite';
+    if (userSwipes?.has(propertyId)) return 'seen';
+    return 'default';
+  };
+
   const priceIcons = useMemo(() => {
     const map = new Map<string, L.DivIcon>();
     properties?.forEach(p => {
       const label = displayPrice(p.prix, p.prix_currency);
-      map.set(p.id, createPriceIcon(label));
+      map.set(p.id, createPriceIcon(label, getMarkerColor(p.id)));
     });
     return map;
-  }, [properties, displayPrice]);
+  }, [properties, displayPrice, userSwipes, userFavIds]);
 
   const handleLike = async (p: any) => {
     try {
