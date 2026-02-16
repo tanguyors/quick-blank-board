@@ -130,7 +130,7 @@ export function PropertyDetailSheet({
             <SheetHeader className="p-0">
               <div className="flex gap-2 flex-wrap mb-1">
                 <Badge>{typeLabels[property.type] || property.type}</Badge>
-                <Badge variant="secondary">{property.operations === 'vente' ? 'Vente' : 'Location'}</Badge>
+                <Badge variant="secondary">{property.operations === 'freehold' ? 'Freehold' : property.operations === 'leasehold' ? 'Leasehold' : property.operations === 'location' ? 'Location' : property.operations}</Badge>
                 {property.droit && <Badge variant="outline">{droitLabels[property.droit] || property.droit}</Badge>}
               </div>
               <SheetTitle className="text-2xl font-bold text-primary">

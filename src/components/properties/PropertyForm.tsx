@@ -147,7 +147,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     chambres: property?.chambres?.toString() || '1',
     salles_bain: property?.salles_bain?.toString() || '1',
     description: property?.description || '',
-    operations: (property?.operations || 'vente') as string,
+    operations: (property?.operations || 'freehold') as string,
     equipements: (property?.equipements as string[]) || [],
     is_published: property?.is_published ?? false,
   });
