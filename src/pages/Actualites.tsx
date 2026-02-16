@@ -101,9 +101,15 @@ export default function Actualites() {
           </p>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-border text-center">
-          <p className="text-xs text-muted-foreground tracking-wider">
-            SOMA GATE — LA PLATEFORME D'INTELLIGENCE IMMOBILIÈRE
+        <div className="mt-12 pt-8 border-t border-border text-center space-y-2">
+          <h2 className="text-2xl font-bold tracking-wide text-foreground" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            SOMA GATE
+          </h2>
+          <p className="text-base font-semibold tracking-widest text-primary uppercase">
+            LA PLATEFORME D'INTELLIGENCE IMMOBILIÈRE
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Soma Gate, la première plateforme d'intelligence immobilière
           </p>
         </div>
       </div>
