@@ -1,141 +1,231 @@
 
+# Plan d'implementation -- Retours client SOMA GATE
 
-## Personnalisation des Templates de Notifications (Admin Desktop)
+Ce plan regroupe tous les points du document de synthese en phases logiques et actionnables. Chaque phase est concue pour etre implementee de maniere incrementale.
 
-### Objectif
-Ajouter un nouvel onglet "Notifications" dans l'interface d'administration (desktop uniquement) permettant de personnaliser les templates d'emails et de messages WhatsApp pour chaque etape du workflow de transaction. L'admin pourra editer le sujet, le contenu HTML des emails, et le texte des messages WhatsApp, avec un apercu en temps reel.
+---
 
-### Architecture
+## Phase 1 : Corrections critiques et bug fix
 
-L'interface reproduira le design de reference fourni :
-- **Ligne 1** : Selecteur d'etape du workflow (chips horizontaux)
-- **Ligne 2** : Onglets par canal et destinataire (Email Acheteur, Email Vendeur, WhatsApp Acheteur, WhatsApp Vendeur)
-- **Zone principale** : Editeur a gauche (sujet + contenu HTML/texte) et Preview live a droite
+### 1.1 Fix build error -- Edge function send-email
+- Le import `npm:resend@2.0.0` cause une erreur de build. Remplacer par un import ESM compatible Deno (`https://esm.sh/resend@2.0.0`).
 
-### Etapes du workflow couvertes
+### 1.2 Supprimer toutes les references a "Tinder"
+**Fichiers concernes** : `src/pages/Home.tsx`, memories, composants divers
+- Retirer le badge "Le Tinder de l'immobilier" de l'ecran d'accueil
+- Remplacer le texte du slide 1 par :
+  - Titre : **"Ta recherche immobiliere reinventee"**
+  - Sous-titre : **"Soma Gate, la premiere plateforme d'intelligence immobiliere"**
+- Mettre a jour le slogan dans tous les footers email : **"SOMA GATE -- LA PLATEFORME D'INTELLIGENCE IMMOBILIERE"**
 
-Les etapes correspondent aux templates email existants + les rappels automatiques :
+### 1.3 Terminologie juridique -- Remplacer "Vente" par Leasehold/Freehold
+- Dans `PropertyForm.tsx` : remplacer l'operation "Vente" par "Leasehold" et "Freehold"
+- Dans `BuyerPreferencesWizard.tsx` (OPERATIONS) : meme remplacement
+- Dans `ExploreFilters.tsx` et `PropertyMap.tsx` : adapter les filtres
+- Dans le formulaire acheteur, ajouter une bulle d'aide explicative (point 15.1) :
+  - **Freehold** = propriete complete et permanente (bien + terrain pour toujours)
+  - **Leasehold** = propriete temporaire (murs uniquement, 20-40 ans, ground rent)
+- Note : cela necessite potentiellement une migration DB pour le type enum `property_operation` (ajouter `leasehold`, `freehold`, retirer ou deprecier `vente`)
 
-| Etape | Cle | Templates actuels |
-|-------|-----|-------------------|
-| Match | `matched` | Email existant |
-| Visite confirmee | `visit_confirmed` | Email existant |
-| Rappel visite | `visit_reminder` | Email existant |
-| Offre recue | `offer_made` | Email existant |
-| Deal finalise | `deal_finalized` | Email existant |
-| Generique | `generic` | Email existant |
-| Relance inactivite | `inactivity_12h` | Nouveau |
+---
 
-### Ce qui va changer
+## Phase 2 : UX/UI des fiches biens
 
-**1. Base de donnees -- Nouvelle table `notification_templates`**
+### 2.1 Ameliorer la lisibilite des specs (surface, chambres, sdb)
+- Dans `SwipeCard.tsx` : augmenter la taille des icones (h-5 w-5), utiliser des couleurs plus contrastees (text-foreground au lieu de text-muted-foreground), ajouter un fond plus visible
+- Appliquer les memes changements dans `PropertyDetailSheet.tsx`
 
-```text
-notification_templates
-  id           UUID (PK, default gen_random_uuid())
-  step         TEXT NOT NULL          -- ex: 'matched', 'visit_confirmed'
-  channel      TEXT NOT NULL          -- 'email' ou 'whatsapp'
-  recipient    TEXT NOT NULL          -- 'buyer' ou 'seller'
-  subject      TEXT                   -- sujet email (null pour WhatsApp)
-  body         TEXT NOT NULL          -- HTML pour email, texte pour WhatsApp
-  variables    JSONB                  -- liste des variables disponibles
-  is_active    BOOLEAN DEFAULT true
-  updated_by   UUID REFERENCES profiles(id)
-  created_at   TIMESTAMPTZ DEFAULT now()
-  updated_at   TIMESTAMPTZ DEFAULT now()
-  UNIQUE(step, channel, recipient)
-```
+### 2.2 Typographie du prix
+- Utiliser un separateur de milliers avec un point (configurer `Intl.NumberFormat` avec locale `de-DE` ou custom)
+- Appliquer une police plus premium au prix (font-bold, tracking plus large, taille superieure)
+- Modifier `formatPrice()` dans `src/lib/currencies.ts` pour utiliser le point comme separateur
 
-- RLS : lecture/ecriture reservee aux admins via `has_role(auth.uid(), 'admin')`
-- Les templates seront pre-remplis avec les contenus HTML actuels lors de la migration (seed)
+### 2.3 Ajouter le type "Entrepot"
+- Deja present dans `ExploreFilters.tsx` et `PropertyForm.tsx` -- verifier la completude dans tous les composants et dans l'enum DB `property_type`
 
-**2. Interface Admin -- Nouvel onglet "Notifications"**
+---
 
-Ajout d'un onglet dans `Admin.tsx` entre "Transactions" et "Carte" :
+## Phase 3 : Carte et code couleur
 
-```text
-Vue globale | Utilisateurs | Biens | Visites | Transactions | Notifications | Carte
-```
+### 3.1 Differenciation des biens sur la carte
+- Modifier `createPriceIcon()` dans `PropertyMap.tsx` pour accepter un parametre de couleur
+- Requeter les `swipes` et `favorites` de l'utilisateur connecte
+- Appliquer le code couleur :
+  - **Biens deja vus** (swipe left/right) : fond gris (`#9ca3af`)
+  - **Biens coup de coeur** (favoris) : fond turquoise (`#06b6d4`)
+  - **Autres biens** : fond blanc casse (`#faf7f2`)
+  - Texte prix en couleur sombre pour lisibilite
 
-**3. Nouveau composant `AdminNotificationsTab.tsx`**
+---
 
-Structure en 3 niveaux :
+## Phase 4 : Recherche avancee
 
-```text
-+------------------------------------------------------------------+
-|  [Match] [Visite confirmee] [Rappel visite] [Offre] [Deal] ...   |  <- Chips etape
-+------------------------------------------------------------------+
-|  Match                                                           |
-|  Personnalisez les messages envoyes lors d'un match              |
-+------------------------------------------------------------------+
-|  [Email Acheteur] [Email Vendeur] | [WhatsApp Acheteur] [WA V.] |  <- Onglets canal
-+------------------------------------------------------------------+
-|  Template Editor        |  Preview                               |
-|  ---------------------- |  ------------------------------------- |
-|  Email Subject          |  Subject: Nouveau match - Jean Dupont  |
-|  [____________________] |                                        |
-|                         |  +-------------------------------+     |
-|  Content (HTML)         |  |  Rendu HTML en temps reel     |     |
-|  [____________________] |  |                               |     |
-|  [____________________] |  |                               |     |
-|  [____________________] |  +-------------------------------+     |
-|                         |                                        |
-|  Variables disponibles: |                                        |
-|  {{recipient_name}}     |                                        |
-|  {{property_type}}      |                                        |
-|  {{property_address}}   |                                        |
-+------------------------------------------------------------------+
-|                    [Sauvegarder]  [Reinitialiser]                 |
-+------------------------------------------------------------------+
-```
+### 4.1 Methode 1 -- Recherche par adresse + rayon
+- Ajouter un champ de saisie d'adresse dans `ExploreFilters.tsx`
+- Ajouter un slider de rayon (1-50 km)
+- Ajouter un selecteur de mode de deplacement (scooter, voiture, a pied) avec icones
+- Utiliser les coordonnees GPS pour filtrer cote client (calcul de distance haversine)
 
-Fonctionnalites :
-- Editeur de sujet (Input) pour les emails
-- Editeur de contenu (Textarea) pour le HTML ou le texte WhatsApp
-- Panneau de variables cliquables qui s'inserent dans l'editeur
-- Preview en temps reel avec remplacement des variables par des valeurs fictives
-- Bouton "Reinitialiser" pour revenir au template par defaut
-- Sauvegarde via upsert dans `notification_templates`
+### 4.2 Methode 2 -- Filtres classiques
+- Deja en place, ameliorer la presentation
 
-**4. Modification de la Edge Function `send-email`**
+### 4.3 Secteurs en menu deroulant multi-select
+- Remplacer les boutons/chips de secteurs dans `ExploreFilters.tsx` et `BuyerPreferencesWizard.tsx` par un menu deroulant multi-selection (utiliser `cmdk` ou un composant custom avec checkboxes)
 
-La edge function sera modifiee pour :
-1. Verifier d'abord s'il existe un template personnalise dans `notification_templates` pour le `step` + `channel` + `recipient`
-2. Si oui, utiliser ce template (sujet + HTML) au lieu du template code en dur
-3. Si non, utiliser le template par defaut existant (comportement actuel)
-4. Remplacer les variables `{{variable_name}}` dans le template personnalise par les valeurs reelles
+### 4.4 Pop-up d'autorisation de localisation
+- Au chargement de la page Explore/Map, declencher `navigator.geolocation.getCurrentPosition()` avec un message explicatif prealable
 
-**5. Types TypeScript**
+---
 
-Mise a jour de `src/integrations/supabase/types.ts` pour inclure la nouvelle table `notification_templates`.
+## Phase 5 : Preferences acheteur -- Ameliorations
 
-### Variables disponibles par etape
+### 5.1 Date d'emmenagement
+- Ajouter une nouvelle etape ou un champ dans le wizard avec les options :
+  - Tres rapidement
+  - Dans les semaines a venir
+  - Choisir un mois (menu deroulant)
+  - Date butoir precise
+  - Je suis flexible
 
-Chaque etape disposera d'un jeu de variables documentees dans l'interface :
+### 5.2 Champs Budget et Intention non obligatoires
+- Dans `BuyerPreferencesWizard.tsx`, modifier `canNext()` pour l'etape 3 (budget) : retirer la condition obligatoire sur `budget_min`, `budget_max` et `intention`
 
-| Variable | Description | Disponible pour |
-|----------|-------------|-----------------|
-| `{{recipient_name}}` | Prenom du destinataire | Toutes |
-| `{{property_type}}` | Type de bien (Villa, Appartement...) | Toutes |
-| `{{property_address}}` | Adresse du bien | Toutes |
-| `{{property_price}}` | Prix du bien | Toutes |
-| `{{property_currency}}` | Devise | Toutes |
-| `{{action_url}}` | Lien vers la transaction | Toutes |
-| `{{visit_date_formatted}}` | Date de visite formatee | visit_confirmed, visit_reminder |
-| `{{reminder_type}}` | Type de rappel (j-1, h-2) | visit_reminder |
-| `{{offer_amount}}` | Montant de l'offre | offer_made |
-| `{{offer_type}}` | Type d'offre | offer_made |
+### 5.3 Ecran de validation
+- Apres la derniere etape du wizard, afficher un ecran de patience avec une icone et le texte :
+  - **"Toutes les maisons ne sont pas faites pour tout le monde. Nous cherchons votre future connexion."**
 
-### Fichiers concernes
+### 5.4 Case "Contacte par un conseiller"
+- Deja present (`wants_advisor` checkbox) -- verifier le wording exact et la visibilite
 
-1. **Nouvelle migration SQL** -- Creation de la table `notification_templates` + seed des templates par defaut
-2. **`src/integrations/supabase/types.ts`** -- Ajout du type `notification_templates`
-3. **`src/pages/Admin.tsx`** -- Ajout de l'onglet "Notifications" avec icone `Mail`
-4. **`src/components/admin/AdminNotificationsTab.tsx`** -- Nouveau composant principal (editeur + preview + variables)
-5. **`supabase/functions/send-email/index.ts`** -- Lecture du template personnalise depuis la BDD avant d'utiliser le template par defaut
+---
 
-### Securite
-- La table `notification_templates` sera protegee par RLS : seuls les admins pourront lire et modifier les templates
-- Le contenu HTML est rendu dans un iframe sandbox dans la preview pour eviter les attaques XSS
-- Les variables sont remplacees cote serveur dans la edge function, donc l'admin ne peut pas injecter de code executable
+## Phase 6 : Navigation et structure
 
+### 6.1 Nouveaux onglets/pages
+Ajouter dans la sidebar et/ou les parametres :
+- **Parametres** (deja present via AccountSettings -- rendre plus visible)
+- **Profil** (deja present)
+- **Obtenir de l'aide** (lien vers `/assistance`)
+- **Confidentialite** (nouvelle page avec politique de confidentialite)
+- **CGV** (nouvelle page Conditions Generales de Vente -- point 13.1)
+
+### 6.2 Validation CI (Carte d'identite)
+- Ajouter un champ d'upload de piece d'identite dans le profil ou le wizard d'inscription
+- Stocker dans le bucket `avatars` ou un nouveau bucket `identity-documents`
+- Ajouter un champ `id_verified` dans la table `profiles`
+
+### 6.3 Onglet Actualites
+- Creer une nouvelle page `/actualites` avec un composant de liste d'articles
+- Creer une table `articles` (id, title, content, image_url, published_at, author_id)
+- Ajouter le lien dans la sidebar et la bottom nav
+
+---
+
+## Phase 7 : Page d'accueil refonte
+
+### 7.1 Refonte complete de `Home.tsx`
+- Remplacer le carrousel a slide unique par une grille de plusieurs photos de biens
+- Bouton CTA principal : **"COMMENCER MA RECHERCHE GRATUITEMENT"**
+- Afficher le nombre de matchs du jour (requete sur `matches` table avec filtre date)
+- Apres 3 biens swipes (dans Explore), afficher un CTA : **"COMMENCER MA RECHERCHE"**
+- Faire apparaitre le slogan **"SOMA GATE -- LA PLATEFORME D'INTELLIGENCE IMMOBILIERE"** plusieurs fois
+
+### 7.2 Conserver le swipe style Airbnb
+- Le systeme de swipe pour passer entre profils vendeur/acheteur peut etre conserve dans l'interface de navigation, pas sur la landing page
+
+---
+
+## Phase 8 : Notifications et micro-interactions
+
+### 8.1 Son de notification
+- Ajouter un fichier audio (ex: `/public/sounds/notification.mp3`)
+- Jouer le son via `new Audio('/sounds/notification.mp3').play()` lors de la reception d'une notification en temps reel (si Supabase Realtime est configure)
+
+### 8.2 Animation et wording du match
+- Refondre `MatchAnimation.tsx` avec un visuel plus premium (pas juste un coeur bouncing)
+- Retravailler le texte selon le systeme de messages valide par la cliente
+
+---
+
+## Phase 9 : Typographies et branding
+
+### 9.1 Polices premium
+- Proposer 3 options de polices adaptees a l'immobilier premium :
+  1. **Playfair Display** (titres) + **Inter** (corps)
+  2. **Cormorant Garamond** (titres) + **Source Sans Pro** (corps)
+  3. **DM Serif Display** (titres) + **DM Sans** (corps)
+- Integrer via Google Fonts dans `index.html` et `tailwind.config.ts`
+
+### 9.2 Icones premium
+- Remplacer les emojis dans `BuyerPreferencesWizard.tsx` par des icones Lucide ou des icones SVG custom
+- Creer un jeu d'icones coherent pour chaque type de bien (villa, appartement, terrain, entrepot, etc.)
+
+### 9.3 Logos
+- Necessiter des propositions de logo de la part de l'equipe design -- hors scope dev direct
+- Preparer l'integration en s'assurant que `logo-soma.png` peut etre facilement remplace
+
+---
+
+## Phase 10 : Chatbot
+
+### 10.1 Integration d'un chatbot
+- Creer un composant `ChatBot.tsx` accessible via un bouton flottant (FAB) en bas a droite
+- Utiliser Lovable AI via une edge function pour generer les reponses
+- Table `chatbot_messages` pour l'historique (user_id, role, content, created_at)
+- Fonctionnalites : FAQ immobiliere, aide a la navigation, explication Leasehold/Freehold
+
+---
+
+## Phase 11 : Legal et conformite
+
+### 11.1 Page CGV
+- Creer `/cgv` avec un contenu placeholder a remplir par l'equipe juridique
+- Lien dans le footer et la page d'inscription
+
+### 11.2 Page Confidentialite
+- Creer `/confidentialite` avec politique de confidentialite
+- Lien dans le footer et les parametres
+
+---
+
+## Phase 12 : Corrections orthographiques
+- Passer en revue tous les textes de l'application (labels, placeholders, messages toast, emails)
+- Corriger les fautes d'orthographe et incoherences (ex: placeholder "Plateau, Cocody, Dakar..." dans PropertyForm.tsx doit devenir "Canggu, Seminyak, Ubud...")
+
+---
+
+## Details techniques
+
+### Migrations DB necessaires
+1. Modifier l'enum `property_operation` : ajouter `leasehold`, `freehold`
+2. Ajouter la table `articles` pour les actualites
+3. Ajouter `id_verified boolean DEFAULT false` et `id_document_url text` a `profiles`
+4. (Optionnel) Table `chatbot_messages` pour le chatbot
+
+### Edge functions a modifier
+- `send-email` : fix import Resend + mise a jour slogan
+- `create-test-users` : mise a jour terminologie
+
+### Fichiers principaux impactes
+- `src/pages/Home.tsx` -- refonte complete
+- `src/components/swipe/SwipeCard.tsx` -- ameliorations visuelles
+- `src/components/explore/ExploreFilters.tsx` -- recherche avancee
+- `src/components/preferences/BuyerPreferencesWizard.tsx` -- terminologie + nouvelles etapes
+- `src/components/map/PropertyMap.tsx` -- code couleur
+- `src/lib/currencies.ts` -- format prix avec points
+- `src/components/layout/AppSidebar.tsx` et `BottomNav.tsx` -- navigation
+- `src/pages/Admin.tsx` -- coherence
+- Nouvelles pages : CGV, Confidentialite, Actualites
+
+### Ordre de priorite recommande
+1. Phase 1 (bug fix + corrections critiques)
+2. Phase 2 (UX fiches biens)
+3. Phase 5 (preferences acheteur)
+4. Phase 7 (page d'accueil)
+5. Phase 3 (carte)
+6. Phase 4 (recherche)
+7. Phase 6 (navigation)
+8. Phase 12 (orthographe)
+9. Phase 8-11 (notifications, typo, chatbot, legal)
+
+> **Note** : Les propositions de logo (point 9.2) et le rendez-vous en presentiel (point 17.1) sont hors du scope technique de ce plan. Les logos doivent etre fournis par l'equipe design, et le rendez-vous est un point organisationnel.
