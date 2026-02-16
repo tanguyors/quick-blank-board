@@ -91,6 +91,14 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
             </p>
           </div>
         </div>
+
+        {/* Badge statut des documents */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">📄 Statut des documents :</span>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
+            Non fournis
+          </span>
+        </div>
         {property.description && (
           <div>
             <h3 className="font-semibold mb-1">Description</h3>

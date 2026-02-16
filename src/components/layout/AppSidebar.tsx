@@ -154,7 +154,19 @@ export function AppSidebar() {
           )}
         >
           <FileText className="h-4 w-4 shrink-0" />
-          <span>CGV</span>
+          <span>CGV Monétisation</span>
+        </Link>
+        <Link
+          to="/cgv-abonnement"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/cgv-abonnement'
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <FileText className="h-4 w-4 shrink-0" />
+          <span>CGV Abonnement</span>
         </Link>
 
         <div className="border-t border-border mt-2 pt-2">
