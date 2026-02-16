@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useProperty } from '@/hooks/useProperties';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
@@ -52,7 +52,17 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           <div>
             <div className="flex gap-2 mb-2 flex-wrap">
               <Badge>{property.type}</Badge>
-              <Badge variant="secondary">{property.operations === 'vente' ? 'Vente' : 'Location'}</Badge>
+              <Badge variant="secondary">
+                {property.operations === 'vente' || property.operations === 'freehold'
+                  ? 'Freehold'
+                  : property.operations === 'leasehold'
+                    ? 'Leasehold'
+                    : property.operations === 'location'
+                      ? 'Location'
+                      : property.operations === 'achat'
+                        ? 'Achat'
+                        : property.operations}
+              </Badge>
             </div>
             <p className="text-2xl font-bold text-primary">{displayPrice(property.prix, property.prix_currency)}</p>
           </div>
@@ -65,10 +75,21 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
         <div className="flex items-center gap-1 text-muted-foreground">
           <MapPin className="h-4 w-4" /><span>{property.adresse}</span>
         </div>
-        <div className="flex gap-4 text-sm text-muted-foreground">
-          {property.surface && <span className="flex items-center gap-1"><Ruler className="h-4 w-4" />{property.surface} m²</span>}
-          <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{property.chambres} ch.</span>
-          <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.salles_bain} sdb</span>
+        <div className="flex gap-4 text-sm text-foreground">
+          {property.surface && <span className="flex items-center gap-1"><Ruler className="h-5 w-5 text-primary" />{property.surface} m²</span>}
+          <span className="flex items-center gap-1"><BedDouble className="h-5 w-5 text-primary" />{property.chambres} ch.</span>
+          <span className="flex items-center gap-1"><Bath className="h-5 w-5 text-primary" />{property.salles_bain} sdb</span>
+        </div>
+
+        {/* Disclaimer légal obligatoire */}
+        <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 rounded-xl p-3 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">⚠ Information importante</p>
+            <p className="text-xs text-amber-700 dark:text-amber-200/80 mt-1 leading-relaxed">
+              Les informations et documents relatifs à ce bien sont fournis par le propriétaire. SOMA GATE n'en vérifie pas l'authenticité ni la conformité légale.
+            </p>
+          </div>
         </div>
         {property.description && (
           <div>

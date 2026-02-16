@@ -1,10 +1,11 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
 import { LayoutGrid, Map } from 'lucide-react';
+import { toast } from 'sonner';
 import logoSoma from '@/assets/logo-soma.png';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
@@ -13,6 +14,18 @@ export default function Explore() {
   const [view, setView] = useState<'swipe' | 'carte'>('swipe');
   const [filters, setFilters] = useState<ExploreFilterValues>(DEFAULT_FILTERS);
   const activeFilterCount = useFilterCount(filters);
+
+  // Geolocation prompt on first load
+  useEffect(() => {
+    const asked = sessionStorage.getItem('geo_asked');
+    if (!asked && navigator.geolocation) {
+      sessionStorage.setItem('geo_asked', '1');
+      navigator.geolocation.getCurrentPosition(
+        () => { /* position obtained */ },
+        () => { toast.info('Activez la localisation pour une meilleure expérience.'); }
+      );
+    }
+  }, []);
 
   return (
     <AppLayout hideHeader>

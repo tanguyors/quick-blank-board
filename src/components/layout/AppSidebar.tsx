@@ -133,6 +133,18 @@ export function AppSidebar() {
           <span>Confidentialité</span>
         </Link>
         <Link
+          to="/cgu"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            pathname === '/cgu'
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <FileText className="h-4 w-4 shrink-0" />
+          <span>CGU</span>
+        </Link>
+        <Link
           to="/cgv"
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
