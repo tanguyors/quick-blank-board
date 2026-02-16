@@ -1,231 +1,216 @@
 
-# Plan d'implementation -- Retours client SOMA GATE
 
-Ce plan regroupe tous les points du document de synthese en phases logiques et actionnables. Chaque phase est concue pour etre implementee de maniere incrementale.
+# Plan d'implementation -- Document client SOMA GATE (Roadmap Legale)
 
----
-
-## Phase 1 : Corrections critiques et bug fix
-
-### 1.1 Fix build error -- Edge function send-email
-- Le import `npm:resend@2.0.0` cause une erreur de build. Remplacer par un import ESM compatible Deno (`https://esm.sh/resend@2.0.0`).
-
-### 1.2 Supprimer toutes les references a "Tinder"
-**Fichiers concernes** : `src/pages/Home.tsx`, memories, composants divers
-- Retirer le badge "Le Tinder de l'immobilier" de l'ecran d'accueil
-- Remplacer le texte du slide 1 par :
-  - Titre : **"Ta recherche immobiliere reinventee"**
-  - Sous-titre : **"Soma Gate, la premiere plateforme d'intelligence immobiliere"**
-- Mettre a jour le slogan dans tous les footers email : **"SOMA GATE -- LA PLATEFORME D'INTELLIGENCE IMMOBILIERE"**
-
-### 1.3 Terminologie juridique -- Remplacer "Vente" par Leasehold/Freehold
-- Dans `PropertyForm.tsx` : remplacer l'operation "Vente" par "Leasehold" et "Freehold"
-- Dans `BuyerPreferencesWizard.tsx` (OPERATIONS) : meme remplacement
-- Dans `ExploreFilters.tsx` et `PropertyMap.tsx` : adapter les filtres
-- Dans le formulaire acheteur, ajouter une bulle d'aide explicative (point 15.1) :
-  - **Freehold** = propriete complete et permanente (bien + terrain pour toujours)
-  - **Leasehold** = propriete temporaire (murs uniquement, 20-40 ans, ground rent)
-- Note : cela necessite potentiellement une migration DB pour le type enum `property_operation` (ajouter `leasehold`, `freehold`, retirer ou deprecier `vente`)
+Ce plan couvre TOUS les points du document client, point par point. Les elements deja implementes sont marques comme tels, et les elements manquants ou incomplets sont detailles.
 
 ---
 
-## Phase 2 : UX/UI des fiches biens
+## PARTIE A -- Corrections produit & UX (Points 1 a 12 du document)
 
-### 2.1 Ameliorer la lisibilite des specs (surface, chambres, sdb)
-- Dans `SwipeCard.tsx` : augmenter la taille des icones (h-5 w-5), utiliser des couleurs plus contrastees (text-foreground au lieu de text-muted-foreground), ajouter un fond plus visible
-- Appliquer les memes changements dans `PropertyDetailSheet.tsx`
+### 1. Positionnement et coherence produit
 
-### 2.2 Typographie du prix
-- Utiliser un separateur de milliers avec un point (configurer `Intl.NumberFormat` avec locale `de-DE` ou custom)
-- Appliquer une police plus premium au prix (font-bold, tracking plus large, taille superieure)
-- Modifier `formatPrice()` dans `src/lib/currencies.ts` pour utiliser le point comme separateur
+| Point | Statut | Action |
+|-------|--------|--------|
+| 1.1 Retirer toute reference a Tinder | Deja fait | Verifier qu'aucune reference ne subsiste (recherche globale) |
+| 1.2 Texte ecran d'accueil | Deja fait | Home.tsx contient "Ta recherche immobiliere reinventee" + "Soma Gate, la premiere plateforme d'intelligence immobiliere" |
+| 1.3 Corrections linguistiques | A FAIRE | Audit orthographique complet de toute l'app |
+| 1.4 Terminologie Leasehold/Freehold | Partiellement fait | `PropertyDetail.tsx` ligne 55 affiche encore "Vente" / "Location" au lieu de Freehold/Leasehold -- a corriger |
 
-### 2.3 Ajouter le type "Entrepot"
-- Deja present dans `ExploreFilters.tsx` et `PropertyForm.tsx` -- verifier la completude dans tous les composants et dans l'enum DB `property_type`
+### 2. Fiche detail d'un bien
 
----
+| Point | Statut | Action |
+|-------|--------|--------|
+| 2.1 Lisibilite icones (surface, chambres, sdb) | Partiellement fait | `SwipeCard.tsx` a les icones h-5 w-5, mais `PropertyDetail.tsx` a toujours h-4 w-4 avec `text-muted-foreground` -- agrandir et ameliorer le contraste |
+| 2.2 Typographie du prix (separateur point, typo premium) | Deja fait | `currencies.ts` utilise le separateur point, prix en bold sur SwipeCard |
 
-## Phase 3 : Carte et code couleur
+### 3. Carte et affichage des biens
 
-### 3.1 Differenciation des biens sur la carte
-- Modifier `createPriceIcon()` dans `PropertyMap.tsx` pour accepter un parametre de couleur
-- Requeter les `swipes` et `favorites` de l'utilisateur connecte
-- Appliquer le code couleur :
-  - **Biens deja vus** (swipe left/right) : fond gris (`#9ca3af`)
-  - **Biens coup de coeur** (favoris) : fond turquoise (`#06b6d4`)
-  - **Autres biens** : fond blanc casse (`#faf7f2`)
-  - Texte prix en couleur sombre pour lisibilite
+| Point | Statut | Action |
+|-------|--------|--------|
+| 3.1 Code couleur carte (gris/turquoise/blanc casse) | Deja fait | PropertyMap.tsx implemente le code couleur |
 
----
+### 4. Types de biens et iconographie
 
-## Phase 4 : Recherche avancee
+| Point | Statut | Action |
+|-------|--------|--------|
+| 4.1 Ajouter type Entrepot | Deja fait | Present dans PROPERTY_TYPES |
+| 4.2 Icones premium (Lucide) | Deja fait | Lucide icons dans BuyerPreferencesWizard |
+| 4.3 Supprimer logos par defaut | A VERIFIER | S'assurer qu'aucun logo generique ne subsiste |
 
-### 4.1 Methode 1 -- Recherche par adresse + rayon
-- Ajouter un champ de saisie d'adresse dans `ExploreFilters.tsx`
-- Ajouter un slider de rayon (1-50 km)
-- Ajouter un selecteur de mode de deplacement (scooter, voiture, a pied) avec icones
-- Utiliser les coordonnees GPS pour filtrer cote client (calcul de distance haversine)
+### 5. Recherche de biens
 
-### 4.2 Methode 2 -- Filtres classiques
-- Deja en place, ameliorer la presentation
+| Point | Statut | Action |
+|-------|--------|--------|
+| 5.1 Methode 1 : adresse + rayon + mode deplacement | A VERIFIER | Verifier si implemente dans ExploreFilters ou Map |
+| 5.2 Menu deroulant villes (pas de chips) | Deja fait | ExploreFilters utilise un Select dropdown avec 47 secteurs |
+| 5.3 Pop-up autorisation localisation | A FAIRE | Ajouter une demande de geolocalisation dans l'app (navigator.geolocation) |
 
-### 4.3 Secteurs en menu deroulant multi-select
-- Remplacer les boutons/chips de secteurs dans `ExploreFilters.tsx` et `BuyerPreferencesWizard.tsx` par un menu deroulant multi-selection (utiliser `cmdk` ou un composant custom avec checkboxes)
+### 6. Statut du bien et temporalite
 
-### 4.4 Pop-up d'autorisation de localisation
-- Au chargement de la page Explore/Map, declencher `navigator.geolocation.getCurrentPosition()` avec un message explicatif prealable
+| Point | Statut | Action |
+|-------|--------|--------|
+| 6.1 Date de debut (emmenagement) | A FAIRE | Ajouter les options dans le wizard : "Tres rapidement", "Dans les semaines a venir", "Choisir un mois", "Date butoir precise", "Je suis flexible" |
+| 6.2 Budget et Intention non obligatoires | Deja fait | canNext() retourne true pour les steps 2 et 3 |
 
----
+### 7. Ecran de patience/validation
 
-## Phase 5 : Preferences acheteur -- Ameliorations
+| Point | Statut | Action |
+|-------|--------|--------|
+| 7.1 Ecran de patience avec texte specifique | Deja fait | "Toutes les maisons ne sont pas faites pour tout le monde..." avec animation |
 
-### 5.1 Date d'emmenagement
-- Ajouter une nouvelle etape ou un champ dans le wizard avec les options :
-  - Tres rapidement
-  - Dans les semaines a venir
-  - Choisir un mois (menu deroulant)
-  - Date butoir precise
-  - Je suis flexible
+### 8. Navigation et structure
 
-### 5.2 Champs Budget et Intention non obligatoires
-- Dans `BuyerPreferencesWizard.tsx`, modifier `canNext()` pour l'etape 3 (budget) : retirer la condition obligatoire sur `budget_min`, `budget_max` et `intention`
+| Point | Statut | Action |
+|-------|--------|--------|
+| 8.1 Onglets manquants (Parametres, Profil, Aide, Confidentialite, Assistance) | Deja fait | Sidebar contient tous ces liens |
 
-### 5.3 Ecran de validation
-- Apres la derniere etape du wizard, afficher un ecran de patience avec une icone et le texte :
-  - **"Toutes les maisons ne sont pas faites pour tout le monde. Nous cherchons votre future connexion."**
+### 9. Typographies et branding
 
-### 5.4 Case "Contacte par un conseiller"
-- Deja present (`wants_advisor` checkbox) -- verifier le wording exact et la visibilite
+| Point | Statut | Action |
+|-------|--------|--------|
+| 9.1 Polices premium | Deja fait | DM Serif Display + DM Sans |
+| 9.2 Propositions de logo | HORS SCOPE | Necessite un travail de design graphique externe |
 
----
+### 10. Page d'accueil
 
-## Phase 6 : Navigation et structure
+| Point | Statut | Action |
+|-------|--------|--------|
+| 10.1 CTA principal | Deja fait | "COMMENCER MA RECHERCHE GRATUITEMENT" |
+| 10.2 Parcours apres 3 swipes | A FAIRE | Ajouter un compteur de swipes et afficher "COMMENCER MA RECHERCHE" apres 3 swipes dans Explore |
+| 10.3 Grille de biens (pas une seule image) | Deja fait | Grid de 6 proprietes |
+| 10.4 Nombre de matchs du jour | Deja fait | Compteur affiche sur Home.tsx |
 
-### 6.1 Nouveaux onglets/pages
-Ajouter dans la sidebar et/ou les parametres :
-- **Parametres** (deja present via AccountSettings -- rendre plus visible)
-- **Profil** (deja present)
-- **Obtenir de l'aide** (lien vers `/assistance`)
-- **Confidentialite** (nouvelle page avec politique de confidentialite)
-- **CGV** (nouvelle page Conditions Generales de Vente -- point 13.1)
+### 11. Notifications et micro-interactions
 
-### 6.2 Validation CI (Carte d'identite)
-- Ajouter un champ d'upload de piece d'identite dans le profil ou le wizard d'inscription
-- Stocker dans le bucket `avatars` ou un nouveau bucket `identity-documents`
-- Ajouter un champ `id_verified` dans la table `profiles`
+| Point | Statut | Action |
+|-------|--------|--------|
+| 11.1 Son de notification | A FAIRE | Ajouter un son personnalise a la reception de notifications |
+| 11.2 Notification de match (wording) | A VERIFIER | Verifier le wording des notifications de match |
 
-### 6.3 Onglet Actualites
-- Creer une nouvelle page `/actualites` avec un composant de liste d'articles
-- Creer une table `articles` (id, title, content, image_url, published_at, author_id)
-- Ajouter le lien dans la sidebar et la bottom nav
+### 12. Slogan et identite
+
+| Point | Statut | Action |
+|-------|--------|--------|
+| 12.1 Slogan visible partout | Deja fait | Present sur Home, footer, emails |
 
 ---
 
-## Phase 7 : Page d'accueil refonte
+## PARTIE B -- Legal et conformite (Points 13 a 16)
 
-### 7.1 Refonte complete de `Home.tsx`
-- Remplacer le carrousel a slide unique par une grille de plusieurs photos de biens
-- Bouton CTA principal : **"COMMENCER MA RECHERCHE GRATUITEMENT"**
-- Afficher le nombre de matchs du jour (requete sur `matches` table avec filtre date)
-- Apres 3 biens swipes (dans Explore), afficher un CTA : **"COMMENCER MA RECHERCHE"**
-- Faire apparaitre le slogan **"SOMA GATE -- LA PLATEFORME D'INTELLIGENCE IMMOBILIERE"** plusieurs fois
+### 13. CGU -- Conditions Generales d'Utilisation
 
-### 7.2 Conserver le swipe style Airbnb
-- Le systeme de swipe pour passer entre profils vendeur/acheteur peut etre conserve dans l'interface de navigation, pas sur la landing page
+| Point | Statut | Action |
+|-------|--------|--------|
+| Page CGU complete (18 articles) | A FAIRE | La page actuelle s'appelle "CGV" mais contient un contenu simplifie. Creer une vraie page CGU avec les 18 articles du document client |
+| Checkbox "J'accepte les CGU et la politique de confidentialite" a l'inscription | A FAIRE | Ajouter dans AuthForm.tsx |
 
----
+### 13bis. CGV -- Conditions Generales de Vente
 
-## Phase 8 : Notifications et micro-interactions
+| Point | Statut | Action |
+|-------|--------|--------|
+| Page CGV complete (16 articles) | A FAIRE | Remplacer le contenu actuel de CGV.tsx par les 16 articles du document client |
 
-### 8.1 Son de notification
-- Ajouter un fichier audio (ex: `/public/sounds/notification.mp3`)
-- Jouer le son via `new Audio('/sounds/notification.mp3').play()` lors de la reception d'une notification en temps reel (si Supabase Realtime est configure)
+### 14. Politique de Confidentialite
 
-### 8.2 Animation et wording du match
-- Refondre `MatchAnimation.tsx` avec un visuel plus premium (pas juste un coeur bouncing)
-- Retravailler le texte selon le systeme de messages valide par la cliente
+| Point | Statut | Action |
+|-------|--------|--------|
+| Contenu conforme PDP Law indonesienne | A FAIRE | Le contenu actuel est generique. Le remplacer par un contenu conforme aux exigences du document (donnees collectees, finalite, duree, droits, contact) |
 
----
+### 15. Disclaimer sur chaque fiche bien
 
-## Phase 9 : Typographies et branding
+| Point | Statut | Action |
+|-------|--------|--------|
+| Message d'avertissement visible | A FAIRE | Ajouter sur PropertyDetail.tsx et PropertyView.tsx un encadre bien visible avec le texte : "Les informations et documents relatifs a ce bien sont fournis par le proprietaire. SOMA GATE n'en verifie pas l'authenticite ni la conformite legale." |
+| Badge statut documents (Non fournis / En cours / Fournis) | A FAIRE | Ajouter un indicateur visuel du statut des documents |
 
-### 9.1 Polices premium
-- Proposer 3 options de polices adaptees a l'immobilier premium :
-  1. **Playfair Display** (titres) + **Inter** (corps)
-  2. **Cormorant Garamond** (titres) + **Source Sans Pro** (corps)
-  3. **DM Serif Display** (titres) + **DM Sans** (corps)
-- Integrer via Google Fonts dans `index.html` et `tailwind.config.ts`
+### 16. Contact conseiller
 
-### 9.2 Icones premium
-- Remplacer les emojis dans `BuyerPreferencesWizard.tsx` par des icones Lucide ou des icones SVG custom
-- Creer un jeu d'icones coherent pour chaque type de bien (villa, appartement, terrain, entrepot, etc.)
-
-### 9.3 Logos
-- Necessiter des propositions de logo de la part de l'equipe design -- hors scope dev direct
-- Preparer l'integration en s'assurant que `logo-soma.png` peut etre facilement remplace
+| Point | Statut | Action |
+|-------|--------|--------|
+| Case a cocher "Je souhaite etre contacte par un conseiller" | Deja fait | Present dans Step4 du BuyerPreferencesWizard |
 
 ---
 
-## Phase 10 : Chatbot
+## PARTIE C -- Actualites (Point 14 du document)
 
-### 10.1 Integration d'un chatbot
-- Creer un composant `ChatBot.tsx` accessible via un bouton flottant (FAB) en bas a droite
-- Utiliser Lovable AI via une edge function pour generer les reponses
-- Table `chatbot_messages` pour l'historique (user_id, role, content, created_at)
-- Fonctionnalites : FAQ immobiliere, aide a la navigation, explication Leasehold/Freehold
-
----
-
-## Phase 11 : Legal et conformite
-
-### 11.1 Page CGV
-- Creer `/cgv` avec un contenu placeholder a remplir par l'equipe juridique
-- Lien dans le footer et la page d'inscription
-
-### 11.2 Page Confidentialite
-- Creer `/confidentialite` avec politique de confidentialite
-- Lien dans le footer et les parametres
+| Point | Statut | Action |
+|-------|--------|--------|
+| Page Actualites | Deja fait | Existe avec articles placeholder |
+| Article specifique du document (permis de construire Bali) | A FAIRE | Remplacer les articles placeholder par le vrai article du document client sur les restrictions de permis de construire |
 
 ---
 
-## Phase 12 : Corrections orthographiques
-- Passer en revue tous les textes de l'application (labels, placeholders, messages toast, emails)
-- Corriger les fautes d'orthographe et incoherences (ex: placeholder "Plateau, Cocody, Dakar..." dans PropertyForm.tsx doit devenir "Canggu, Seminyak, Ubud...")
+## PARTIE D -- Parcours transaction (Pages 40-48)
+
+La plupart de ces fonctionnalites (state machine, notifications, documents, validations) sont deja implementees dans le systeme de workflow existant. Points a verifier/ajouter :
+
+| Point | Statut | Action |
+|-------|--------|--------|
+| Message de vigilance anti-arnaque | A FAIRE | Afficher le message central sur chaque page de transaction : "De nombreuses escroqueries existent dans la location et l'immobilier. En utilisant SOMA GATE a chaque etape, vous conservez des preuves claires et datees." |
+| Wording notifications match (cote acheteur) | A FAIRE | "Nous prevenons le Proprietaire de votre coup de coeur pour son bien via Soma Gate." |
+| Wording notifications match (cote vendeur) | A FAIRE | "Bonne nouvelle votre maison vient de recevoir le coup de coeur qu'elle merite." |
+| Motifs de refus de visite (3 motifs specifiques) | Deja fait | Implemente dans le workflow |
+| Motifs d'arret d'intention (8 motifs) | Deja fait | Implemente dans le workflow |
+| Message sur impact score si refus | A FAIRE | Ajouter "Les refus de visites peuvent diminuer votre score Soma Gate" |
+| Message respect des RDV | A FAIRE | Ajouter l'avertissement sur le respect des rendez-vous |
+| Email certification client | A VERIFIER | Verifier le contenu du mail de certification |
+
+### 18. Chatbot
+
+| Point | Statut | Action |
+|-------|--------|--------|
+| Integration chatbot | Deja fait | ChatBot.tsx + edge function deployes |
+
+---
+
+## Plan d'execution par phases
+
+### Phase 1 -- Legal critique (CGU + CGV + Confidentialite)
+1. Creer une page `CGU.tsx` avec les 18 articles complets du document
+2. Recrire `CGV.tsx` avec les 16 articles complets du document
+3. Recrire `Confidentialite.tsx` conforme PDP Law
+4. Ajouter une checkbox obligatoire CGU + Confidentialite dans `AuthForm.tsx`
+5. Ajouter les routes CGU dans `App.tsx`
+
+### Phase 2 -- Disclaimers et securite
+1. Ajouter le disclaimer "Information importante" sur chaque fiche bien (`PropertyDetail.tsx`)
+2. Ajouter le message central anti-arnaque sur les pages de transaction
+3. Ajouter les messages de score/respect sur les ecrans de visite
+
+### Phase 3 -- Corrections UX restantes
+1. Corriger `PropertyDetail.tsx` : terminologie Freehold/Leasehold (ligne 55)
+2. Ameliorer les icones dans PropertyDetail (h-5 w-5, meilleur contraste)
+3. Ajouter le champ "Date d'emmenagement" dans le wizard acheteur (Step 3)
+4. Ajouter la demande de geolocalisation
+
+### Phase 4 -- Actualites et wording
+1. Remplacer les articles placeholder par l'article reel du document (permis de construire Bali)
+2. Mettre a jour le wording des notifications de match
+3. Audit orthographique global
+
+### Phase 5 -- Micro-interactions
+1. Ajouter un son de notification
 
 ---
 
 ## Details techniques
 
-### Migrations DB necessaires
-1. Modifier l'enum `property_operation` : ajouter `leasehold`, `freehold`
-2. Ajouter la table `articles` pour les actualites
-3. Ajouter `id_verified boolean DEFAULT false` et `id_document_url text` a `profiles`
-4. (Optionnel) Table `chatbot_messages` pour le chatbot
+### Fichiers a creer
+- `src/pages/CGU.tsx` -- nouvelle page CGU complete
 
-### Edge functions a modifier
-- `send-email` : fix import Resend + mise a jour slogan
-- `create-test-users` : mise a jour terminologie
+### Fichiers a modifier
+- `src/pages/CGV.tsx` -- recrire avec 16 articles complets
+- `src/pages/Confidentialite.tsx` -- recrire conforme PDP Law
+- `src/components/auth/AuthForm.tsx` -- ajouter checkbox CGU/Confidentialite
+- `src/App.tsx` -- ajouter route /cgu
+- `src/components/properties/PropertyDetail.tsx` -- disclaimer + terminologie + icones
+- `src/components/swipe/SwipeCard.tsx` -- verifier le disclaimer
+- `src/components/preferences/BuyerPreferencesWizard.tsx` -- ajouter champ date emmenagement
+- `src/pages/Actualites.tsx` -- remplacer articles par contenu reel
+- `src/components/workflow/TransactionStatus.tsx` -- message anti-arnaque
+- `src/components/layout/AppSidebar.tsx` -- ajouter lien CGU
 
-### Fichiers principaux impactes
-- `src/pages/Home.tsx` -- refonte complete
-- `src/components/swipe/SwipeCard.tsx` -- ameliorations visuelles
-- `src/components/explore/ExploreFilters.tsx` -- recherche avancee
-- `src/components/preferences/BuyerPreferencesWizard.tsx` -- terminologie + nouvelles etapes
-- `src/components/map/PropertyMap.tsx` -- code couleur
-- `src/lib/currencies.ts` -- format prix avec points
-- `src/components/layout/AppSidebar.tsx` et `BottomNav.tsx` -- navigation
-- `src/pages/Admin.tsx` -- coherence
-- Nouvelles pages : CGV, Confidentialite, Actualites
+### Base de donnees
+- Aucune migration necessaire pour cette phase
 
-### Ordre de priorite recommande
-1. Phase 1 (bug fix + corrections critiques)
-2. Phase 2 (UX fiches biens)
-3. Phase 5 (preferences acheteur)
-4. Phase 7 (page d'accueil)
-5. Phase 3 (carte)
-6. Phase 4 (recherche)
-7. Phase 6 (navigation)
-8. Phase 12 (orthographe)
-9. Phase 8-11 (notifications, typo, chatbot, legal)
-
-> **Note** : Les propositions de logo (point 9.2) et le rendez-vous en presentiel (point 17.1) sont hors du scope technique de ce plan. Les logos doivent etre fournis par l'equipe design, et le rendez-vous est un point organisationnel.
