@@ -127,6 +127,18 @@ export function SwipeStack({ filters }: SwipeStackProps) {
 
   return (
     <div className="relative flex flex-col items-center h-full">
+      {/* CTA after 3 swipes if preferences not set */}
+      {currentIndex >= 3 && needsPreferences && (
+        <div className="absolute top-2 left-4 z-10">
+          <button
+            onClick={() => navigate('/buyer/preferences')}
+            className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg animate-pulse"
+          >
+            COMMENCER MA RECHERCHE
+          </button>
+        </div>
+      )}
+
       {/* Counter */}
       <div className="absolute top-2 right-4 z-10">
         <span className="bg-secondary/80 text-foreground text-sm px-3 py-1.5 rounded-full font-medium">

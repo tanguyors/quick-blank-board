@@ -133,7 +133,7 @@ export default function Home() {
           className="w-full h-14 rounded-2xl text-base font-semibold shadow-lg shadow-primary/20"
           onClick={() => navigate('/auth')}
         >
-          COMMENCER MA RECHERCHE GRATUITEMENT
+          SWIPER DÈS MAINTENANT ET GRATUITEMENT
           <ArrowRight className="h-5 w-5 ml-2" />
         </Button>
         <Button
@@ -150,7 +150,9 @@ export default function Home() {
           <button onClick={() => navigate('/how-it-works')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</button>
           <button onClick={() => navigate('/security')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Sécurité</button>
           <button onClick={() => navigate('/assistance')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Aide</button>
+          <button onClick={() => navigate('/cgu')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGU</button>
           <button onClick={() => navigate('/cgv')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGV</button>
+          <button onClick={() => navigate('/cgv-abonnement')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGV Abo</button>
           <button onClick={() => navigate('/confidentialite')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Confidentialité</button>
         </div>
 

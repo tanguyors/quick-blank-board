@@ -43,6 +43,7 @@ const Install = lazy(() => import("./pages/Install"));
 const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const CGU = lazy(() => import("./pages/CGU"));
 const CGV = lazy(() => import("./pages/CGV"));
+const CGVAbonnement = lazy(() => import("./pages/CGVAbonnement"));
 const Confidentialite = lazy(() => import("./pages/Confidentialite"));
 const Actualites = lazy(() => import("./pages/Actualites"));
 
@@ -83,6 +84,7 @@ const App = () => (
                 <Route path="/install" element={<Install />} />
                 <Route path="/cgu" element={<CGU />} />
                 <Route path="/cgv" element={<CGV />} />
+                <Route path="/cgv-abonnement" element={<CGVAbonnement />} />
                 <Route path="/confidentialite" element={<Confidentialite />} />
                 <Route path="/actualites" element={<ProtectedRoute><Actualites /></ProtectedRoute>} />
                 <Route path="/profile-selection" element={<ProtectedRoute><ProfileSelection /></ProtectedRoute>} />
