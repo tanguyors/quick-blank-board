@@ -45,9 +45,9 @@ const DROITS = [
 ] as const;
 
 const OPERATIONS = [
-  { value: 'achat', label: 'Achat' },
+  { value: 'freehold', label: 'Freehold' },
+  { value: 'leasehold', label: 'Leasehold' },
   { value: 'location', label: 'Location' },
-  { value: 'vente', label: 'Vente' },
 ] as const;
 
 /* Currencies imported from @/lib/currencies */
@@ -97,22 +97,22 @@ const EQ_HEBERGEMENT_ANIMAUX: TypeConfig['equipementCategories'] = [
 ];
 
 const TYPE_CONFIGS: Record<string, TypeConfig> = {
-  appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
-  studio:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
-  villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
-  maison:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['achat', 'location', 'vente'] },
-  maison_a_renover:   { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
-  terrain:            { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_TERRAIN,      allowedOperations: ['achat', 'vente'] },
-  bureau:             { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
-  commerce:           { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
-  entrepot:           { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
-  commercial:         { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['achat', 'location', 'vente'] },
-  construction:       { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['achat', 'vente'] },
+  appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
+  studio:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
+  villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
+  maison:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
+  maison_a_renover:   { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['freehold', 'leasehold'] },
+  terrain:            { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_TERRAIN,      allowedOperations: ['freehold', 'leasehold'] },
+  bureau:             { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['freehold', 'leasehold', 'location'] },
+  commerce:           { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['freehold', 'leasehold', 'location'] },
+  entrepot:           { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['freehold', 'leasehold', 'location'] },
+  commercial:         { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['freehold', 'leasehold', 'location'] },
+  construction:       { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['freehold', 'leasehold'] },
   colocation_longue:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
   colocation_courte:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
   hebergement_service:{ showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
   hebergement_animaux:{ showRooms: false, showBathrooms: false, showDroit: false, showEquipements: true,  equipementCategories: EQ_HEBERGEMENT_ANIMAUX, allowedOperations: ['location'] },
-  guesthouse:         { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_GUESTHOUSE,   allowedOperations: ['achat', 'location', 'vente'] },
+  guesthouse:         { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_GUESTHOUSE,   allowedOperations: ['freehold', 'leasehold', 'location'] },
 };
 
 function getConfig(type: string): TypeConfig {
@@ -326,7 +326,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
       {/* Secteur */}
       <div>
         <Label className="text-sm font-semibold">Secteur *</Label>
-        <Input className="mt-1" value={form.secteur} onChange={e => update('secteur', e.target.value)} placeholder="Ex: Plateau, Cocody, Dakar..." />
+        <Input className="mt-1" value={form.secteur} onChange={e => update('secteur', e.target.value)} placeholder="Ex: Canggu, Seminyak, Ubud..." />
       </div>
 
       {/* Adresse */}

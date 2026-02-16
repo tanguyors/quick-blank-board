@@ -26,9 +26,9 @@ const PROPERTY_TYPES = [
 ];
 
 const OPERATIONS = [
-  { value: 'achat', label: 'Achat' },
+  { value: 'freehold', label: 'Freehold' },
+  { value: 'leasehold', label: 'Leasehold' },
   { value: 'location', label: 'Location' },
-  { value: 'vente', label: 'Vente' },
 ];
 
 const SECTORS = [
@@ -158,7 +158,7 @@ export function BuyerPreferencesWizard() {
       case 2:
         return true; // optional
       case 3:
-        return form.budget_min != null && form.budget_max != null && !!form.intention;
+        return true; // Budget and intention are now optional
       case 4:
         return true; // optional
       case 5:
@@ -291,6 +291,13 @@ function Step1({ form, setForm, toggleArrayItem }: { form: FormState; setForm: S
             </Chip>
           ))}
         </div>
+        {(form.preferred_operation === 'freehold' || form.preferred_operation === 'leasehold') && (
+          <div className="mt-3 p-3 bg-secondary/50 rounded-xl text-sm text-foreground border border-border">
+            <p className="font-semibold mb-1">💡 Leasehold ou Freehold ?</p>
+            <p className="mb-1"><strong>Freehold</strong> — Vous possédez le bien et le terrain pour toujours. Pas de loyer foncier. Liberté totale.</p>
+            <p><strong>Leasehold</strong> — Vous possédez uniquement les murs pour une durée limitée (20-40 ans). Le terrain appartient à un tiers. Paiement d'un ground rent.</p>
+          </div>
+        )}
       </div>
 
       <div>
@@ -406,7 +413,7 @@ function Step4({ form, setForm, currencySymbol }: { form: FormState; setForm: Se
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-foreground">Budget min ({currencySymbol}) *</label>
+          <label className="text-sm font-medium text-foreground">Budget min ({currencySymbol})</label>
           <Input
             type="number"
             value={form.budget_min ?? ''}
@@ -416,7 +423,7 @@ function Step4({ form, setForm, currencySymbol }: { form: FormState; setForm: Se
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-foreground">Budget max ({currencySymbol}) *</label>
+          <label className="text-sm font-medium text-foreground">Budget max ({currencySymbol})</label>
           <Input
             type="number"
             value={form.budget_max ?? ''}
@@ -428,7 +435,7 @@ function Step4({ form, setForm, currencySymbol }: { form: FormState; setForm: Se
       </div>
 
       <div>
-        <h3 className="font-semibold text-foreground mb-3">Intention *</h3>
+        <h3 className="font-semibold text-foreground mb-3">Intention</h3>
         <div className="grid grid-cols-3 gap-2">
           {INTENTIONS.map(i => (
             <Chip

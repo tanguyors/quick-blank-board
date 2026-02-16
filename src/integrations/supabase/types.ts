@@ -996,7 +996,12 @@ export type Database = {
         | "deliberation"
         | "freehold"
         | "leasehold"
-      property_operation: "vente" | "location" | "achat"
+      property_operation:
+        | "vente"
+        | "location"
+        | "achat"
+        | "leasehold"
+        | "freehold"
       property_status: "available" | "sold" | "rented" | "draft"
       property_type:
         | "villa"
@@ -1168,7 +1173,13 @@ export const Constants = {
         "freehold",
         "leasehold",
       ],
-      property_operation: ["vente", "location", "achat"],
+      property_operation: [
+        "vente",
+        "location",
+        "achat",
+        "leasehold",
+        "freehold",
+      ],
       property_status: ["available", "sold", "rented", "draft"],
       property_type: [
         "villa",

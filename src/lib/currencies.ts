@@ -41,7 +41,8 @@ export function convertCurrency(amount: number, fromCode: string, toCode: string
  */
 export function formatPrice(amount: number, currencyCode: string): string {
   const info = getCurrencyInfo(currencyCode);
-  const formatted = new Intl.NumberFormat('fr-FR').format(amount);
+  // Use dot as thousands separator for a premium look
+  const formatted = new Intl.NumberFormat('de-DE').format(amount);
   if (info.code === 'EUR') return `${formatted} €`;
   if (info.code === 'USD') return `$${formatted}`;
   if (info.code === 'GBP') return `£${formatted}`;
