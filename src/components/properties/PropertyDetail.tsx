@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { useProperty } from '@/hooks/useProperties';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays, AlertTriangle } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
+import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 
 interface PropertyDetailProps {
   propertyId: string;
@@ -115,12 +116,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           </div>
         )}
         {property.equipements && (property.equipements as string[]).length > 0 && (
-          <div>
-            <h3 className="font-semibold mb-2">Équipements</h3>
-            <div className="flex flex-wrap gap-2">
-              {(property.equipements as string[]).map(eq => <Badge key={eq} variant="outline">{eq}</Badge>)}
-            </div>
-          </div>
+          <EquipmentGrid equipments={property.equipements as string[]} />
         )}
         {!isOwner && !hideActions && (
           <Button className="w-full" onClick={() => setShowVisitForm(true)}>
