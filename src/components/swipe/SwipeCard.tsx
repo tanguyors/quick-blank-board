@@ -31,22 +31,22 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
 
           {/* Specs */}
           <div className="flex gap-3 mt-3">
-            <span className="flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/80 px-3 py-1.5 rounded-lg">
-              <BedDouble className="h-4 w-4" /> {property.chambres}
+            <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
+              <BedDouble className="h-5 w-5" /> {property.chambres}
             </span>
-            <span className="flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/80 px-3 py-1.5 rounded-lg">
-              <Bath className="h-4 w-4" /> {property.salles_bain}
+            <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
+              <Bath className="h-5 w-5" /> {property.salles_bain}
             </span>
             {property.surface && (
-              <span className="flex items-center gap-1.5 text-sm text-muted-foreground bg-secondary/80 px-3 py-1.5 rounded-lg">
-                <Maximize2 className="h-4 w-4" /> {property.surface}m²
+              <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
+                <Maximize2 className="h-5 w-5" /> {property.surface}m²
               </span>
             )}
           </div>
 
           {/* Price */}
           <div className="mt-3">
-            <span className="inline-block bg-secondary/90 text-foreground font-bold text-lg px-4 py-2 rounded-xl">
+            <span className="inline-block bg-primary text-primary-foreground font-bold text-xl tracking-wide px-5 py-2.5 rounded-xl">
               {displayPrice(property.prix, property.prix_currency)}
             </span>
           </div>

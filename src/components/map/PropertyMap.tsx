@@ -175,7 +175,8 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
             <SelectTrigger className="w-full"><SelectValue placeholder="Opération" /></SelectTrigger>
             <SelectContent className="z-[1100]">
               <SelectItem value="all">Toutes les opérations</SelectItem>
-              <SelectItem value="vente">Vente</SelectItem>
+              <SelectItem value="freehold">Freehold</SelectItem>
+              <SelectItem value="leasehold">Leasehold</SelectItem>
               <SelectItem value="location">Location</SelectItem>
             </SelectContent>
           </Select>
@@ -198,7 +199,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
                   <SelectItem value="maison_a_renover">Maison à rénover</SelectItem>
                 </>
               )}
-              {filters.operation !== 'vente' && (
+              {(filters.operation !== 'freehold' && filters.operation !== 'leasehold') && (
                 <>
                   <SelectItem value="colocation_longue">Colocation longue</SelectItem>
                   <SelectItem value="colocation_courte">Colocation courte</SelectItem>
@@ -251,7 +252,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
                       );
                     })()}
                     <p className="font-bold text-sm mb-0.5">{displayPrice(p.prix, p.prix_currency)}</p>
-                    <p className="text-xs font-medium mb-0.5">{p.operations === 'vente' ? 'Vente' : 'Location'} · {p.type}</p>
+                    <p className="text-xs font-medium mb-0.5">{p.operations === 'freehold' ? 'Freehold' : p.operations === 'leasehold' ? 'Leasehold' : 'Location'} · {p.type}</p>
                     <p className="text-xs text-muted-foreground mb-0.5">
                       {p.chambres} ch. · {p.salles_bain} sdb{p.surface ? ` · ${p.surface} m²` : ''}
                     </p>

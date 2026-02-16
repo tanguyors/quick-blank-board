@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Resend } from 'npm:resend@2.0.0'
+import { Resend } from 'https://esm.sh/resend@2.0.0'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,7 +32,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           </div>
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,
@@ -58,7 +58,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           </div>
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,
@@ -85,7 +85,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           </div>
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,
@@ -111,7 +111,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           </div>
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,
@@ -136,7 +136,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           </div>
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,
@@ -159,7 +159,7 @@ const defaultTemplates: Record<string, (data: Record<string, any>) => { subject:
           ` : ''}
         </div>
         <div style="padding: 16px 32px; background: #f1f3f5; text-align: center; font-size: 12px; color: #888;">
-          <p>SOMA — La plateforme immobilière intelligente</p>
+          <p>SOMA GATE — La plateforme d'intelligence immobilière</p>
         </div>
       </div>
     `,

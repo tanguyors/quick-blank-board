@@ -39,9 +39,9 @@ const DEMO_CARDS = [
 const SLIDES = [
   {
     key: 'swipe',
-    badge: 'Le Tinder de l\'immobilier',
-    title: 'Swipez pour trouver votre bien idéal',
-    subtitle: 'Comme sur Tinder, swipez à droite si un bien vous plaît. C\'est aussi simple que ça.',
+    badge: 'Intelligence immobilière',
+    title: 'Ta recherche immobilière réinventée',
+    subtitle: 'Soma Gate, la première plateforme d\'intelligence immobilière. Découvrez des biens uniques en un geste.',
   },
   {
     key: 'secure',
@@ -225,7 +225,7 @@ export default function Home() {
             </div>
 
             <p className="text-xs text-muted-foreground mt-3 animate-pulse">
-              ← Swipez la carte ou utilisez les boutons →
+              ← Glissez la carte ou utilisez les boutons →
             </p>
           </div>
         )}
