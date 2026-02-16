@@ -4,9 +4,19 @@ import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
-import { LayoutGrid, Map } from 'lucide-react';
+import { LayoutGrid, Map, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import logoSoma from '@/assets/logo-soma.png';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
@@ -14,21 +24,59 @@ export default function Explore() {
   const [view, setView] = useState<'swipe' | 'carte'>('swipe');
   const [filters, setFilters] = useState<ExploreFilterValues>(DEFAULT_FILTERS);
   const activeFilterCount = useFilterCount(filters);
+  const [showGeoDialog, setShowGeoDialog] = useState(false);
 
-  // Geolocation prompt on first load
+  // Show geolocation permission dialog on first load
   useEffect(() => {
     const asked = sessionStorage.getItem('geo_asked');
-    if (!asked && navigator.geolocation) {
-      sessionStorage.setItem('geo_asked', '1');
-      navigator.geolocation.getCurrentPosition(
-        () => { /* position obtained */ },
-        () => { toast.info('Activez la localisation pour une meilleure expérience.'); }
-      );
+    if (!asked) {
+      setShowGeoDialog(true);
     }
   }, []);
 
+  const handleGeoAccept = () => {
+    sessionStorage.setItem('geo_asked', '1');
+    setShowGeoDialog(false);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => toast.success('Position activée !'),
+        () => toast.info('Activez la localisation pour une meilleure expérience.')
+      );
+    }
+  };
+
+  const handleGeoDecline = () => {
+    sessionStorage.setItem('geo_asked', '1');
+    setShowGeoDialog(false);
+  };
+
   return (
     <AppLayout hideHeader>
+      {/* Geolocation permission dialog */}
+      <AlertDialog open={showGeoDialog} onOpenChange={setShowGeoDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex justify-center mb-3">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapPin className="h-6 w-6 text-primary" />
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center">Autoriser la localisation</AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Autoriser l'application Soma Gate à accéder à la position de cet appareil pour vous proposer des biens à proximité.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <AlertDialogAction onClick={handleGeoAccept} className="w-full">
+              Autoriser
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={handleGeoDecline} className="w-full">
+              Plus tard
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="flex flex-col" style={{ height: 'calc(100dvh - 5rem)' }}>
         {/* Top bar: logo + icons */}
         <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
