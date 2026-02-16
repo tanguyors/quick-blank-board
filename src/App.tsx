@@ -41,6 +41,9 @@ const Security = lazy(() => import("./pages/Security"));
 const Assistance = lazy(() => import("./pages/Assistance"));
 const Install = lazy(() => import("./pages/Install"));
 const AccountSettings = lazy(() => import("./pages/AccountSettings"));
+const CGV = lazy(() => import("./pages/CGV"));
+const Confidentialite = lazy(() => import("./pages/Confidentialite"));
+const Actualites = lazy(() => import("./pages/Actualites"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +80,9 @@ const App = () => (
                 <Route path="/security" element={<Security />} />
                 <Route path="/assistance" element={<Assistance />} />
                 <Route path="/install" element={<Install />} />
+                <Route path="/cgv" element={<CGV />} />
+                <Route path="/confidentialite" element={<Confidentialite />} />
+                <Route path="/actualites" element={<ProtectedRoute><Actualites /></ProtectedRoute>} />
                 <Route path="/profile-selection" element={<ProtectedRoute><ProfileSelection /></ProtectedRoute>} />
                 <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

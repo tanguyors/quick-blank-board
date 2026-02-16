@@ -7,22 +7,28 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronLeft, ChevronRight, Heart, Save } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, Heart, Save,
+  Home, Building2, Wrench, TreePine, Store, HardHat,
+  Users, User, Handshake, PawPrint, Hotel,
+  Warehouse,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { getCurrencyInfo } from '@/lib/currencies';
 
 const PROPERTY_TYPES = [
-  { value: 'villa', label: 'Villa', emoji: '🏠' },
-  { value: 'appartement', label: 'Appartement', emoji: '🏢' },
-  { value: 'maison_a_renover', label: 'À rénover', emoji: '🔧' },
-  { value: 'terrain', label: 'Terrain', emoji: '🌴' },
-  { value: 'commercial', label: 'Commercial', emoji: '🏪' },
-  { value: 'construction', label: 'En construction', emoji: '🏗' },
-  { value: 'colocation_longue', label: 'Colocation longue durée', emoji: '👨‍👩‍👧' },
-  { value: 'colocation_courte', label: 'Colocation courte durée', emoji: '👩‍👧' },
-  { value: 'hebergement_service', label: 'Hébergement contre service', emoji: '🤝' },
-  { value: 'hebergement_animaux', label: 'Hébergement pour animaux', emoji: '🐾' },
-  { value: 'guesthouse', label: 'Guesthouse', emoji: '🏨' },
+  { value: 'villa', label: 'Villa', icon: Home },
+  { value: 'appartement', label: 'Appartement', icon: Building2 },
+  { value: 'maison_a_renover', label: 'À rénover', icon: Wrench },
+  { value: 'terrain', label: 'Terrain', icon: TreePine },
+  { value: 'commercial', label: 'Commercial', icon: Store },
+  { value: 'construction', label: 'En construction', icon: HardHat },
+  { value: 'entrepot', label: 'Entrepôt', icon: Warehouse },
+  { value: 'colocation_longue', label: 'Colocation longue durée', icon: Users },
+  { value: 'colocation_courte', label: 'Colocation courte durée', icon: User },
+  { value: 'hebergement_service', label: 'Hébergement contre service', icon: Handshake },
+  { value: 'hebergement_animaux', label: 'Hébergement pour animaux', icon: PawPrint },
+  { value: 'guesthouse', label: 'Guesthouse', icon: Hotel },
 ];
 
 const OPERATIONS = [
@@ -314,7 +320,7 @@ function Step1({ form, setForm, toggleArrayItem }: { form: FormState; setForm: S
               selected={form.preferred_types.includes(t.value)}
               onClick={() => setForm(f => ({ ...f, preferred_types: toggleArrayItem(f.preferred_types, t.value) }))}
             >
-              {t.emoji} {t.label}
+              <t.icon className="h-4 w-4 inline-block mr-1.5 -mt-0.5" /> {t.label}
             </Chip>
           ))}
         </div>
