@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Settings, LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import logoSoma from '@/assets/logo-soma.png';
 
 export function Header() {
@@ -15,7 +16,6 @@ export function Header() {
     navigate('/auth');
   };
 
-  // Hide header on auth page
   if (pathname === '/auth') return null;
 
   return (
@@ -30,6 +30,7 @@ export function Header() {
         <span className="text-foreground font-semibold text-lg">SomaGate</span>
       </div>
       <div className="flex items-center gap-1">
+        <LanguageSelector compact />
         <ThemeToggle />
         <NotificationBell />
         <button onClick={() => navigate('/profile')} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Paramètres">
