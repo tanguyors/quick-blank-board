@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -66,7 +66,7 @@ function PageLoader() {
 }
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+  <ThemeProvider defaultTheme="light">
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
