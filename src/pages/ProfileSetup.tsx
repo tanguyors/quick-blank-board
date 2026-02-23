@@ -8,10 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileSetup() {
   const { user, roles, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const isOwner = roles.includes('owner');
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -23,6 +25,7 @@ export default function ProfileSetup() {
     avatar_url: '',
     company_name: '',
     company_address: '',
+    nationality: '',
   });
 
   const handleSubmit = async () => {
@@ -35,12 +38,13 @@ export default function ProfileSetup() {
         .update({
           ...form,
           full_name: fullName,
-        })
+          nationality: form.nationality || null,
+        } as any)
         .eq('id', user.id);
       if (error) throw error;
 
       await refreshProfile();
-      toast.success('Profil configuré !');
+      toast.success(t('profile.configured'));
       navigate(isOwner ? '/dashboard' : '/explore');
     } catch (error: any) {
       toast.error(error.message);
@@ -55,12 +59,11 @@ export default function ProfileSetup() {
         <button onClick={() => navigate(-1)} className="text-foreground">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <span className="flex-1 text-center font-semibold text-lg text-foreground">Configurez votre profil</span>
+        <span className="flex-1 text-center font-semibold text-lg text-foreground">{t('profile.setupTitle')}</span>
         <div className="w-8" />
       </div>
 
       <div className="flex-1 px-6 py-6 max-w-sm mx-auto w-full space-y-5">
-        {/* Avatar */}
         <div className="flex justify-center">
           <AvatarUpload
             url={form.avatar_url}
@@ -68,28 +71,27 @@ export default function ProfileSetup() {
           />
         </div>
 
-        {/* Fields */}
         <div className="space-y-3">
           <Input
-            placeholder="Prénom"
+            placeholder={t('profile.firstName')}
             value={form.first_name}
             onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
             className="h-14 bg-card border-border rounded-xl"
           />
           <Input
-            placeholder="Nom"
+            placeholder={t('profile.lastName')}
             value={form.last_name}
             onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
             className="h-14 bg-card border-border rounded-xl"
           />
           <Input
-            placeholder="Numéro WhatsApp (+62...)"
+            placeholder={t('profile.whatsapp')}
             value={form.whatsapp}
             onChange={e => setForm(f => ({ ...f, whatsapp: e.target.value }))}
             className="h-14 bg-card border-border rounded-xl"
           />
           <Textarea
-            placeholder="Parlez-nous de vous..."
+            placeholder={t('profile.bio')}
             value={form.bio}
             onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
             rows={3}
@@ -98,15 +100,21 @@ export default function ProfileSetup() {
           {isOwner && (
             <>
               <Input
-                placeholder="Nom de l'entreprise"
+                placeholder={t('profile.companyName')}
                 value={form.company_name}
                 onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))}
                 className="h-14 bg-card border-border rounded-xl"
               />
               <Input
-                placeholder="Adresse de l'entreprise"
+                placeholder={t('profile.companyAddress')}
                 value={form.company_address}
                 onChange={e => setForm(f => ({ ...f, company_address: e.target.value }))}
+                className="h-14 bg-card border-border rounded-xl"
+              />
+              <Input
+                placeholder={t('profile.nationalityPlaceholder')}
+                value={form.nationality}
+                onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
                 className="h-14 bg-card border-border rounded-xl"
               />
             </>
@@ -118,14 +126,14 @@ export default function ProfileSetup() {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? 'Enregistrement...' : 'Terminer'}
+          {loading ? t('profile.saving') : t('profile.finish')}
         </Button>
 
         <button
           onClick={() => navigate(isOwner ? '/dashboard' : '/explore')}
           className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          Passer cette étape
+          {t('profile.skipStep')}
         </button>
       </div>
     </div>

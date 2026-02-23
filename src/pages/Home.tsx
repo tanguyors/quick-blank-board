@@ -4,6 +4,8 @@ import { Heart, X, ArrowRight, ChevronRight, MapPin, BedDouble, Shield, FileText
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
 
 import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
@@ -20,15 +22,16 @@ const HERO_PROPERTIES = [
   { image: beachImg, type: 'Villa', location: 'Sanur', price: 'Rp 6.100.000.000', beds: 4 },
 ];
 
-const FEATURES = [
-  { icon: Shield, title: 'Transactions sécurisées', desc: 'Anti-fraude IA & traçabilité complète' },
-  { icon: FileText, title: 'Documents automatisés', desc: 'LOI, contrats, term sheets en un clic' },
-  { icon: Heart, title: 'Matching intelligent', desc: 'Trouvez le bien qui vous correspond' },
-  { icon: Sparkles, title: 'Intelligence immobilière', desc: 'Données et analyses pour décider' },
-];
-
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const FEATURES = [
+    { icon: Shield, title: t('features.secureTransactions'), desc: t('features.secureTransactionsDesc') },
+    { icon: FileText, title: t('features.automatedDocs'), desc: t('features.automatedDocsDesc') },
+    { icon: Heart, title: t('features.smartMatching'), desc: t('features.smartMatchingDesc') },
+    { icon: Sparkles, title: t('features.realEstateIntel'), desc: t('features.realEstateIntelDesc') },
+  ];
 
   // Fetch today's match count
   const { data: todayMatchCount } = useQuery({
@@ -53,12 +56,15 @@ export default function Home() {
           <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
           <span className="font-semibold text-lg text-foreground">SomaGate</span>
         </div>
-        <button
-          onClick={() => navigate('/auth')}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-secondary/50"
-        >
-          Connexion
-        </button>
+        <div className="flex items-center gap-1">
+          <LanguageSelector compact />
+          <button
+            onClick={() => navigate('/auth')}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-secondary/50"
+          >
+            {t('home.login')}
+          </button>
+        </div>
       </div>
 
       {/* Hero section */}
@@ -66,13 +72,13 @@ export default function Home() {
         <div className="text-center mb-6">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/15 text-primary mb-3">
             <Sparkles className="h-3 w-3" />
-            Intelligence immobilière
+            {t('home.intelligenceTag')}
           </span>
           <h1 className="text-3xl font-bold text-foreground leading-tight">
-            Ta recherche immobilière réinventée
+            {t('home.heroTitle')}
           </h1>
           <p className="text-muted-foreground mt-2 text-base leading-relaxed">
-            Soma Gate, la première plateforme d'intelligence immobilière
+            {t('home.heroSubtitle')}
           </p>
         </div>
 
@@ -82,7 +88,7 @@ export default function Home() {
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
               <Heart className="h-4 w-4 text-primary fill-primary" />
               <span className="text-sm font-semibold text-primary">
-                {todayMatchCount} match{(todayMatchCount ?? 0) > 1 ? 's' : ''} aujourd'hui
+                {t('home.matchesToday', { count: todayMatchCount })}
               </span>
             </div>
           </div>
@@ -110,7 +116,7 @@ export default function Home() {
       {/* Slogan banner */}
       <div className="mx-5 mb-4 py-4 px-5 rounded-2xl bg-primary/5 border border-primary/10 text-center">
         <p className="text-xs font-semibold tracking-widest text-primary uppercase">
-          SOMA GATE — LA PLATEFORME D'INTELLIGENCE IMMOBILIÈRE
+          {t('home.slogan')}
         </p>
       </div>
 
@@ -133,7 +139,7 @@ export default function Home() {
           className="w-full h-14 rounded-2xl text-base font-semibold shadow-lg shadow-primary/20"
           onClick={() => navigate('/auth')}
         >
-          SWIPER DÈS MAINTENANT ET GRATUITEMENT
+          {t('home.ctaSwipe')}
           <ArrowRight className="h-5 w-5 ml-2" />
         </Button>
         <Button
@@ -141,24 +147,24 @@ export default function Home() {
           className="w-full h-14 rounded-2xl text-base border-border"
           onClick={() => navigate('/auth')}
         >
-          J'ai déjà un compte
+          {t('home.ctaAccount')}
         </Button>
 
         {/* Footer links */}
         <div className="flex flex-wrap justify-center gap-3 pt-2">
-          <button onClick={() => navigate('/features')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Fonctionnalités</button>
-          <button onClick={() => navigate('/how-it-works')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Comment ça marche</button>
-          <button onClick={() => navigate('/security')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Sécurité</button>
-          <button onClick={() => navigate('/assistance')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Aide</button>
-          <button onClick={() => navigate('/cgu')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGU</button>
-          <button onClick={() => navigate('/cgv')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGV</button>
-          <button onClick={() => navigate('/cgv-abonnement')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">CGV Abo</button>
-          <button onClick={() => navigate('/confidentialite')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">Confidentialité</button>
+          <button onClick={() => navigate('/features')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.features')}</button>
+          <button onClick={() => navigate('/how-it-works')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.howItWorks')}</button>
+          <button onClick={() => navigate('/security')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.security')}</button>
+          <button onClick={() => navigate('/assistance')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.help')}</button>
+          <button onClick={() => navigate('/cgu')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.cgu')}</button>
+          <button onClick={() => navigate('/cgv')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.cgv')}</button>
+          <button onClick={() => navigate('/cgv-abonnement')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.cgvAbo')}</button>
+          <button onClick={() => navigate('/confidentialite')} className="text-xs text-muted-foreground hover:text-foreground transition-colors">{t('home.privacy')}</button>
         </div>
 
         {/* Bottom slogan */}
         <p className="text-center text-[10px] text-muted-foreground tracking-wider pt-2">
-          SOMA GATE — LA PLATEFORME D'INTELLIGENCE IMMOBILIÈRE
+          {t('home.slogan')}
         </p>
       </div>
     </div>
