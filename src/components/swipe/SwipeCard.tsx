@@ -1,5 +1,6 @@
 import { MapPin, BedDouble, Bath, Maximize2, Info } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
+import { useTranslation } from 'react-i18next';
 
 interface SwipeCardProps {
   property: any;
@@ -8,6 +9,7 @@ interface SwipeCardProps {
 
 export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
   const { displayPrice } = useDisplayPrice();
+  const { t } = useTranslation();
   const primaryMedia = property.property_media?.find((m: any) => m.is_primary) || property.property_media?.[0];
 
   return (
@@ -17,7 +19,7 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
           <img src={primaryMedia.url} alt="" className="w-full h-full object-cover" draggable={false} />
         ) : (
           <div className="w-full h-full bg-secondary flex items-center justify-center text-muted-foreground">
-            Pas de photo
+            {t('property.noPhoto')}
           </div>
         )}
 
@@ -62,7 +64,7 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
               className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 bg-foreground/10 backdrop-blur-md rounded-xl text-foreground text-sm font-medium hover:bg-foreground/20 transition-colors"
             >
               <Info className="h-4 w-4" />
-              Voir les détails
+              {t('property.viewDetails')}
             </button>
           )}
         </div>
