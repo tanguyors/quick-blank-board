@@ -8,6 +8,7 @@ import { MatchAnimation } from './MatchAnimation';
 import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
 import { X, Star, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
 interface SwipeStackProps {
@@ -15,6 +16,7 @@ interface SwipeStackProps {
 }
 
 export function SwipeStack({ filters }: SwipeStackProps) {
+  const { t } = useTranslation();
   const { data: properties, isLoading } = useExplorableProperties(filters);
   const swipe = useSwipe();
   const navigate = useNavigate();
@@ -31,7 +33,6 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const currentProperty = properties?.[currentIndex];
   const totalCount = properties?.length || 0;
 
-  // Heart = match (right swipe with conversation + transaction)
   const handleMatch = useCallback(async () => {
     if (!currentProperty || swipe.isPending) return;
     setSwipeDirection('right');
@@ -53,7 +54,6 @@ export function SwipeStack({ filters }: SwipeStackProps) {
     }
   }, [currentProperty, swipe]);
 
-  // X = pass (left swipe)
   const handlePass = useCallback(async () => {
     if (!currentProperty || swipe.isPending) return;
     setSwipeDirection('left');
@@ -74,16 +74,15 @@ export function SwipeStack({ filters }: SwipeStackProps) {
     }
   }, [currentProperty, swipe]);
 
-  // Star = add to favorites (no match, no transaction, just bookmark)
   const handleFavorite = useCallback(async () => {
     if (!currentProperty || addFavorite.isPending) return;
     try {
       await addFavorite.mutateAsync(currentProperty.id);
-      toast.success('Ajouté aux favoris ★');
+      toast.success(t('explore.addedToFavorites'));
     } catch {
-      toast.error('Déjà dans vos favoris');
+      toast.error(t('explore.alreadyFavorite'));
     }
-  }, [currentProperty, addFavorite]);
+  }, [currentProperty, addFavorite, t]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     startPos.current = { x: e.clientX, y: e.clientY };
@@ -99,11 +98,8 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   const onPointerUp = () => {
     setIsDragging(false);
     if (Math.abs(offset.x) > 100) {
-      if (offset.x > 0) {
-        handleMatch();
-      } else {
-        handlePass();
-      }
+      if (offset.x > 0) handleMatch();
+      else handlePass();
     } else {
       setOffset({ x: 0, y: 0 });
     }
@@ -119,34 +115,31 @@ export function SwipeStack({ filters }: SwipeStackProps) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-8">
         <Heart className="h-16 w-16 text-muted-foreground mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Plus de biens à explorer</h2>
-        <p className="text-muted-foreground">Revenez plus tard ou ajustez vos filtres pour découvrir de nouveaux biens !</p>
+        <h2 className="text-xl font-semibold mb-2">{t('explore.noMoreProperties')}</h2>
+        <p className="text-muted-foreground">{t('explore.noMorePropertiesHint')}</p>
       </div>
     );
   }
 
   return (
     <div className="relative flex flex-col items-center h-full">
-      {/* CTA after 3 swipes if preferences not set */}
       {currentIndex >= 3 && needsPreferences && (
         <div className="absolute top-2 left-4 z-10">
           <button
             onClick={() => navigate('/buyer/preferences')}
             className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg animate-pulse"
           >
-            COMMENCER MA RECHERCHE
+            {t('explore.startSearch')}
           </button>
         </div>
       )}
 
-      {/* Counter */}
       <div className="absolute top-2 right-4 z-10">
         <span className="bg-secondary/80 text-foreground text-sm px-3 py-1.5 rounded-full font-medium">
           {currentIndex + 1}/{totalCount}
         </span>
       </div>
 
-      {/* Card */}
       <div className="flex-1 flex items-center justify-center w-full px-4 pt-2 pb-0 min-h-0">
         <div
           className="w-full max-w-sm mx-auto touch-none"
@@ -167,10 +160,9 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       </div>
 
-      {/* Swipe indicators */}
       {offset.x < -50 && (
         <div className="absolute top-32 right-8 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg font-bold text-lg rotate-12 z-20">
-          PASSER
+          {t('explore.pass')}
         </div>
       )}
       {offset.x > 50 && (
@@ -179,13 +171,12 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       )}
 
-      {/* Action buttons */}
       <div className="flex items-center justify-center gap-6 py-3 flex-shrink-0">
         <button
           onClick={handlePass}
           disabled={swipe.isPending}
           className="w-14 h-14 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
-          aria-label="Passer"
+          aria-label={t('explore.pass')}
         >
           <X className="h-6 w-6" />
         </button>
@@ -193,7 +184,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           onClick={handleFavorite}
           disabled={addFavorite.isPending}
           className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
-          aria-label="Ajouter aux favoris"
+          aria-label={t('property.favorite')}
         >
           <Star className="h-5 w-5" />
         </button>
@@ -210,9 +201,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
       {showMatch && (
         <MatchAnimation onClose={() => {
           setShowMatch(false);
-          if (needsPreferences) {
-            navigate('/buyer/preferences');
-          }
+          if (needsPreferences) navigate('/buyer/preferences');
         }} />
       )}
 
@@ -221,10 +210,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         open={showDetail}
         onClose={() => setShowDetail(false)}
         showBuyerActions
-        onLike={() => {
-          setShowDetail(false);
-          handleMatch();
-        }}
+        onLike={() => { setShowDetail(false); handleMatch(); }}
         onToggleFavorite={() => handleFavorite()}
         isFavorite={(id) => isFavorite(id)}
       />
