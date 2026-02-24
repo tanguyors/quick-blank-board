@@ -5,30 +5,32 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Eye } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
-
-const STATUS_LABELS: Record<string, string> = {
-  available: 'Disponible', sold: 'Vendu', rented: 'Loué', draft: 'Brouillon',
-};
+import { useTranslation } from 'react-i18next';
 
 export function PropertyList() {
   const { data: properties, isLoading } = useMyProperties();
   const navigate = useNavigate();
   const { displayPrice } = useDisplayPrice();
+  const { t } = useTranslation();
+
+  const STATUS_LABELS: Record<string, string> = {
+    available: t('property.available'), sold: t('property.sold'), rented: t('property.rented'), draft: t('property.draft'),
+  };
 
   if (isLoading) return <div className="flex items-center justify-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
 
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">Mes biens</h2>
+        <h2 className="text-xl font-bold">{t('property.myProperties')}</h2>
         <Button onClick={() => navigate('/properties/new')} size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Ajouter
+          <Plus className="h-4 w-4 mr-1" /> {t('property.add')}
         </Button>
       </div>
       {!properties?.length ? (
         <div className="text-center py-12 text-muted-foreground">
-          <p>Vous n'avez pas encore de biens</p>
-          <Button className="mt-4" onClick={() => navigate('/properties/new')}>Ajouter un bien</Button>
+          <p>{t('property.noProperties')}</p>
+          <Button className="mt-4" onClick={() => navigate('/properties/new')}>{t('property.addProperty')}</Button>
         </div>
       ) : (
         <div className="grid gap-3">
@@ -40,13 +42,13 @@ export function PropertyList() {
                   {primaryMedia ? (
                     <img src={primaryMedia.url} alt="" className="w-24 h-24 object-cover" />
                   ) : (
-                    <div className="w-24 h-24 bg-muted flex items-center justify-center text-xs text-muted-foreground">No img</div>
+                    <div className="w-24 h-24 bg-muted flex items-center justify-center text-xs text-muted-foreground">{t('property.noPhoto')}</div>
                   )}
                   <div className="p-3 flex-1">
                     <div className="flex gap-1 mb-1 flex-wrap">
                       <Badge variant="outline" className="text-xs">{property.type}</Badge>
                       <Badge variant={property.is_published ? 'default' : 'secondary'} className="text-xs">
-                        {property.is_published ? 'Publié' : 'Non publié'}
+                        {property.is_published ? t('property.published') : t('property.unpublished')}
                       </Badge>
                       <Badge variant="outline" className="text-xs">{STATUS_LABELS[property.status]}</Badge>
                     </div>
