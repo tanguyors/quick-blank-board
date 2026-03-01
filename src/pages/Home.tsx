@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, X, ArrowRight, ChevronRight, MapPin, BedDouble, Shield, FileText, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +11,11 @@ import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
 import beachImg from '@/assets/onboarding-beach-3.jpg';
 import logoSoma from '@/assets/logo-soma.png';
+
+import iconAssurance from '@/assets/icons/assurance.png';
+import iconDoc from '@/assets/icons/doc.png';
+import iconAppsearch from '@/assets/icons/appsearch.png';
+import iconDeal from '@/assets/icons/deal.png';
 
 // Grid of properties for the hero section
 const HERO_PROPERTIES = [
@@ -27,10 +32,10 @@ export default function Home() {
   const { t } = useTranslation();
 
   const FEATURES = [
-    { icon: Shield, title: t('features.secureTransactions'), desc: t('features.secureTransactionsDesc') },
-    { icon: FileText, title: t('features.automatedDocs'), desc: t('features.automatedDocsDesc') },
-    { icon: Heart, title: t('features.smartMatching'), desc: t('features.smartMatchingDesc') },
-    { icon: Sparkles, title: t('features.realEstateIntel'), desc: t('features.realEstateIntelDesc') },
+    { icon: iconAssurance, title: t('features.secureTransactions'), desc: t('features.secureTransactionsDesc') },
+    { icon: iconDoc, title: t('features.automatedDocs'), desc: t('features.automatedDocsDesc') },
+    { icon: iconAppsearch, title: t('features.smartMatching'), desc: t('features.smartMatchingDesc') },
+    { icon: iconDeal, title: t('features.realEstateIntel'), desc: t('features.realEstateIntelDesc') },
   ];
 
   // Fetch today's match count
@@ -86,7 +91,7 @@ export default function Home() {
         {(todayMatchCount ?? 0) > 0 && (
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-              <Heart className="h-4 w-4 text-primary fill-primary" />
+              <img src={iconDeal} alt="" className="h-5 w-5 object-contain" />
               <span className="text-sm font-semibold text-primary">
                 {t('home.matchesToday', { count: todayMatchCount })}
               </span>
@@ -125,7 +130,7 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-3">
           {FEATURES.map((f, i) => (
             <div key={i} className="p-4 rounded-2xl bg-card border border-border">
-              <f.icon className="h-6 w-6 text-primary mb-2" />
+              <img src={f.icon} alt="" className="h-10 w-10 object-contain mb-2" />
               <h3 className="text-sm font-semibold text-foreground">{f.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>
             </div>

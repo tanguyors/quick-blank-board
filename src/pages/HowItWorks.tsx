@@ -1,47 +1,43 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Heart, Calendar, FileText, CheckCircle, PartyPopper } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+import iconAppsearch from '@/assets/icons/appsearch.png';
+import iconPlanning from '@/assets/icons/planning.png';
+import iconContrat from '@/assets/icons/contrat.png';
+import iconDocsign from '@/assets/icons/docsign.png';
+import iconDeal from '@/assets/icons/deal.png';
 
 const STEPS = [
   {
     number: '01',
-    icon: Heart,
+    icon: iconAppsearch,
     title: 'Swipez & Matchez',
     description: "Parcourez les biens disponibles en swipant. Quand un bien vous plaît, swipez à droite. Un match est créé et une transaction démarre.",
-    color: 'text-pink-400',
-    bg: 'bg-pink-500/10',
   },
   {
     number: '02',
-    icon: Calendar,
+    icon: iconPlanning,
     title: 'Organisez une visite',
     description: "Demandez une visite, le vendeur propose des créneaux, vous choisissez celui qui vous convient. Rappels automatiques J-1 et H-2.",
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
   },
   {
     number: '03',
-    icon: FileText,
+    icon: iconContrat,
     title: 'Faites une offre',
     description: "Exprimez votre intention puis faites une offre. Les documents (LOI, contrat, term sheet) sont générés automatiquement.",
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
   },
   {
     number: '04',
-    icon: CheckCircle,
+    icon: iconDocsign,
     title: 'Validez les documents',
     description: "Acheteur et vendeur valident chaque document. La validation croisée garantit l'accord mutuel sur les termes.",
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
   },
   {
     number: '05',
-    icon: PartyPopper,
+    icon: iconDeal,
     title: 'Finalisez le deal',
     description: "Une fois tout validé, le deal est finalisé. Vous obtenez le badge 'Client Certifié' et un questionnaire d'expérience.",
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/10',
   },
 ];
 
@@ -72,11 +68,11 @@ export default function HowItWorks() {
             <div key={step.number} className="relative">
               {/* Connector line */}
               {index < STEPS.length - 1 && (
-                <div className="absolute left-6 top-16 bottom-0 w-0.5 bg-border -mb-6 h-full" />
+                <div className="absolute left-7 top-16 bottom-0 w-0.5 bg-border -mb-6 h-full" />
               )}
               <div className="bg-card border border-border rounded-2xl p-5 flex gap-4 relative z-10">
-                <div className={`w-12 h-12 rounded-xl ${step.bg} flex items-center justify-center shrink-0`}>
-                  <step.icon className={`h-6 w-6 ${step.color}`} />
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0">
+                  <img src={step.icon} alt="" className="h-12 w-12 object-contain" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
