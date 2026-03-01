@@ -1,49 +1,44 @@
 import { Link } from 'react-router-dom';
-import { Heart, Shield, FileText, Bell, Star, Eye, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+import iconAppsearch from '@/assets/icons/appsearch.png';
+import iconAssurance from '@/assets/icons/assurance.png';
+import iconDocsign from '@/assets/icons/docsign.png';
+import iconPlanning from '@/assets/icons/planning.png';
+import iconAccueil from '@/assets/icons/accueil.png';
+import iconMap from '@/assets/icons/map.png';
 
 const FEATURES = [
   {
-    icon: Heart,
+    icon: iconAppsearch,
     title: 'Swipe Immobilier',
     description: 'Parcourez les biens comme sur Tinder. Swipez à droite pour liker, à gauche pour passer. Simple et intuitif.',
-    color: 'text-pink-400',
-    bg: 'bg-pink-500/10',
   },
   {
-    icon: Shield,
+    icon: iconAssurance,
     title: 'Transactions Sécurisées',
     description: 'Messagerie protégée, détection anti-fraude IA, et traçabilité complète de chaque étape.',
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
   },
   {
-    icon: FileText,
+    icon: iconDocsign,
     title: 'Documents Automatiques',
     description: "LOI, contrats, term sheets — tout est généré automatiquement. Validez depuis votre téléphone.",
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
   },
   {
-    icon: Bell,
+    icon: iconPlanning,
     title: 'Notifications Intelligentes',
     description: 'Rappels de visite J-1 et H-2, relances automatiques, notifications push en temps réel.',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
   },
   {
-    icon: Star,
+    icon: iconAccueil,
     title: 'Score de Fiabilité',
     description: "Chaque utilisateur a un score de confiance basé sur son historique. Badge 'Client Certifié' après un deal réussi.",
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/10',
   },
   {
-    icon: Eye,
+    icon: iconMap,
     title: 'Gestion des Visites',
     description: 'Proposez, confirmez et validez les visites directement dans l\'app. Suivi des no-shows.',
-    color: 'text-cyan-400',
-    bg: 'bg-cyan-500/10',
   },
 ];
 
@@ -72,8 +67,8 @@ export default function Features() {
         <div className="grid gap-4">
           {FEATURES.map((feature) => (
             <div key={feature.title} className="bg-card border border-border rounded-2xl p-5 flex gap-4">
-              <div className={`w-12 h-12 rounded-xl ${feature.bg} flex items-center justify-center shrink-0`}>
-                <feature.icon className={`h-6 w-6 ${feature.color}`} />
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0">
+                <img src={feature.icon} alt="" className="h-12 w-12 object-contain" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">{feature.title}</h3>
