@@ -2,13 +2,17 @@ import { useState } from 'react';
 import { useProperty } from '@/hooks/useProperties';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, BedDouble, Bath, Ruler, Edit, CalendarDays } from 'lucide-react';
+import { Edit, CalendarDays } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 import { useTranslation } from 'react-i18next';
+
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 interface PropertyDetailProps {
   propertyId: string;
