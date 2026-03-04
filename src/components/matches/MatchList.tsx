@@ -2,10 +2,13 @@ import { useMatches } from '@/hooks/useMatches';
 import { useMyTransactions } from '@/hooks/useTransaction';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Maximize2, CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
+import { CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import type { TransactionStatus } from '@/types/workflow';
 import { useTranslation } from 'react-i18next';
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 export function MatchList() {
   const { data: matches, isLoading } = useMatches();
@@ -69,14 +72,14 @@ export function MatchList() {
             <div className="p-4">
               <h3 className="font-bold text-lg text-foreground">{property?.type}</h3>
               <div className="flex items-center gap-1 text-muted-foreground mt-1">
-                <MapPin className="h-4 w-4" />
+                <img src={iconMap} alt="" className="h-4 w-4 object-contain" />
                 <span className="text-sm">{property?.adresse}</span>
               </div>
               <div className="flex gap-3 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property?.chambres}</span>
-                <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property?.salles_bain || 0}</span>
+                <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-4 w-4 object-contain" /> {property?.chambres}</span>
+                <span className="flex items-center gap-1">🚿 {property?.salles_bain || 0}</span>
                 {property?.surface && (
-                  <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property?.surface}m²</span>
+                  <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-4 w-4 object-contain" /> {property?.surface}m²</span>
                 )}
               </div>
               <div className="flex gap-2 mt-4">
