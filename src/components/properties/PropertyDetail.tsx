@@ -11,7 +11,7 @@ import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 import { useTranslation } from 'react-i18next';
 
 import iconMap from '@/assets/icons/map.png';
-import iconHome from '@/assets/icons/home.png';
+import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
 
 interface PropertyDetailProps {

@@ -13,7 +13,7 @@ import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
 import { ArrowLeft, FileText, CheckCircle, Loader2, Download } from 'lucide-react';
 import iconMap from '@/assets/icons/map.png';
-import iconHome from '@/assets/icons/home.png';
+import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
 import { Button } from '@/components/ui/button';
 import { DocumentGenerationService } from '@/services/documentGenerationService';
