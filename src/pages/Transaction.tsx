@@ -11,7 +11,10 @@ import { SecurityBanner } from '@/components/workflow/SecurityAlert';
 import { OfferForm } from '@/components/workflow/OfferForm';
 import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
-import { ArrowLeft, FileText, MapPin, BedDouble, Bath, Maximize2, CheckCircle, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle, Loader2, Download } from 'lucide-react';
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 import { Button } from '@/components/ui/button';
 import { DocumentGenerationService } from '@/services/documentGenerationService';
 import { toast } from 'sonner';
@@ -204,7 +207,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
           <div className="p-4">
             <h3 className="font-bold text-lg text-foreground capitalize">{property.type}</h3>
             <div className="flex items-center gap-1 text-muted-foreground mt-1">
-              <MapPin className="h-4 w-4" />
+              <img src={iconMap} alt="" className="h-4 w-4 object-contain" />
               <span className="text-sm">{property.adresse}</span>
             </div>
             <p className="text-primary font-bold text-xl mt-2">
@@ -212,12 +215,12 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
             </p>
             <div className="flex gap-3 mt-2 text-sm text-muted-foreground">
               {property.chambres > 0 && (
-                <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property.chambres}</span>
+                <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-4 w-4 object-contain" /> {property.chambres}</span>
               )}
               {property.salles_bain > 0 && (
-                <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.salles_bain}</span>
+                <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
               )}
-              {property.surface && <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property.surface}m²</span>}
+              {property.surface && <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-4 w-4 object-contain" /> {property.surface}m²</span>}
             </div>
           </div>
         </div>
