@@ -1,6 +1,10 @@
-import { MapPin, BedDouble, Bath, Maximize2, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useTranslation } from 'react-i18next';
+
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 interface SwipeCardProps {
   property: any;
