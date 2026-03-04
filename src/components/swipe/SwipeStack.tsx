@@ -6,10 +6,13 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
-import { X, Star, Heart } from 'lucide-react';
+import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
+
+import iconMatches from '@/assets/icons/matches.png';
+import iconFavorites from '@/assets/icons/favorites.png';
 
 interface SwipeStackProps {
   filters?: ExploreFilterValues;
@@ -114,7 +117,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   if (!currentProperty) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-8">
-        <Heart className="h-16 w-16 text-muted-foreground mb-4" />
+        <img src={iconMatches} alt="" className="h-16 w-16 object-contain mb-4 opacity-50" />
         <h2 className="text-xl font-semibold mb-2">{t('explore.noMoreProperties')}</h2>
         <p className="text-muted-foreground">{t('explore.noMorePropertiesHint')}</p>
       </div>
@@ -183,18 +186,18 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         <button
           onClick={handleFavorite}
           disabled={addFavorite.isPending}
-          className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center text-background hover:bg-foreground/80 transition-colors"
+          className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center hover:bg-foreground/80 transition-colors"
           aria-label={t('property.favorite')}
         >
-          <Star className="h-5 w-5" />
+          <img src={iconFavorites} alt="" className="h-6 w-6 object-contain" />
         </button>
         <button
           onClick={handleMatch}
           disabled={swipe.isPending}
-          className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+          className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center hover:bg-primary transition-colors"
           aria-label="Match"
         >
-          <Heart className="h-6 w-6" />
+          <img src={iconMatches} alt="" className="h-7 w-7 object-contain" />
         </button>
       </div>
 

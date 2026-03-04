@@ -10,13 +10,19 @@ import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { VisitStatusBadge } from '@/components/visits/VisitStatusBadge';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Flame, Heart, Star, CalendarDays, FileText, MapPin, ArrowRight,
-  TrendingUp, Eye, ChevronRight,
-} from 'lucide-react';
+import { ChevronRight, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import type { TransactionStatus } from '@/types/workflow';
+
+import iconExplore from '@/assets/icons/appsearch.png';
+import iconMatches from '@/assets/icons/matches.png';
+import iconFavorites from '@/assets/icons/favorites.png';
+import iconVisits from '@/assets/icons/planning.png';
+import iconDoc from '@/assets/icons/doc.png';
+import iconPrice from '@/assets/icons/pricehome.png';
+import iconMap from '@/assets/icons/appmap.png';
+import iconSearch from '@/assets/icons/explore.png';
 
 export default function BuyerDashboard() {
   const { user, profile } = useAuth();
@@ -58,7 +64,6 @@ export default function BuyerDashboard() {
     !['deal_finalized', 'deal_cancelled', 'archived'].includes(t.status)
   ) || [];
 
-  // Recent visits (last 5)
   const recentVisits = (visits.data || []).slice(0, 5);
   const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
 
@@ -82,7 +87,7 @@ export default function BuyerDashboard() {
               onClick={() => navigate('/explore')}
               className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
             >
-              <Flame className="h-6 w-6 text-primary mb-2" />
+              <img src={iconExplore} alt="" className="h-7 w-7 object-contain mb-2" />
               <p className="font-semibold text-foreground text-sm">Explorer</p>
               <p className="text-xs text-muted-foreground mt-0.5">Swiper</p>
             </button>
@@ -90,7 +95,7 @@ export default function BuyerDashboard() {
               onClick={() => navigate('/matches')}
               className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
             >
-              <Heart className="h-6 w-6 text-primary mb-2" />
+              <img src={iconMatches} alt="" className="h-7 w-7 object-contain mb-2" />
               <p className="font-semibold text-foreground text-sm">Matches</p>
               <p className="text-xs text-muted-foreground mt-0.5">{stats?.matches ?? 0}</p>
             </button>
@@ -98,19 +103,19 @@ export default function BuyerDashboard() {
               onClick={() => navigate('/favorites')}
               className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-left transition-colors active:bg-amber-500/20"
             >
-              <Star className="h-6 w-6 text-amber-500 mb-2" />
+              <img src={iconFavorites} alt="" className="h-7 w-7 object-contain mb-2" />
               <p className="font-semibold text-foreground text-sm">Favoris</p>
               <p className="text-xs text-muted-foreground mt-0.5">{favorites.data?.length ?? 0}</p>
             </button>
           </div>
 
-          {/* Stats row - all clickable */}
+          {/* Stats row */}
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => navigate('/explore')}
               className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
             >
-              <Eye className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+              <img src={iconSearch} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{stats?.swipes ?? 0}</p>
               <p className="text-[10px] text-muted-foreground">Vus</p>
             </button>
@@ -118,7 +123,7 @@ export default function BuyerDashboard() {
               onClick={() => navigate('/visits')}
               className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors relative"
             >
-              <CalendarDays className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+              <img src={iconVisits} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{recentVisits.length}</p>
               <p className="text-[10px] text-muted-foreground">Visites</p>
               {pendingVisitsCount > 0 && (
@@ -131,7 +136,7 @@ export default function BuyerDashboard() {
               onClick={() => navigate('/mes-transactions')}
               className="bg-card border border-border rounded-xl p-3 text-center hover:border-primary/30 transition-colors"
             >
-              <TrendingUp className="h-4 w-4 text-primary mx-auto mb-1" />
+              <img src={iconPrice} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{Math.round(scoreVal / 10)}<span className="text-xs text-muted-foreground">/10</span></p>
               <p className="text-[10px] text-muted-foreground">Score</p>
             </button>
@@ -196,7 +201,7 @@ export default function BuyerDashboard() {
               </div>
             ) : activeTransactions.length === 0 ? (
               <div className="bg-card border border-border rounded-xl p-6 text-center">
-                <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-30" />
+                <img src={iconDoc} alt="" className="h-8 w-8 object-contain mx-auto mb-2 opacity-30" />
                 <p className="text-sm text-muted-foreground">Aucune transaction en cours</p>
                 <p className="text-xs text-muted-foreground/60 mt-1">Explorez et matchez pour démarrer !</p>
               </div>
@@ -219,7 +224,7 @@ export default function BuyerDashboard() {
                           {property?.type || 'Bien'}
                         </p>
                         <div className="flex items-center gap-1 text-muted-foreground mt-0.5">
-                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <img src={iconMap} alt="" className="h-3 w-3 object-contain flex-shrink-0" />
                           <span className="text-xs truncate">{property?.adresse}</span>
                         </div>
                         <div className="flex items-center justify-between mt-1.5">
