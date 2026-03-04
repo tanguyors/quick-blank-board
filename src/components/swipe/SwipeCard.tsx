@@ -31,21 +31,21 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/80 to-transparent p-5 pt-16">
           <h3 className="text-2xl font-bold text-foreground">{property.type}</h3>
           <div className="flex items-center gap-1 mt-1 text-muted-foreground">
-            <MapPin className="h-4 w-4" />
+            <img src={iconMap} alt="" className="h-4 w-4 object-contain" />
             <span className="text-sm">{property.adresse}</span>
           </div>
 
           {/* Specs */}
           <div className="flex gap-3 mt-3">
             <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
-              <BedDouble className="h-5 w-5" /> {property.chambres}
+              <img src={iconHome} alt="" className="h-5 w-5 object-contain" /> {property.chambres}
             </span>
             <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
-              <Bath className="h-5 w-5" /> {property.salles_bain}
+              🚿 {property.salles_bain}
             </span>
             {property.surface && (
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground bg-secondary px-3 py-2 rounded-lg">
-                <Maximize2 className="h-5 w-5" /> {property.surface}m²
+                <img src={iconSearch} alt="" className="h-5 w-5 object-contain" /> {property.surface}m²
               </span>
             )}
           </div>

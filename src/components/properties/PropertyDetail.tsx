@@ -80,12 +80,12 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           )}
         </div>
         <div className="flex items-center gap-1 text-muted-foreground">
-          <MapPin className="h-4 w-4" /><span>{property.adresse}</span>
+          <img src={iconMap} alt="" className="h-4 w-4 object-contain" /><span>{property.adresse}</span>
         </div>
         <div className="flex gap-4 text-sm text-foreground">
-          {property.surface && <span className="flex items-center gap-1"><Ruler className="h-5 w-5 text-primary" />{property.surface} m²</span>}
-          <span className="flex items-center gap-1"><BedDouble className="h-5 w-5 text-primary" />{property.chambres}</span>
-          <span className="flex items-center gap-1"><Bath className="h-5 w-5 text-primary" />{property.salles_bain}</span>
+          {property.surface && <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-5 w-5 object-contain" />{property.surface} m²</span>}
+          <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-5 w-5 object-contain" />{property.chambres}</span>
+          <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
         </div>
 
         {/* Disclaimer */}

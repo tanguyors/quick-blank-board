@@ -125,15 +125,15 @@ export function PropertyDetailSheet({
             </SheetHeader>
 
             <div className="flex items-center gap-1 text-muted-foreground">
-              <MapPin className="h-4 w-4 shrink-0" /><span className="text-sm">{property.adresse}</span>
+              <img src={iconMap} alt="" className="h-4 w-4 object-contain shrink-0" /><span className="text-sm">{property.adresse}</span>
             </div>
 
             {property.secteur && <p className="text-sm text-muted-foreground">{t('property.sector')} : {property.secteur}</p>}
 
             <div className="flex gap-4 text-sm text-muted-foreground">
-              {property.surface && <span className="flex items-center gap-1"><Ruler className="h-4 w-4" />{property.surface} m²</span>}
-              <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{property.chambres}</span>
-              <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.salles_bain}</span>
+              {property.surface && <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-4 w-4 object-contain" />{property.surface} m²</span>}
+              <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-4 w-4 object-contain" />{property.chambres}</span>
+              <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
             </div>
 
             {/* Disclaimer */}
