@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+import { PageLoader } from "@/components/ui/PageLoader";
+
 // Eager: critical path
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -57,13 +59,6 @@ const queryClient = new QueryClient({
   },
 });
 
-function PageLoader() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-background">
-      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-    </div>
-  );
-}
 
 const App = () => (
   <ThemeProvider defaultTheme="light">
