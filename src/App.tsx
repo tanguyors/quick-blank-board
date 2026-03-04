@@ -59,13 +59,6 @@ const queryClient = new QueryClient({
   },
 });
 
-function PageLoader() {
-  return (
-    <div className="flex h-screen items-center justify-center bg-background">
-      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-    </div>
-  );
-}
 
 const App = () => (
   <ThemeProvider defaultTheme="light">
