@@ -3,12 +3,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MapPin, BedDouble, Bath, Ruler, CalendarDays, ChevronLeft, ChevronRight, X, Heart, Star, MessageCircle } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, X, Heart, Star } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 import { useTranslation } from 'react-i18next';
+
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 interface PropertyData {
   id: string;
