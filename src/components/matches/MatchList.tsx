@@ -2,10 +2,13 @@ import { useMatches } from '@/hooks/useMatches';
 import { useMyTransactions } from '@/hooks/useTransaction';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, BedDouble, Bath, Maximize2, CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
+import { CalendarDays, MessageSquare, ArrowRight } from 'lucide-react';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import type { TransactionStatus } from '@/types/workflow';
 import { useTranslation } from 'react-i18next';
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 export function MatchList() {
   const { data: matches, isLoading } = useMatches();
