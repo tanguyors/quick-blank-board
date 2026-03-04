@@ -3,12 +3,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MapPin, BedDouble, Bath, Ruler, CalendarDays, ChevronLeft, ChevronRight, X, Heart, Star, MessageCircle } from 'lucide-react';
+import { CalendarDays, ChevronLeft, ChevronRight, X, Heart, Star } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 import { useTranslation } from 'react-i18next';
+
+import iconMap from '@/assets/icons/map.png';
+import iconHome from '@/assets/icons/home.png';
+import iconSearch from '@/assets/icons/search.png';
 
 interface PropertyData {
   id: string;
@@ -121,15 +125,15 @@ export function PropertyDetailSheet({
             </SheetHeader>
 
             <div className="flex items-center gap-1 text-muted-foreground">
-              <MapPin className="h-4 w-4 shrink-0" /><span className="text-sm">{property.adresse}</span>
+              <img src={iconMap} alt="" className="h-4 w-4 object-contain shrink-0" /><span className="text-sm">{property.adresse}</span>
             </div>
 
             {property.secteur && <p className="text-sm text-muted-foreground">{t('property.sector')} : {property.secteur}</p>}
 
             <div className="flex gap-4 text-sm text-muted-foreground">
-              {property.surface && <span className="flex items-center gap-1"><Ruler className="h-4 w-4" />{property.surface} m²</span>}
-              <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{property.chambres}</span>
-              <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.salles_bain}</span>
+              {property.surface && <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-4 w-4 object-contain" />{property.surface} m²</span>}
+              <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-4 w-4 object-contain" />{property.chambres}</span>
+              <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
             </div>
 
             {/* Disclaimer */}
