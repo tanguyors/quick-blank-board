@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+import { PageLoader } from "@/components/ui/PageLoader";
+
 // Eager: critical path
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
