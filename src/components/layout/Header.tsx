@@ -1,10 +1,11 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Settings, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import logoSoma from '@/assets/logo-soma.png';
+import iconSettings from '@/assets/icons/settings_secure.png';
 
 export function Header() {
   const { signOut } = useAuth();
@@ -34,7 +35,7 @@ export function Header() {
         <ThemeToggle />
         <NotificationBell />
         <button onClick={() => navigate('/profile')} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Paramètres">
-          <Settings className="h-5 w-5" />
+          <img src={iconSettings} alt="" className="h-5 w-5 object-contain" />
         </button>
         <button onClick={handleSignOut} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Se déconnecter">
           <LogOut className="h-5 w-5" />

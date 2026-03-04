@@ -4,7 +4,6 @@ import { SwipeStack } from '@/components/swipe/SwipeStack';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { ExploreFilters, DEFAULT_FILTERS, useFilterCount, type ExploreFilterValues } from '@/components/explore/ExploreFilters';
-import { LayoutGrid, Map, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import logoSoma from '@/assets/logo-soma.png';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +17,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
+import iconDashboard from '@/assets/icons/dashboard.png';
+import iconMap from '@/assets/icons/appmap.png';
+import iconMapPin from '@/assets/icons/map.png';
 
 const PropertyMap = lazy(() => import('@/components/map/PropertyMap').then(m => ({ default: m.PropertyMap })));
 
@@ -58,7 +61,7 @@ export default function Explore() {
           <AlertDialogHeader>
             <div className="flex justify-center mb-3">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapPin className="h-6 w-6 text-primary" />
+                <img src={iconMapPin} alt="" className="h-6 w-6 object-contain" />
               </div>
             </div>
             <AlertDialogTitle className="text-center">{t('explore.allowLocation')}</AlertDialogTitle>
@@ -99,7 +102,7 @@ export default function Explore() {
                   view === 'swipe' ? 'bg-foreground text-background' : 'text-muted-foreground'
                 }`}
               >
-                <LayoutGrid className="h-4 w-4" /> {t('explore.swipe')}
+                <img src={iconDashboard} alt="" className="h-4 w-4 object-contain" /> {t('explore.swipe')}
               </button>
               <button
                 onClick={() => setView('carte')}
@@ -107,7 +110,7 @@ export default function Explore() {
                   view === 'carte' ? 'bg-foreground text-background' : 'text-muted-foreground'
                 }`}
               >
-                <Map className="h-4 w-4" /> {t('explore.map')}
+                <img src={iconMap} alt="" className="h-4 w-4 object-contain" /> {t('explore.map')}
               </button>
             </div>
           </div>

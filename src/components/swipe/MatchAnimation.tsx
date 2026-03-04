@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import iconMatches from '@/assets/icons/matches.png';
 
 interface MatchAnimationProps {
   onClose: () => void;
@@ -22,14 +22,13 @@ export function MatchAnimation({ onClose }: MatchAnimationProps) {
         className="text-center px-8"
         onClick={e => e.stopPropagation()}
       >
-        {/* Animated sparkle ring */}
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 150 }}
           className="w-28 h-28 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-2xl shadow-primary/40"
         >
-          <Sparkles className="h-14 w-14 text-primary-foreground" />
+          <img src={iconMatches} alt="" className="h-14 w-14 object-contain" />
         </motion.div>
 
         <motion.h2

@@ -1,11 +1,11 @@
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { useState } from 'react';
+import iconNotifications from '@/assets/icons/notifications.png';
 
 export function NotificationBell() {
   const { notifications, unreadCount, markAsRead } = useNotifications();
@@ -22,7 +22,7 @@ export function NotificationBell() {
           className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5" />
+          <img src={iconNotifications} alt="" className="h-5 w-5 object-contain" />
           {count > 0 && (
             <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
               {count > 99 ? '99+' : count}
@@ -41,7 +41,7 @@ export function NotificationBell() {
 
         {!recentNotifs.length ? (
           <div className="p-6 text-center">
-            <Bell className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-30" />
+            <img src={iconNotifications} alt="" className="h-8 w-8 object-contain mx-auto mb-2 opacity-30" />
             <p className="text-muted-foreground text-sm">Aucune notification</p>
           </div>
         ) : (

@@ -3,7 +3,10 @@ import { PageTopBar } from '@/components/layout/PageTopBar';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useNavigate } from 'react-router-dom';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
-import { Star, MapPin, BedDouble, Bath, Maximize2, ArrowRight, Trash2 } from 'lucide-react';
+import { ArrowRight, Trash2 } from 'lucide-react';
+
+import iconFavorites from '@/assets/icons/favorites.png';
+import iconMap from '@/assets/icons/map.png';
 
 export default function Favorites() {
   const { favorites, removeFavorite } = useFavorites();
@@ -13,11 +16,10 @@ export default function Favorites() {
   return (
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
-        {/* Header */}
         <PageTopBar>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
-              <Star className="h-4 w-4 text-primary fill-primary" />
+              <img src={iconFavorites} alt="" className="h-5 w-5 object-contain" />
               <span className="text-foreground font-semibold">Favoris</span>
             </div>
             {favorites.data?.length ? (
@@ -33,7 +35,7 @@ export default function Favorites() {
             </div>
           ) : !favorites.data?.length ? (
             <div className="text-center p-8">
-              <Star className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
+              <img src={iconFavorites} alt="" className="h-12 w-12 object-contain mx-auto mb-3 opacity-30" />
               <p className="text-muted-foreground">Aucun favori pour le moment</p>
               <p className="text-xs text-muted-foreground/60 mt-1">Appuyez sur ★ dans Découvrir pour ajouter un bien</p>
             </div>
@@ -79,20 +81,14 @@ export default function Favorites() {
                     <div className="p-4">
                       <h3 className="font-bold text-lg text-foreground capitalize">{property?.type}</h3>
                       <div className="flex items-center gap-1 text-muted-foreground mt-1">
-                        <MapPin className="h-4 w-4" />
+                        <img src={iconMap} alt="" className="h-4 w-4 object-contain" />
                         <span className="text-sm">{property?.adresse}</span>
                       </div>
                       <div className="flex gap-3 mt-2 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <BedDouble className="h-4 w-4" /> {property?.chambres}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Bath className="h-4 w-4" /> {property?.salles_bain || 0}
-                        </span>
+                        <span>🛏 {property?.chambres}</span>
+                        <span>🚿 {property?.salles_bain || 0}</span>
                         {property?.surface && (
-                          <span className="flex items-center gap-1">
-                            <Maximize2 className="h-4 w-4" /> {property?.surface}m²
-                          </span>
+                          <span>📐 {property?.surface}m²</span>
                         )}
                       </div>
 
