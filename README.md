@@ -1,73 +1,137 @@
-# Welcome to your Lovable project
+<div align="center">
 
-## Project info
-
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+ ██████╗ ██╗   ██╗██╗ ██████╗██╗  ██╗    ██████╗ ██╗      █████╗ ███╗   ██╗██╗  ██╗
+██╔═══██╗██║   ██║██║██╔════╝██║ ██╔╝    ██╔══██╗██║     ██╔══██╗████╗  ██║██║ ██╔╝
+██║   ██║██║   ██║██║██║     █████╔╝     ██████╔╝██║     ███████║██╔██╗ ██║█████╔╝
+██║▄▄ ██║██║   ██║██║██║     ██╔═██╗     ██╔══██╗██║     ██╔══██║██║╚██╗██║██╔═██╗
+╚██████╔╝╚██████╔╝██║╚██████╗██║  ██╗    ██████╔╝███████╗██║  ██║██║ ╚████║██║  ██╗
+ ╚══▀▀═╝  ╚═════╝ ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
+                    ██████╗  ██████╗  █████╗ ██████╗ ██████╗
+                    ██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔══██╗
+                    ██████╔╝██║   ██║███████║██████╔╝██║  ██║
+                    ██╔══██╗██║   ██║██╔══██║██╔══██╗██║  ██║
+                    ██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
+                    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
 ```
 
-**Edit a file directly in GitHub**
+### 🇫🇷 French Real Estate Platform with Notaire Dashboard
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
 
-**Use GitHub Codespaces**
+![Commits](https://img.shields.io/badge/297+_Commits-FF6B35?style=for-the-badge&logo=git&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Production-00C853?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+</div>
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🎯 Overview
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**Quick Blank Board** is a full-stack French real estate transaction platform that digitizes the property buying process. It features a dedicated notaire (notary) dashboard for managing legal documents, a buyer/seller portal, and automated compliance with French real estate law.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## ⚡ Feature Matrix
 
-## Can I connect a custom domain to my Lovable project?
+| Module | Description | Status |
+|--------|-------------|--------|
+| 🏠 **Property Listings** | Rich property cards with photos, floor plans & virtual tours | ✅ Live |
+| ⚖️ **Notaire Dashboard** | Dedicated legal workspace for document review & signing | ✅ Live |
+| 📋 **Transaction Tracker** | Step-by-step pipeline from offer to closing | ✅ Live |
+| 📄 **Document Manager** | Secure upload, signing & storage of legal documents | ✅ Live |
+| 💰 **Financial Calculator** | Mortgage simulation, frais de notaire & tax estimation | ✅ Live |
+| 👥 **Multi-Party Portal** | Separate views for buyers, sellers, agents & notaires | ✅ Live |
+| 📱 **Mobile App** | Native iOS app via Capacitor for on-site property visits | ✅ Live |
+| 🔔 **Notifications** | Real-time alerts for document updates & deadlines | ✅ Live |
+| 🗓️ **Appointment System** | Schedule visits, signings & notaire consultations | ✅ Live |
+| 🇫🇷 **French Compliance** | Built-in DPE, diagnostics tracking & legal requirements | ✅ Live |
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🏗️ Architecture
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```
+┌──────────────────────────────────────────────────┐
+│            QUICK BLANK BOARD PLATFORM            │
+├──────────────────────────────────────────────────┤
+│  ┌───────────┐  ┌────────────┐  ┌────────────┐  │
+│  │  Buyer /  │  │  Notaire   │  │   Agent    │  │
+│  │  Seller   │  │  Dashboard │  │   Portal   │  │
+│  └─────┬─────┘  └─────┬──────┘  └─────┬──────┘  │
+│        └───────────────┼───────────────┘         │
+│         React + TypeScript + Capacitor           │
+│         Tailwind CSS + shadcn/ui                 │
+│  ┌──────────────────────────────────────────┐    │
+│  │         Supabase Backend                  │    │
+│  │  Auth (RLS) | PostgreSQL | Edge Functions │    │
+│  │  Storage (Documents) | Real-time          │    │
+│  └──────────────────────────────────────────┘    │
+│  iOS Native | Document Signing | Notifications   │
+└──────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Language** | TypeScript (97.6%) + PL/pgSQL |
+| **Framework** | React + Vite + Capacitor |
+| **Styling** | Tailwind CSS + shadcn/ui |
+| **Backend** | Supabase (Auth, DB, Storage, Edge Functions) |
+| **Database** | PostgreSQL with Row Level Security |
+| **Mobile** | Capacitor (iOS) |
+| **State** | TanStack Query |
+| **Hosting** | Vercel + App Store |
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/tanguyors/quick-blank-board.git
+cd quick-blank-board
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env.local
+
+# Start development server
+npm run dev
+
+# Build iOS app
+npx cap sync ios
+```
+
+---
+
+## 📈 Project Stats
+
+| Metric | Value |
+|--------|-------|
+| **Total Commits** | 297+ |
+| **Primary Language** | TypeScript (97.6%) |
+| **Platforms** | Web + iOS |
+| **User Roles** | Buyer, Seller, Agent, Notaire |
+| **Legal Compliance** | French real estate law |
+
+---
+
+<div align="center">
+
+**Built with 🏛️ for France by [@tanguyors](https://github.com/tanguyors)**
+
+*Digitizing French real estate, from compromis to acte authentique*
+
+</div>
