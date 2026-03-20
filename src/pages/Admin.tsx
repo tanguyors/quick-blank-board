@@ -86,6 +86,7 @@ export default function Admin() {
           {activeTab === 'visits' && <AdminVisitsTab />}
           {activeTab === 'transactions' && <AdminTransactionsTab />}
           {activeTab === 'notifications' && <AdminNotificationsTab />}
+          {activeTab === 'verifications' && <AdminVerificationsTab />}
           {activeTab === 'map' && (
             <div className="h-[calc(100vh-10rem)] w-full">
               <PropertyMap embedded />
