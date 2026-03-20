@@ -172,7 +172,7 @@ export function ProfileForm() {
         >
           <Flame className="h-6 w-6 text-primary mb-2" />
           <p className="font-semibold text-foreground text-sm">Explorer</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Swiper</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Découvrir</p>
         </button>
         <button
           onClick={() => navigate('/matches')}
