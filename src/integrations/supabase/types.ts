@@ -160,6 +160,48 @@ export type Database = {
           },
         ]
       }
+      identity_verifications: {
+        Row: {
+          created_at: string
+          document_type: string
+          document_url: string
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["identity_verification_status"]
+          submitted_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type?: string
+          document_url: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["identity_verification_status"]
+          submitted_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          document_url?: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["identity_verification_status"]
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       matches: {
         Row: {
           created_at: string
@@ -995,6 +1037,7 @@ export type Database = {
     }
     Enums: {
       app_role: "user" | "owner" | "admin" | "notaire" | "agent"
+      identity_verification_status: "pending" | "approved" | "rejected"
       media_type: "image" | "video"
       property_droit:
         | "titre_foncier"
@@ -1172,6 +1215,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["user", "owner", "admin", "notaire", "agent"],
+      identity_verification_status: ["pending", "approved", "rejected"],
       media_type: ["image", "video"],
       property_droit: [
         "titre_foncier",

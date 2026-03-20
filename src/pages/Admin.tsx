@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PageTopBar } from '@/components/layout/PageTopBar';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { Users, Building2, TrendingUp, FileText, Shield, Search, CalendarDays, Map, Mail } from 'lucide-react';
+import { Users, Building2, TrendingUp, FileText, Shield, Search, CalendarDays, Map, Mail, UserCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { AdminUserDetail } from '@/components/admin/AdminUserDetail';
@@ -15,8 +15,9 @@ import { AdminTransactionsTab } from '@/components/admin/AdminTransactionsTab';
 import { AdminOverviewTab } from '@/components/admin/AdminOverviewTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
 import { PropertyMap } from '@/components/map/PropertyMap';
+import { AdminVerificationsTab } from '@/components/admin/AdminVerificationsTab';
 
-type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'map';
+type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'verifications' | 'map';
 
 export default function Admin() {
   const { roles, loading } = useAuth();
@@ -39,6 +40,7 @@ export default function Admin() {
     { id: 'visits', label: 'Visites', icon: CalendarDays },
     { id: 'transactions', label: 'Transactions', icon: FileText },
     { id: 'notifications', label: 'Notifications', icon: Mail },
+    { id: 'verifications', label: 'Identités', icon: UserCheck },
     { id: 'map', label: 'Carte', icon: Map },
   ];
 
@@ -84,6 +86,7 @@ export default function Admin() {
           {activeTab === 'visits' && <AdminVisitsTab />}
           {activeTab === 'transactions' && <AdminTransactionsTab />}
           {activeTab === 'notifications' && <AdminNotificationsTab />}
+          {activeTab === 'verifications' && <AdminVerificationsTab />}
           {activeTab === 'map' && (
             <div className="h-[calc(100vh-10rem)] w-full">
               <PropertyMap embedded />

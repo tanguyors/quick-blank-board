@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save, Globe } from 'lucide-react';
 import { CURRENCIES } from '@/lib/currencies';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
+import { IdentityVerification } from '@/components/settings/IdentityVerification';
 import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import {
@@ -127,6 +128,8 @@ export default function AccountSettings() {
             prefs={{ notif_push: form.notif_push, notif_email: form.notif_email, notif_whatsapp: form.notif_whatsapp, notif_newsletter: form.notif_newsletter }}
             onToggle={(key, value) => { setForm(f => ({ ...f, [key]: value })); updateProfile.mutate({ [key]: value } as any); toast.success(t('settings.prefUpdated')); }}
           />
+
+          <IdentityVerification />
 
           <Button onClick={handleSave} className="w-full gap-2" disabled={updateProfile.isPending}>
             <Save className="h-4 w-4" /> {t('settings.saveChanges')}
