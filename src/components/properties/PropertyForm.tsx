@@ -48,6 +48,7 @@ const OPERATIONS = [
   { value: 'freehold', label: 'Freehold' },
   { value: 'leasehold', label: 'Leasehold' },
   { value: 'location', label: 'Location' },
+  { value: 'home_exchange', label: 'Home Exchange' },
 ] as const;
 
 /* Currencies imported from @/lib/currencies */
