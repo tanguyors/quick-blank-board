@@ -40,6 +40,7 @@ export default function Admin() {
     { id: 'visits', label: 'Visites', icon: CalendarDays },
     { id: 'transactions', label: 'Transactions', icon: FileText },
     { id: 'notifications', label: 'Notifications', icon: Mail },
+    { id: 'verifications', label: 'Identités', icon: UserCheck },
     { id: 'map', label: 'Carte', icon: Map },
   ];
 
