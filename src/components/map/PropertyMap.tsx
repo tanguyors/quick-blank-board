@@ -224,6 +224,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
               <SelectItem value="freehold">Freehold</SelectItem>
               <SelectItem value="leasehold">Leasehold</SelectItem>
               <SelectItem value="location">Location</SelectItem>
+              <SelectItem value="home_exchange">Home Exchange</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filters.type || 'all'} onValueChange={v => setFilters(f => ({ ...f, type: v === 'all' ? '' : v }))}>
