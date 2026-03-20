@@ -250,8 +250,8 @@ export function ExploreFilters({ filters, onFiltersChange, activeCount }: {
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">{t('explore.operation')}</label>
-                <div className="flex gap-2">
-                  {[{ value: 'freehold', label: 'Freehold' }, { value: 'leasehold', label: 'Leasehold' }, { value: 'location', labelKey: 'property.rental' }].map(op => (
+                <div className="flex flex-wrap gap-2">
+                  {[{ value: 'freehold', label: 'Freehold' }, { value: 'leasehold', label: 'Leasehold' }, { value: 'location', labelKey: 'property.rental' }, { value: 'home_exchange', label: 'Home Exchange' }].map(op => (
                     <button
                       key={op.value}
                       onClick={() => setDraft(d => ({ ...d, operation: d.operation === op.value ? null : op.value }))}

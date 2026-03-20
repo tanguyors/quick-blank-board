@@ -48,6 +48,7 @@ const OPERATIONS = [
   { value: 'freehold', label: 'Freehold' },
   { value: 'leasehold', label: 'Leasehold' },
   { value: 'location', label: 'Location' },
+  { value: 'home_exchange', label: 'Home Exchange' },
 ] as const;
 
 /* Currencies imported from @/lib/currencies */
@@ -97,10 +98,10 @@ const EQ_HEBERGEMENT_ANIMAUX: TypeConfig['equipementCategories'] = [
 ];
 
 const TYPE_CONFIGS: Record<string, TypeConfig> = {
-  appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
-  studio:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
-  villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
-  maison:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location'] },
+  appartement:        { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location', 'home_exchange'] },
+  studio:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location', 'home_exchange'] },
+  villa:              { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location', 'home_exchange'] },
+  maison:             { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_RESIDENTIAL, allowedOperations: ['freehold', 'leasehold', 'location', 'home_exchange'] },
   maison_a_renover:   { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: false, equipementCategories: [],              allowedOperations: ['freehold', 'leasehold'] },
   terrain:            { showRooms: false, showBathrooms: false, showDroit: true,  showEquipements: true,  equipementCategories: EQ_TERRAIN,      allowedOperations: ['freehold', 'leasehold'] },
   bureau:             { showRooms: false, showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_COMMERCIAL,   allowedOperations: ['freehold', 'leasehold', 'location'] },
@@ -112,7 +113,7 @@ const TYPE_CONFIGS: Record<string, TypeConfig> = {
   colocation_courte:  { showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
   hebergement_service:{ showRooms: true,  showBathrooms: true,  showDroit: false, showEquipements: true,  equipementCategories: EQ_COLOCATION,   allowedOperations: ['location'] },
   hebergement_animaux:{ showRooms: false, showBathrooms: false, showDroit: false, showEquipements: true,  equipementCategories: EQ_HEBERGEMENT_ANIMAUX, allowedOperations: ['location'] },
-  guesthouse:         { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_GUESTHOUSE,   allowedOperations: ['freehold', 'leasehold', 'location'] },
+  guesthouse:         { showRooms: true,  showBathrooms: true,  showDroit: true,  showEquipements: true,  equipementCategories: EQ_GUESTHOUSE,   allowedOperations: ['freehold', 'leasehold', 'location', 'home_exchange'] },
 };
 
 function getConfig(type: string): TypeConfig {

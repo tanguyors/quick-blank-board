@@ -89,7 +89,7 @@ export default function BuyerDashboard() {
             >
               <img src={iconExplore} alt="" className="h-7 w-7 object-contain mb-2" />
               <p className="font-semibold text-foreground text-sm">Explorer</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Swiper</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Découvrir</p>
             </button>
             <button
               onClick={() => navigate('/matches')}

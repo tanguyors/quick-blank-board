@@ -224,6 +224,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
               <SelectItem value="freehold">Freehold</SelectItem>
               <SelectItem value="leasehold">Leasehold</SelectItem>
               <SelectItem value="location">Location</SelectItem>
+              <SelectItem value="home_exchange">Home Exchange</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filters.type || 'all'} onValueChange={v => setFilters(f => ({ ...f, type: v === 'all' ? '' : v }))}>
@@ -298,7 +299,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
                       );
                     })()}
                     <p className="font-bold text-sm mb-0.5">{displayPrice(p.prix, p.prix_currency)}</p>
-                    <p className="text-xs font-medium mb-0.5">{p.operations === 'freehold' ? 'Freehold' : p.operations === 'leasehold' ? 'Leasehold' : 'Location'} · {p.type}</p>
+                    <p className="text-xs font-medium mb-0.5">{p.operations === 'freehold' ? 'Freehold' : p.operations === 'leasehold' ? 'Leasehold' : p.operations === 'home_exchange' ? 'Home Exchange' : 'Location'} · {p.type}</p>
                     <p className="text-xs text-muted-foreground mb-0.5">
                       {p.chambres} ch. · {p.salles_bain} sdb{p.surface ? ` · ${p.surface} m²` : ''}
                     </p>

@@ -1008,6 +1008,7 @@ export type Database = {
         | "achat"
         | "leasehold"
         | "freehold"
+        | "home_exchange"
       property_status: "available" | "sold" | "rented" | "draft"
       property_type:
         | "villa"
@@ -1185,6 +1186,7 @@ export const Constants = {
         "achat",
         "leasehold",
         "freehold",
+        "home_exchange",
       ],
       property_status: ["available", "sold", "rented", "draft"],
       property_type: [
