@@ -155,7 +155,7 @@ export function ProfileForm() {
           <div className="mt-3 h-1.5 bg-secondary rounded-full overflow-hidden">
             <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${scoreValue}%` }} />
           </div>
-          <p className="text-xs text-muted-foreground mt-2">↗ Swipez et visitez pour augmenter votre score</p>
+          <p className="text-xs text-muted-foreground mt-2">↗ Explorez et visitez pour augmenter votre score</p>
           {userScore?.certified && (
             <div className="mt-2 flex items-center gap-1.5 text-primary text-xs font-medium">
               ✅ Client Certifié
