@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PageTopBar } from '@/components/layout/PageTopBar';
 import { Navigate, useSearchParams } from 'react-router-dom';
-import { Users, Building2, TrendingUp, FileText, Shield, Search, CalendarDays, Map, Mail } from 'lucide-react';
+import { Users, Building2, TrendingUp, FileText, Shield, Search, CalendarDays, Map, Mail, UserCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { AdminUserDetail } from '@/components/admin/AdminUserDetail';
