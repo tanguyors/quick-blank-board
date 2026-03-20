@@ -299,7 +299,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
                       );
                     })()}
                     <p className="font-bold text-sm mb-0.5">{displayPrice(p.prix, p.prix_currency)}</p>
-                    <p className="text-xs font-medium mb-0.5">{p.operations === 'freehold' ? 'Freehold' : p.operations === 'leasehold' ? 'Leasehold' : 'Location'} · {p.type}</p>
+                    <p className="text-xs font-medium mb-0.5">{p.operations === 'freehold' ? 'Freehold' : p.operations === 'leasehold' ? 'Leasehold' : p.operations === 'home_exchange' ? 'Home Exchange' : 'Location'} · {p.type}</p>
                     <p className="text-xs text-muted-foreground mb-0.5">
                       {p.chambres} ch. · {p.salles_bain} sdb{p.surface ? ` · ${p.surface} m²` : ''}
                     </p>
