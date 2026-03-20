@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save, Globe } from 'lucide-react';
 import { CURRENCIES } from '@/lib/currencies';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
+import { IdentityVerification } from '@/components/settings/IdentityVerification';
 import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import { useTranslation } from 'react-i18next';
 import {
