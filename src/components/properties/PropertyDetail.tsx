@@ -64,11 +64,13 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
                   ? 'Freehold'
                   : property.operations === 'leasehold'
                     ? 'Leasehold'
-                    : property.operations === 'location'
-                      ? t('property.rental')
-                      : property.operations === 'achat'
-                        ? t('property.purchase')
-                        : property.operations}
+                    : property.operations === 'home_exchange'
+                      ? 'Home Exchange'
+                      : property.operations === 'location'
+                        ? t('property.rental')
+                        : property.operations === 'achat'
+                          ? t('property.purchase')
+                          : property.operations}
               </Badge>
             </div>
             <p className="text-2xl font-bold text-primary">{displayPrice(property.prix, property.prix_currency)}</p>
