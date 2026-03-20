@@ -15,8 +15,9 @@ import { AdminTransactionsTab } from '@/components/admin/AdminTransactionsTab';
 import { AdminOverviewTab } from '@/components/admin/AdminOverviewTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
 import { PropertyMap } from '@/components/map/PropertyMap';
+import { AdminVerificationsTab } from '@/components/admin/AdminVerificationsTab';
 
-type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'map';
+type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'verifications' | 'map';
 
 export default function Admin() {
   const { roles, loading } = useAuth();
