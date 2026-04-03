@@ -375,7 +375,8 @@
   "notifications": {
     "noNotifications": "No notifications",
     "viewAll": "View all notifications",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all as read",
+    "deleteRead": "Clear read"
   },
   "txPage": {
     "title": "Transaction",
@@ -545,6 +546,14 @@
     "suspectMessage": "Your message was sent but contains suspicious terms. Reminder: all exchanges must remain on the platform.",
     "suspect": "Suspect",
     "placeholder": "Your secure message...",
-    "blocked": "Message blocked"
+    "blocked": "Message blocked",
+    "conversations": "conversations",
+    "noConversations": "No conversations yet",
+    "user": "User"
+  },
+  "owner": {
+    "myProfile": "My Profile",
+    "aboutActivity": "About my activity",
+    "activityPlaceholder": "Describe your real estate activity..."
   }
 }

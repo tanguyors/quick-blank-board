@@ -2,10 +2,11 @@ import { useConversations } from '@/hooks/useConversations';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale/fr';
 import { MessageSquare } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function OwnerMessagesTab() {
+  const { t } = useTranslation();
   const { data: conversations, isLoading } = useConversations();
   const navigate = useNavigate();
 
@@ -23,14 +24,14 @@ export function OwnerMessagesTab() {
     <div className="p-4">
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h3 className="text-lg font-bold text-foreground">Messages</h3>
-          <p className="text-sm text-muted-foreground">{count} conversation{count !== 1 ? 's' : ''}</p>
+          <h3 className="text-lg font-bold text-foreground">{t('nav.messages')}</h3>
+          <p className="text-sm text-muted-foreground">{count} {t('messaging.conversations', 'conversations')}</p>
         </div>
 
         {!conversations?.length ? (
           <div className="p-12 text-center">
             <MessageSquare className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-            <p className="text-muted-foreground text-sm">Aucune conversation pour le moment</p>
+            <p className="text-muted-foreground text-sm">{t('messaging.noConversations', 'No conversations yet')}</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -48,11 +49,11 @@ export function OwnerMessagesTab() {
                     <AvatarFallback>{other?.full_name?.[0] || '?'}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate text-foreground">{other?.full_name || 'Utilisateur'}</p>
+                    <p className="font-medium truncate text-foreground">{other?.full_name || t('messaging.user', 'User')}</p>
                     <p className="text-sm text-muted-foreground truncate">{property?.adresse}</p>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {format(new Date(conv.last_message_at), 'dd/MM', { locale: fr })}
+                    {format(new Date(conv.last_message_at), 'dd/MM')}
                   </span>
                 </button>
               );

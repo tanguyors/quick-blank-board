@@ -95,5 +95,35 @@ export function useNotifications() {
     },
   });
 
-  return { notifications, unreadCount, markAsRead, markAllAsRead };
+  const deleteRead = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('wf_notifications')
+        .delete()
+        .eq('user_id', user!.id)
+        .not('read_at', 'is', null);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+    },
+  });
+
+  const deleteOne = useMutation({
+    mutationFn: async (notificationId: string) => {
+      const { error } = await supabase
+        .from('wf_notifications')
+        .delete()
+        .eq('id', notificationId)
+        .eq('user_id', user!.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+    },
+  });
+
+  return { notifications, unreadCount, markAsRead, markAllAsRead, deleteRead, deleteOne };
 }

@@ -375,7 +375,8 @@
   "notifications": {
     "noNotifications": "Aucune notification",
     "viewAll": "Voir toutes les notifications",
-    "markAllRead": "Tout marquer comme lu"
+    "markAllRead": "Tout marquer comme lu",
+    "deleteRead": "Supprimer lues"
   },
   "txPage": {
     "title": "Transaction",
@@ -545,6 +546,14 @@
     "suspectMessage": "Votre message a été envoyé mais contient des termes suspects. Rappel: tous les échanges doivent rester sur la plateforme.",
     "suspect": "Suspect",
     "placeholder": "Votre message sécurisé...",
-    "blocked": "Message bloqué"
+    "blocked": "Message bloqué",
+    "conversations": "conversations",
+    "noConversations": "Aucune conversation pour le moment",
+    "user": "Utilisateur"
+  },
+  "owner": {
+    "myProfile": "Mon Profil",
+    "aboutActivity": "À propos de mon activité",
+    "activityPlaceholder": "Décrivez votre activité immobilière..."
   }
 }

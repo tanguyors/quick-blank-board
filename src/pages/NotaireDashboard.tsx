@@ -50,7 +50,7 @@ export default function NotaireDashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex shrink-0 border-b border-border bg-background">
+        <div className="flex shrink-0 overflow-x-auto border-b border-border bg-background">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (

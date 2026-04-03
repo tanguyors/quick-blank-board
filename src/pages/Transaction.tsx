@@ -130,7 +130,7 @@ export default function Transaction() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-border">
+        <div className="flex overflow-x-auto border-b border-border">
           {tabs.map(tab => (
             <button
               key={tab.id}

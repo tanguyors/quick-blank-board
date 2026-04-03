@@ -91,9 +91,17 @@
 /* Hide scrollbars — native mobile feel (scroll with touch) */
 * {
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 ::-webkit-scrollbar {
   display: none;
+}
+
+/* Horizontal scroll containers — smooth touch scrolling */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
 }
 
 /* Safe area for mobile (notch / Dynamic Island / home indicator) */

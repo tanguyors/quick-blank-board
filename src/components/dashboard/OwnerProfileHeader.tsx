@@ -6,8 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function OwnerProfileHeader() {
+  const { t } = useTranslation();
   const { profile, user } = useAuth();
   const { updateProfile } = useProfile();
   const [editingBio, setEditingBio] = useState(false);
@@ -19,7 +21,7 @@ export function OwnerProfileHeader() {
   const handleSaveBio = async () => {
     try {
       await updateProfile.mutateAsync({ bio });
-      toast.success('Description mise à jour');
+      toast.success(t('profile.bioUpdated'));
       setEditingBio(false);
     } catch (error: any) {
       toast.error(error.message);
@@ -33,51 +35,49 @@ export function OwnerProfileHeader() {
 
   return (
     <div className="mx-4 mt-4 space-y-3">
-      {/* Profile card */}
       <div className="bg-card rounded-2xl p-5 border border-border">
         <div className="flex items-center gap-4">
           <AvatarUpload url={avatarUrl || profile?.avatar_url} onUpload={handleAvatarUpload} />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-muted-foreground">Mon Profil</p>
+            <p className="text-xs text-muted-foreground">{t('owner.myProfile', 'My Profile')}</p>
             <h2 className="text-xl font-bold text-foreground truncate">{displayName} 👋</h2>
-            <p className="text-sm text-muted-foreground">✨ Membre SomaGate Pro</p>
+            <p className="text-sm text-muted-foreground">✨ {t('profile.memberSomgatePro')}</p>
           </div>
         </div>
       </div>
 
-      {/* Activity bio */}
       <div
         className="bg-card rounded-2xl p-4 border border-border cursor-pointer"
         onClick={() => !editingBio && setEditingBio(true)}
       >
         {editingBio ? (
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">À PROPOS DE MON ACTIVITÉ</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('owner.aboutActivity', 'About my activity')}</p>
             <Textarea
               value={bio}
               onChange={e => setBio(e.target.value)}
-              placeholder="Décrivez votre activité immobilière..."
+              placeholder={t('owner.activityPlaceholder', 'Describe your real estate activity...')}
               rows={3}
               className="bg-secondary/50 border-border resize-none text-foreground placeholder:text-muted-foreground"
               autoFocus
             />
             <div className="flex justify-end gap-2">
               <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditingBio(false); setBio(profile?.bio || ''); }}>
-                Annuler
+                {t('profile.cancel')}
               </Button>
               <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSaveBio(); }}>
-                Enregistrer
+                {t('profile.save')}
               </Button>
             </div>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">À PROPOS DE MON ACTIVITÉ</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t('owner.aboutActivity', 'About my activity')}</p>
               <Pencil className="h-4 w-4 text-muted-foreground" />
             </div>
             <p className={bio ? 'text-foreground text-sm' : 'text-muted-foreground text-sm'}>
-              {bio || 'Cliquez sur le crayon pour ajouter une description de votre activité...'}
+              {bio || t('owner.activityPlaceholder', 'Describe your real estate activity...')}
             </p>
           </>
         )}
