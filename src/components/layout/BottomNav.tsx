@@ -55,10 +55,11 @@ export function BottomNav() {
 
   return (
     <nav
-      className="z-50 shrink-0 w-full border-t border-border bg-background pb-safe lg:hidden"
+      className="z-50 shrink-0 w-full border-t border-border bg-background lg:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Navigation mobile"
     >
-      <div className="mx-auto flex h-16 max-w-lg items-center justify-around">
+      <div className="mx-auto flex h-14 max-w-lg items-center justify-around">
         {links.map((link) => {
           const { to, icon, label } = link;
           const tabLink = 'tab' in link ? (link as any).tab : null;

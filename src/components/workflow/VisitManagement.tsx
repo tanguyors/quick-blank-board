@@ -9,6 +9,7 @@ import { SecurityBanner } from './SecurityAlert';
 import type { TransactionStatus, WfTransaction } from '@/types/workflow';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface VisitManagementProps {
   transaction: WfTransaction;
@@ -34,6 +35,7 @@ export function VisitManagement({
   isLoading,
 }: VisitManagementProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const isBuyer = user?.id === transaction.buyer_id;
   const isSeller = user?.id === transaction.seller_id;
   const status = transaction.status as TransactionStatus;
@@ -48,7 +50,7 @@ export function VisitManagement({
       )}
 
       {status === 'matched' && isSeller && (
-        <WaitingCard message="En attente d'une demande de visite de l'acheteur." />
+        <WaitingCard message={t('visitMgmt.waitingBuyerRequest')} />
       )}
 
       {/* Propose dates OR refuse - seller only when visit_requested */}
@@ -61,7 +63,7 @@ export function VisitManagement({
       )}
 
       {status === 'visit_requested' && isBuyer && (
-        <WaitingCard message="Votre demande de visite a été envoyée. En attente de réponse du propriétaire." />
+        <WaitingCard message={t('visitMgmt.requestSent')} />
       )}
 
       {/* Confirm visit - both parties when visit_proposed */}
@@ -90,7 +92,7 @@ export function VisitManagement({
       )}
 
       {status === 'visit_completed' && isSeller && (
-        <WaitingCard message="En attente de la décision de l'acheteur après la visite." />
+        <WaitingCard message={t('visitMgmt.waitingBuyerDecision')} />
       )}
 
       {/* Rescheduled - seller proposes new dates */}
@@ -104,22 +106,22 @@ export function VisitManagement({
       )}
 
       {status === 'visit_rescheduled' && isBuyer && (
-        <WaitingCard message="La visite a été reportée. En attente de nouvelles dates du propriétaire." />
+        <WaitingCard message={t('visitMgmt.visitRescheduled')} />
       )}
 
       {/* Cancelled */}
       {status === 'visit_cancelled' && (
         <div className="bg-card rounded-xl p-4 border border-destructive/30">
-          <p className="text-destructive font-medium">Visite annulée</p>
+          <p className="text-destructive font-medium">{t('visitMgmt.visitCancelled')}</p>
           {transaction.visit_refusal_reason && (
-            <p className="text-muted-foreground text-sm mt-2">Raison : {transaction.visit_refusal_reason}</p>
+            <p className="text-muted-foreground text-sm mt-2">{t('visitMgmt.reason')} : {transaction.visit_refusal_reason}</p>
           )}
           {transaction.visit_refusal_details && (
             <p className="text-muted-foreground text-sm mt-1">{transaction.visit_refusal_details}</p>
           )}
           {isBuyer && (
             <Button className="mt-3 w-full" onClick={onRequestVisit} disabled={isLoading}>
-              Redemander une visite
+              {t('visitMgmt.requestAgain')}
             </Button>
           )}
         </div>
@@ -131,29 +133,24 @@ export function VisitManagement({
 // ── Request Visit ──────────────────────────────────────────────────────────────
 
 function RequestVisitCard({ onRequest, isLoading }: { onRequest: () => Promise<any>; isLoading: boolean }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-card rounded-xl p-4 border border-border space-y-3">
       <div className="flex items-center gap-2">
         <Calendar className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold text-foreground">Demander une visite</h3>
+        <h3 className="font-semibold text-foreground">{t('visitMgmt.requestVisit')}</h3>
       </div>
       <p className="text-sm text-muted-foreground">
-        Vous avez matché avec ce bien ! Demandez une visite pour le découvrir.
+        {t('visitMgmt.matchedWithProperty')}
       </p>
-      <Button className="w-full" onClick={async () => { await onRequest(); toast.success('Demande de visite envoyée !'); }} disabled={isLoading}>
-        Demander une visite
+      <Button className="w-full" onClick={async () => { await onRequest(); toast.success(t('visitMgmt.visitRequestSent')); }} disabled={isLoading}>
+        {t('visitMgmt.requestVisit')}
       </Button>
     </div>
   );
 }
 
 // ── Propose Dates + Refuse Visit ──────────────────────────────────────────────
-
-const REFUSAL_REASONS = [
-  { value: 'unavailable', label: 'Bien non disponible' },
-  { value: 'occupied', label: 'Bien occupé' },
-  { value: 'unqualified', label: 'Profil insuffisamment qualifié' },
-] as const;
 
 function ProposeDatesCard({
   onPropose, onRefuse, isLoading, isReschedule = false,
@@ -163,29 +160,36 @@ function ProposeDatesCard({
   isLoading: boolean;
   isReschedule?: boolean;
 }) {
+  const { t } = useTranslation();
   const [dates, setDates] = useState(['', '', '']);
   const [showRefuse, setShowRefuse] = useState(false);
   const [refusalReason, setRefusalReason] = useState('');
   const [refusalDetails, setRefusalDetails] = useState('');
 
+  const REFUSAL_REASONS = [
+    { value: 'unavailable', label: t('visitMgmt.propertyUnavailable') },
+    { value: 'occupied', label: t('visitMgmt.propertyOccupied') },
+    { value: 'unqualified', label: t('visitMgmt.profileNotQualified') },
+  ] as const;
+
   const handleSubmit = async () => {
     const validDates = dates.filter(d => d).map((d, i) => ({ date: d, preference: i + 1 }));
     if (validDates.length === 0) {
-      toast.error('Proposez au moins une date');
+      toast.error(t('visitMgmt.proposeAtLeastOne'));
       return;
     }
     await onPropose(validDates);
-    toast.success('Dates proposées !');
+    toast.success(t('visitMgmt.datesProposed'));
   };
 
   const handleRefuse = async () => {
     if (!refusalReason) {
-      toast.error('Sélectionnez un motif de refus');
+      toast.error(t('visitMgmt.selectRefusalReason'));
       return;
     }
     const reasonLabel = REFUSAL_REASONS.find(r => r.value === refusalReason)?.label || refusalReason;
     await onRefuse(reasonLabel, refusalDetails || undefined);
-    toast.success('Visite refusée');
+    toast.success(t('visitMgmt.visitRefused'));
   };
 
   if (showRefuse) {
@@ -193,7 +197,7 @@ function ProposeDatesCard({
       <div className="bg-card rounded-xl p-4 border border-border space-y-4">
         <h3 className="font-semibold text-foreground flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-destructive" />
-          Refuser la visite
+          {t('visitMgmt.refuseVisit')}
         </h3>
 
         <SecurityBanner type="visit_refusal_warning" />
@@ -222,17 +226,17 @@ function ProposeDatesCard({
         <Textarea
           value={refusalDetails}
           onChange={e => setRefusalDetails(e.target.value)}
-          placeholder="Détails supplémentaires (optionnel)"
+          placeholder={t('visitMgmt.additionalDetails')}
           className="bg-background border-border"
           maxLength={500}
         />
 
         <div className="flex gap-2">
           <Button variant="outline" className="flex-1" onClick={() => setShowRefuse(false)}>
-            Annuler
+            {t('profile.cancel')}
           </Button>
           <Button variant="destructive" className="flex-1" onClick={handleRefuse} disabled={isLoading || !refusalReason}>
-            Confirmer le refus
+            {t('txPage.confirmReject')}
           </Button>
         </div>
       </div>
@@ -243,9 +247,9 @@ function ProposeDatesCard({
     <div className="bg-card rounded-xl p-4 border border-border space-y-3">
       <h3 className="font-semibold text-foreground flex items-center gap-2">
         <Clock className="h-5 w-5 text-primary" />
-        {isReschedule ? 'Proposer de nouvelles dates' : 'Proposer des dates de visite'}
+        {isReschedule ? t('visitMgmt.proposeNewDates') : t('visitMgmt.proposeDates')}
       </h3>
-      <p className="text-sm text-muted-foreground">Proposez jusqu'à 3 dates et horaires.</p>
+      <p className="text-sm text-muted-foreground">{t('visitMgmt.proposeUpTo3')}</p>
       {[0, 1, 2].map(i => (
         <Input
           key={i}
@@ -261,11 +265,11 @@ function ProposeDatesCard({
         />
       ))}
       <Button className="w-full" onClick={handleSubmit} disabled={isLoading}>
-        Proposer ces dates
+        {t('visitMgmt.proposeTheseDates')}
       </Button>
       {!isReschedule && (
         <Button variant="ghost" className="w-full text-destructive" onClick={() => setShowRefuse(true)}>
-          <X className="h-4 w-4 mr-2" /> Refuser la visite
+          <X className="h-4 w-4 mr-2" /> {t('visitMgmt.refuseVisit')}
         </Button>
       )}
     </div>
@@ -277,6 +281,7 @@ function ProposeDatesCard({
 function ConfirmVisitCard({
   transaction, onConfirm, isBuyer, isLoading
 }: { transaction: WfTransaction; onConfirm: (date: string) => Promise<any>; isBuyer: boolean; isLoading: boolean }) {
+  const { t } = useTranslation();
   const proposedDates = transaction.visit_proposed_dates as { date: string; preference: number }[] | null;
   const alreadyConfirmed = isBuyer ? transaction.visit_confirmed_by_buyer : transaction.visit_confirmed_by_seller;
 
@@ -284,7 +289,7 @@ function ConfirmVisitCard({
     return (
       <div className="bg-card rounded-xl p-4 border border-border">
         <p className="text-muted-foreground text-sm">
-          ✅ Vous avez confirmé. En attente de l'autre participant.
+          ✅ {t('visitMgmt.youConfirmed')}
         </p>
       </div>
     );
@@ -292,20 +297,20 @@ function ConfirmVisitCard({
 
   return (
     <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-      <h3 className="font-semibold text-foreground">Confirmez une date</h3>
+      <h3 className="font-semibold text-foreground">{t('visitMgmt.confirmDate')}</h3>
       {proposedDates?.map((d, i) => (
         <Button
           key={i}
           variant="outline"
           className="w-full justify-start"
-          onClick={async () => { await onConfirm(d.date); toast.success('Date confirmée !'); }}
+          onClick={async () => { await onConfirm(d.date); toast.success(t('visitMgmt.dateConfirmed')); }}
           disabled={isLoading}
         >
           <Calendar className="h-4 w-4 mr-2" />
           {new Date(d.date).toLocaleDateString('fr-FR', {
             weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
           })}
-          {d.preference === 1 && <span className="ml-auto text-xs text-primary">Préféré</span>}
+          {d.preference === 1 && <span className="ml-auto text-xs text-primary">{t('visitMgmt.preferred')}</span>}
         </Button>
       ))}
     </div>
@@ -322,13 +327,14 @@ function VisitConfirmedCard({
   onReschedule: () => Promise<any>;
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-3">
       {/* Confirmed banner */}
       <div className="bg-card rounded-xl p-4 border border-green-500/30 space-y-3">
         <div className="flex items-center gap-2 text-green-400">
           <Check className="h-5 w-5" />
-          <h3 className="font-semibold">Visite confirmée !</h3>
+          <h3 className="font-semibold">{t('visitMgmt.visitConfirmed')}</h3>
         </div>
         {transaction.visit_confirmed_date && (
           <p className="text-muted-foreground text-sm">
@@ -341,22 +347,22 @@ function VisitConfirmedCard({
 
       {/* Post-visit actions */}
       <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-        <h3 className="font-semibold text-foreground">La visite a-t-elle eu lieu ?</h3>
+        <h3 className="font-semibold text-foreground">{t('visitMgmt.didVisitHappen')}</h3>
         <div className="flex gap-2">
-          <Button className="flex-1" onClick={async () => { await onComplete(true); toast.success('Visite validée !'); }} disabled={isLoading}>
-            <Check className="h-4 w-4 mr-2" /> Effectuée
+          <Button className="flex-1" onClick={async () => { await onComplete(true); toast.success(t('visitMgmt.visitValidated')); }} disabled={isLoading}>
+            <Check className="h-4 w-4 mr-2" /> {t('visitMgmt.completed')}
           </Button>
-          <Button variant="outline" className="flex-1" onClick={async () => { await onComplete(false); toast.error('No-show signalé'); }} disabled={isLoading}>
-            <X className="h-4 w-4 mr-2" /> Absent(e)
+          <Button variant="outline" className="flex-1" onClick={async () => { await onComplete(false); toast.error(t('visitMgmt.noShowReported')); }} disabled={isLoading}>
+            <X className="h-4 w-4 mr-2" /> {t('visitMgmt.absent')}
           </Button>
         </div>
         <Button
           variant="ghost"
           className="w-full text-muted-foreground"
-          onClick={async () => { await onReschedule(); toast.info('Visite reportée'); }}
+          onClick={async () => { await onReschedule(); toast.info(t('visitMgmt.visitPostponed')); }}
           disabled={isLoading}
         >
-          <RotateCcw className="h-4 w-4 mr-2" /> Reporter la visite
+          <RotateCcw className="h-4 w-4 mr-2" /> {t('visitMgmt.reschedule')}
         </Button>
       </div>
     </div>
@@ -365,25 +371,26 @@ function VisitConfirmedCard({
 
 // ── Intention Card with Structured Stop Motifs ────────────────────────────────
 
-const STOP_MOTIFS = [
-  { value: 'non_conforme_photos', label: 'Bien non conforme aux photos' },
-  { value: 'pas_coup_coeur', label: 'Pas de coup de cœur' },
-  { value: 'emplacement_inadapte', label: 'Emplacement non adapté' },
-  { value: 'prix_inadapte', label: 'Prix ou conditions non adaptés' },
-  { value: 'etat_non_conforme', label: 'État général non conforme' },
-  { value: 'projet_modifie', label: 'Projet modifié' },
-  { value: 'autre_bien_trouve', label: 'Autre bien trouvé' },
-  { value: 'autre', label: 'Autre' },
-] as const;
-
 function IntentionCard({ onExpress, isLoading }: { onExpress: (args: { intention: 'continue' | 'offer' | 'stop'; reason?: string; details?: string }) => Promise<any>; isLoading: boolean }) {
+  const { t } = useTranslation();
   const [showStopMotifs, setShowStopMotifs] = useState(false);
   const [selectedMotif, setSelectedMotif] = useState('');
   const [otherDetails, setOtherDetails] = useState('');
 
+  const STOP_MOTIFS = [
+    { value: 'non_conforme_photos', label: t('visitMgmt.notMatchingPhotos') },
+    { value: 'pas_coup_coeur', label: t('visitMgmt.noFeeling') },
+    { value: 'emplacement_inadapte', label: t('visitMgmt.locationNotSuitable') },
+    { value: 'prix_inadapte', label: t('visitMgmt.priceNotSuitable') },
+    { value: 'etat_non_conforme', label: t('visitMgmt.conditionNotSuitable') },
+    { value: 'projet_modifie', label: t('visitMgmt.projectChanged') },
+    { value: 'autre_bien_trouve', label: t('visitMgmt.otherPropertyFound') },
+    { value: 'autre', label: t('visitMgmt.other') },
+  ] as const;
+
   const handleStop = async () => {
     if (!selectedMotif) {
-      toast.error('Veuillez sélectionner un motif');
+      toast.error(t('visitMgmt.selectReason'));
       return;
     }
     const motifLabel = STOP_MOTIFS.find(m => m.value === selectedMotif)?.label || selectedMotif;
@@ -393,11 +400,11 @@ function IntentionCard({ onExpress, isLoading }: { onExpress: (args: { intention
 
   return (
     <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-      <h3 className="font-semibold text-foreground">Quelle suite souhaitez-vous donner ?</h3>
+      <h3 className="font-semibold text-foreground">{t('visitMgmt.whatNext')}</h3>
 
       {showStopMotifs ? (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Pourquoi souhaitez-vous arrêter ?</p>
+          <p className="text-sm text-muted-foreground">{t('visitMgmt.whyStop')}</p>
           <div className="space-y-2">
             {STOP_MOTIFS.map(motif => (
               <label
@@ -423,7 +430,7 @@ function IntentionCard({ onExpress, isLoading }: { onExpress: (args: { intention
             <Textarea
               value={otherDetails}
               onChange={e => setOtherDetails(e.target.value)}
-              placeholder="Précisez la raison..."
+              placeholder={t('visitMgmt.specifyReason')}
               className="bg-background border-border"
               maxLength={500}
             />
@@ -431,23 +438,23 @@ function IntentionCard({ onExpress, isLoading }: { onExpress: (args: { intention
 
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setShowStopMotifs(false); setSelectedMotif(''); }}>
-              Annuler
+              {t('profile.cancel')}
             </Button>
             <Button variant="destructive" className="flex-1" onClick={handleStop} disabled={isLoading || !selectedMotif}>
-              Confirmer l'arrêt
+              {t('visitMgmt.confirmStop')}
             </Button>
           </div>
         </div>
       ) : (
         <div className="space-y-2">
-          <Button className="w-full" onClick={async () => { await onExpress({ intention: 'offer' }); toast.success('Intention enregistrée !'); }} disabled={isLoading}>
-            💰 Faire une offre
+          <Button className="w-full" onClick={async () => { await onExpress({ intention: 'offer' }); toast.success(t('visitMgmt.intentionRecorded')); }} disabled={isLoading}>
+            💰 {t('visitMgmt.makeOffer')}
           </Button>
-          <Button variant="outline" className="w-full" onClick={async () => { await onExpress({ intention: 'continue' }); toast.success('Intention enregistrée !'); }} disabled={isLoading}>
-            🤔 Continuer les échanges
+          <Button variant="outline" className="w-full" onClick={async () => { await onExpress({ intention: 'continue' }); toast.success(t('visitMgmt.intentionRecorded')); }} disabled={isLoading}>
+            🤔 {t('visitMgmt.continueExchanges')}
           </Button>
           <Button variant="ghost" className="w-full text-destructive" onClick={() => setShowStopMotifs(true)}>
-            ✋ Arrêter
+            ✋ {t('visitMgmt.stop')}
           </Button>
         </div>
       )}

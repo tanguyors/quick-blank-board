@@ -6,6 +6,54 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 type Msg = { role: 'user' | 'assistant'; content: string };
 
+/** Lightweight markdown → JSX for chatbot responses */
+function renderMarkdown(text: string) {
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    // Heading ###
+    if (line.startsWith('### ')) {
+      return <p key={i} className="font-bold text-xs mt-2 mb-1 text-foreground/90">{parseBold(line.slice(4))}</p>;
+    }
+    // Numbered list "1. "
+    if (/^\d+\.\s/.test(line)) {
+      const content = line.replace(/^\d+\.\s/, '');
+      return (
+        <div key={i} className="flex gap-1.5 mt-1">
+          <span className="text-primary font-bold text-xs mt-px">{line.match(/^\d+/)?.[0]}.</span>
+          <span className="flex-1">{parseBold(content)}</span>
+        </div>
+      );
+    }
+    // Bullet "- " or "• "
+    if (line.startsWith('- ') || line.startsWith('• ')) {
+      return (
+        <div key={i} className="flex gap-1.5 mt-0.5 pl-1">
+          <span className="text-primary mt-0.5">•</span>
+          <span className="flex-1">{parseBold(line.slice(2))}</span>
+        </div>
+      );
+    }
+    // Empty line
+    if (!line.trim()) return <div key={i} className="h-1.5" />;
+    // Normal text
+    return <p key={i} className="mt-0.5">{parseBold(line)}</p>;
+  });
+}
+
+/** Parse **bold** and *italic* in a string */
+function parseBold(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    return part;
+  });
+}
+
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`;
 
 /**
@@ -121,13 +169,13 @@ export function ChatBot() {
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                    className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground rounded-br-md'
+                        ? 'bg-primary text-primary-foreground rounded-br-md whitespace-pre-wrap'
                         : 'bg-secondary text-foreground rounded-bl-md'
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
                   </div>
                 </div>
               ))}

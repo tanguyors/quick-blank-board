@@ -8,11 +8,13 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { PageTopBar } from '@/components/layout/PageTopBar';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Home, RefreshCw, Shield, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 
 export default function HomeExchange() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { displayPrice } = useDisplayPrice();
@@ -79,7 +81,7 @@ export default function HomeExchange() {
         <div className="bg-card rounded-xl p-4 border border-border space-y-3">
           <h3 className="font-semibold text-foreground flex items-center gap-2">
             <Info className="h-4 w-4 text-primary" />
-            Comment ça marche ?
+            {t('homeExchange.howItWorks')}
           </h3>
           <div className="space-y-2">
             {[
@@ -116,10 +118,10 @@ export default function HomeExchange() {
           <div className="bg-secondary/50 rounded-xl p-4 border border-border text-center space-y-3">
             <Home className="h-8 w-8 text-muted-foreground mx-auto" />
             <p className="text-sm text-muted-foreground">
-              Pour proposer un échange, vous devez d'abord publier un bien.
+              {t('homeExchange.toExchangeNeedProperty')}
             </p>
             <Button onClick={() => navigate('/properties/new')} size="sm">
-              Publier mon bien
+              {t('homeExchange.publishYourProperty')}
             </Button>
           </div>
         )}
@@ -127,7 +129,7 @@ export default function HomeExchange() {
         {/* Properties available for exchange */}
         <div>
           <h3 className="font-semibold text-foreground mb-3">
-            Biens disponibles à l'échange
+            {t('homeExchange.availableForExchange')}
             {properties && <span className="text-muted-foreground font-normal ml-2 text-sm">({properties.length})</span>}
           </h3>
 
@@ -208,7 +210,7 @@ export default function HomeExchange() {
           onClick={() => navigate('/explore?operation=home_exchange')}
         >
           <RefreshCw className="h-4 w-4 mr-2" />
-          Explorer en mode swipe
+          {t('homeExchange.exploreSwipe')}
         </Button>
       </div>
     </AppLayout>

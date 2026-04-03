@@ -8,6 +8,7 @@ import { fr } from 'date-fns/locale/fr';
 import { SecurityBanner } from './SecurityAlert';
 import { toast } from 'sonner';
 import type { WfMessage } from '@/types/workflow';
+import { useTranslation } from 'react-i18next';
 
 interface SecureMessagingProps {
   messages: WfMessage[];
@@ -17,6 +18,7 @@ interface SecureMessagingProps {
 
 export function SecureMessaging({ messages, onSendMessage, isSending }: SecureMessagingProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [newMessage, setNewMessage] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -34,10 +36,10 @@ export function SecureMessaging({ messages, onSendMessage, isSending }: SecureMe
     try {
       const result = await onSendMessage(content);
       if (result.blocked) {
-        toast.error(result.reason || 'Message bloqué');
+        toast.error(result.reason || t('messaging.blocked'));
         setNewMessage(content); // Restore message
       } else if (result.suspicious) {
-        toast.warning('⚠️ Votre message a été envoyé mais contient des termes suspects. Rappel: tous les échanges doivent rester sur la plateforme.');
+        toast.warning('⚠️ ' + t('messaging.suspectMessage'));
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -57,8 +59,8 @@ export function SecureMessaging({ messages, onSendMessage, isSending }: SecureMe
         {messages.length === 0 && (
           <div className="text-center py-8">
             <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
-            <p className="text-muted-foreground text-sm">Messagerie sécurisée</p>
-            <p className="text-muted-foreground/60 text-xs mt-1">Vos échanges sont protégés par SomaGate</p>
+            <p className="text-muted-foreground text-sm">{t('messaging.secureMessaging')}</p>
+            <p className="text-muted-foreground/60 text-xs mt-1">{t('messaging.protectedBysomagate')}</p>
           </div>
         )}
 
@@ -72,7 +74,7 @@ export function SecureMessaging({ messages, onSendMessage, isSending }: SecureMe
                 {msg.flagged_suspicious && (
                   <div className="flex items-center gap-1 mb-1">
                     <Shield className="h-3 w-3 text-amber-400" />
-                    <span className="text-xs text-amber-400">Suspect</span>
+                    <span className="text-xs text-amber-400">{t('messaging.suspect')}</span>
                   </div>
                 )}
                 <p className="text-sm">{msg.content}</p>
@@ -90,7 +92,7 @@ export function SecureMessaging({ messages, onSendMessage, isSending }: SecureMe
         <Input
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
-          placeholder="Votre message sécurisé..."
+          placeholder={t('messaging.placeholder')}
           className="flex-1 bg-card border-border"
         />
         <Button type="submit" size="icon" disabled={isSending || !newMessage.trim()}>

@@ -4,24 +4,26 @@ import { PageTopBar } from '@/components/layout/PageTopBar';
 import { VisitList } from '@/components/visits/VisitList';
 import { CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const FILTERS = [
-  { value: 'all', label: 'Toutes' },
-  { value: 'confirmed', label: 'Acceptées' },
-  { value: 'pending', label: 'Demandées' },
-  { value: 'completed', label: 'Réalisées' },
-  { value: 'cancelled', label: 'Refusées' },
-] as const;
+import { useTranslation } from 'react-i18next';
 
 export default function Visits() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<string>('all');
+
+  const FILTERS = [
+    { value: 'all', label: t('visits.all') },
+    { value: 'confirmed', label: t('visits.accepted') },
+    { value: 'pending', label: t('visits.requested') },
+    { value: 'completed', label: t('visits.completed') },
+    { value: 'cancelled', label: t('visits.refused') },
+  ] as const;
 
   return (
     <AppLayout hideHeader>
       <PageTopBar>
         <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
           <CalendarDays className="h-4 w-4 text-primary" />
-          <span className="text-foreground font-semibold">Visites</span>
+          <span className="text-foreground font-semibold">{t('visits.title')}</span>
         </div>
       </PageTopBar>
 

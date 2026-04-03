@@ -13,6 +13,7 @@ import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
 import { ArrowLeft, FileText, CheckCircle, Loader2, Download, DollarSign, Archive } from 'lucide-react';
 import { LanguageButtons } from '@/components/ui/LanguageButtons';
+import { useTranslation } from 'react-i18next';
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
@@ -32,6 +33,7 @@ export default function Transaction() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { displayPrice } = useDisplayPrice();
   const [activeTab, setActiveTab] = useState<TabId>('apercu');
   const [validatingDoc, setValidatingDoc] = useState<ValidatingDoc>(null);
@@ -56,7 +58,7 @@ export default function Transaction() {
   if (!transaction.data) {
     return (
       <AppLayout>
-        <div className="text-center p-8 text-muted-foreground">Transaction introuvable</div>
+        <div className="text-center p-8 text-muted-foreground">{t('txPage.notFound')}</div>
       </AppLayout>
     );
   }
@@ -67,10 +69,10 @@ export default function Transaction() {
   const primaryMedia = property?.property_media?.find((m: any) => m.is_primary) || property?.property_media?.[0];
 
   const tabs: { id: TabId; label: string }[] = [
-    { id: 'apercu', label: 'Aperçu' },
-    { id: 'visite', label: 'Visite' },
-    { id: 'messages', label: 'Messages' },
-    { id: 'documents', label: 'Documents' },
+    { id: 'apercu', label: t('txPage.overview') },
+    { id: 'visite', label: t('txPage.visit') },
+    { id: 'messages', label: t('txPage.messages') },
+    { id: 'documents', label: t('txPage.documents') },
   ];
 
   return (
@@ -83,7 +85,7 @@ export default function Transaction() {
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="font-semibold text-foreground">Transaction</h1>
+              <h1 className="font-semibold text-foreground">{t('txPage.title')}</h1>
               <TransactionStatusBadge status={tx.status as TxStatus} />
             </div>
             {['deal_finalized', 'archived', 'deal_cancelled'].includes(tx.status) && (
@@ -95,10 +97,10 @@ export default function Transaction() {
                     onClick={async () => {
                       try {
                         await WorkflowService.updateStatus(tx.id, 'archived', user!.id);
-                        toast.success('Transaction archivée');
+                        toast.success(t('txPage.archivedSuccess'));
                         transaction.refetch();
                       } catch (err) {
-                        toast.error('Erreur lors de l\'archivage');
+                        toast.error(t('txPage.archiveError'));
                       }
                     }}
                   >
@@ -111,13 +113,13 @@ export default function Transaction() {
                   onClick={async () => {
                     try {
                       await TransactionExportService.exportTransaction(tx.id);
-                      toast.success('Dossier téléchargé !');
+                      toast.success(t('txPage.downloadSuccess'));
                     } catch (err) {
-                      toast.error('Erreur lors du téléchargement');
+                      toast.error(t('txPage.downloadError'));
                     }
                   }}
                 >
-                  <Download className="h-4 w-4 mr-1" /> Dossier
+                  <Download className="h-4 w-4 mr-1" /> {t('txPage.dossier')}
                 </Button>
               </div>
             )}
@@ -200,11 +202,11 @@ export default function Transaction() {
                     user!.id,
                     isBuyer ? 'buyer' : 'seller'
                   );
-                  toast.success('Document validé !');
+                  toast.success(t('txPage.documentValidated'));
                   documents.refetch();
                   transaction.refetch();
                 } catch (err: any) {
-                  toast.error(err.message || 'Erreur de validation');
+                  toast.error(err.message || t('txPage.validationError'));
                 } finally {
                   setValidatingDoc(null);
                 }
@@ -231,6 +233,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
   isFinalizing: boolean;
   isSubmittingFeedback: boolean;
 }) {
+  const { t } = useTranslation();
   const status = tx.status as TxStatus;
 
   return (
@@ -265,14 +268,14 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
 
       {/* Participants */}
       <div className="bg-card rounded-xl p-4 border border-border space-y-2">
-        <h3 className="font-semibold text-foreground text-sm">Participants</h3>
+        <h3 className="font-semibold text-foreground text-sm">{t('transaction.participants')}</h3>
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Acheteur</span>
-          <span className="text-foreground">{tx.buyer_profile?.full_name || tx.buyer_profile?.email || 'Acheteur'}</span>
+          <span className="text-muted-foreground">{t('dashboard.buyer')}</span>
+          <span className="text-foreground">{tx.buyer_profile?.full_name || tx.buyer_profile?.email || t('dashboard.buyer')}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Vendeur</span>
-          <span className="text-foreground">{tx.seller_profile?.full_name || tx.seller_profile?.email || 'Vendeur'}</span>
+          <span className="text-muted-foreground">{t('dashboard.seller')}</span>
+          <span className="text-foreground">{tx.seller_profile?.full_name || tx.seller_profile?.email || t('dashboard.seller')}</span>
         </div>
       </div>
 
@@ -303,32 +306,32 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
       {/* Buyer: waiting for seller response */}
       {status === 'offer_made' && isBuyer && (tx.offer_type === 'home_exchange' ? (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
-          <h3 className="font-semibold text-foreground text-sm">Proposition d'échange envoyée</h3>
+          <h3 className="font-semibold text-foreground text-sm">{t('txPage.exchangeProposed')}</h3>
           {tx.offer_details && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{tx.offer_details}</p>}
-          <p className="text-sm text-muted-foreground mt-2">En attente de la réponse du propriétaire...</p>
+          <p className="text-sm text-muted-foreground mt-2">{t('txPage.waitingOwnerResponse')}</p>
         </div>
       ) : !!tx.offer_amount && (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
-          <h3 className="font-semibold text-foreground text-sm">Offre envoyée</h3>
+          <h3 className="font-semibold text-foreground text-sm">{t('txPage.offerSent')}</h3>
           <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
           {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
-          <p className="text-sm text-muted-foreground mt-2">En attente de la réponse du vendeur...</p>
+          <p className="text-sm text-muted-foreground mt-2">{t('txPage.waitingSellerResponse')}</p>
         </div>
       ))}
 
       {/* Offer rejected message - shown when back to intention_expressed after rejection */}
       {status === 'intention_expressed' && isBuyer && tx.offer_details && tx.offer_details.startsWith('Offre refusée') && (
         <div className="bg-red-500/10 rounded-xl p-4 border border-red-500/30 space-y-2">
-          <h3 className="font-semibold text-red-400 text-sm">Offre refusée</h3>
+          <h3 className="font-semibold text-red-400 text-sm">{t('txPage.offerRejected')}</h3>
           <p className="text-sm text-muted-foreground">{tx.offer_details}</p>
-          <p className="text-sm text-muted-foreground">Vous pouvez reformuler une offre ou arrêter la transaction.</p>
+          <p className="text-sm text-muted-foreground">{t('txPage.canReformulate')}</p>
         </div>
       )}
 
       {/* Offer summary */}
       {(status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
-          <h3 className="font-semibold text-foreground text-sm">Offre</h3>
+          <h3 className="font-semibold text-foreground text-sm">{t('timeline.offer')}</h3>
           <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
           {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
           {tx.offer_details && <p className="text-xs text-muted-foreground">{tx.offer_details}</p>}
@@ -362,7 +365,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
 
       {/* Timeline */}
       <div className="bg-card rounded-xl p-4 border border-border">
-        <h3 className="font-semibold text-foreground text-sm mb-4">Progression</h3>
+        <h3 className="font-semibold text-foreground text-sm mb-4">{t('transaction.progression')}</h3>
         <TransactionTimeline
           currentStatus={tx.status as TxStatus}
           logs={logs}
@@ -381,12 +384,14 @@ function DocumentsTab({
   validatingDoc: ValidatingDoc;
   onValidate: (docId: string) => void;
 }) {
+  const { t } = useTranslation();
+
   if (documents.length === 0) {
     return (
       <div className="text-center p-8">
         <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
-        <p className="text-muted-foreground text-sm">Aucun document pour le moment</p>
-        <p className="text-muted-foreground/60 text-xs mt-1">Les documents seront générés automatiquement après votre offre.</p>
+        <p className="text-muted-foreground text-sm">{t('txPage.noDocuments')}</p>
+        <p className="text-muted-foreground/60 text-xs mt-1">{t('txPage.docsWillGenerate')}</p>
       </div>
     );
   }
@@ -409,12 +414,12 @@ function DocumentsTab({
               <div className="flex gap-1">
                 {doc.buyer_validated && (
                   <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle className="h-3 w-3" /> Acheteur
+                    <CheckCircle className="h-3 w-3" /> {t('txPage.buyer')}
                   </span>
                 )}
                 {doc.seller_validated && (
                   <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle className="h-3 w-3" /> Vendeur
+                    <CheckCircle className="h-3 w-3" /> {t('txPage.seller')}
                   </span>
                 )}
               </div>
@@ -423,7 +428,7 @@ function DocumentsTab({
             {/* Document content preview */}
             {doc.content && (
               <div className="mt-3 bg-secondary/30 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
-                {doc.content.reference && <p>Réf: {doc.content.reference}</p>}
+                {doc.content.reference && <p>{t('txPage.ref')}: {doc.content.reference}</p>}
                 {doc.content.conditions?.prix_offert && (
                   <p>Montant: {doc.content.conditions.prix_offert.toLocaleString()} {doc.content.conditions?.devise}</p>
                 )}
@@ -445,22 +450,22 @@ function DocumentsTab({
                 disabled={isValidating}
               >
                 {isValidating ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Validation...</>
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('txPage.validation')}</>
                 ) : (
-                  <><CheckCircle className="h-4 w-4 mr-2" /> Valider ce document</>
+                  <><CheckCircle className="h-4 w-4 mr-2" /> {t('txPage.validateDocument')}</>
                 )}
               </Button>
             )}
 
             {myValidated && !otherValidated && (
               <p className="text-xs text-muted-foreground mt-3 text-center">
-                En attente de validation de {isBuyer ? "l'autre partie" : "l'acheteur"}
+                {isBuyer ? t('txPage.waitingOtherValidation') : t('txPage.waitingBuyerValidation')}
               </p>
             )}
 
             {myValidated && otherValidated && (
               <p className="text-xs text-primary mt-3 text-center font-medium">
-                ✓ Document validé par les deux parties
+                ✓ {t('txPage.documentValidatedBoth')}
               </p>
             )}
           </div>
@@ -478,6 +483,7 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
   isAccepting: boolean;
   isRejecting: boolean;
 }) {
+  const { t } = useTranslation();
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [counterAmount, setCounterAmount] = useState('');
@@ -488,7 +494,7 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
     <div className="bg-card rounded-xl p-4 border border-primary/30 space-y-4">
       <div className="flex items-center gap-2">
         <DollarSign className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold text-foreground">Offre reçue</h3>
+        <h3 className="font-semibold text-foreground">{t('txPage.offerReceived')}</h3>
       </div>
 
       <div className="bg-primary/10 rounded-lg p-3 space-y-1">
@@ -497,7 +503,7 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
         </p>
         {property?.prix && (
           <p className="text-xs text-muted-foreground">
-            Prix affiché : {displayPrice(property.prix, currency)}
+            {t('txPage.listedPrice')} : {displayPrice(property.prix, currency)}
           </p>
         )}
         {tx.offer_type && (
@@ -514,11 +520,11 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
             className="flex-1"
             onClick={async () => {
               await onAccept();
-              toast.success('Offre acceptée !');
+              toast.success(t('txPage.offerAccepted'));
             }}
             disabled={isAccepting || isRejecting}
           >
-            {isAccepting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Acceptation...</> : 'Accepter'}
+            {isAccepting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('txPage.accepting')}</> : t('txPage.accept')}
           </Button>
           <Button
             variant="destructive"
@@ -526,28 +532,28 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
             onClick={() => setShowRejectForm(true)}
             disabled={isAccepting || isRejecting}
           >
-            Refuser
+            {t('txPage.reject')}
           </Button>
         </div>
       ) : (
         <div className="space-y-3">
           <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Motif du refus (optionnel)</label>
+            <label className="text-sm text-muted-foreground">{t('txPage.rejectReason')}</label>
             <Textarea
               value={rejectReason}
               onChange={e => setRejectReason(e.target.value)}
-              placeholder="Expliquez pourquoi vous refusez cette offre..."
+              placeholder={t('txPage.rejectPlaceholder')}
               rows={2}
               className="bg-secondary/30 border-border"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Contre-proposition ({currency}) (optionnel)</label>
+            <label className="text-sm text-muted-foreground">{t('txPage.counterOffer')} ({currency}) (optionnel)</label>
             <Input
               type="number"
               value={counterAmount}
               onChange={e => setCounterAmount(e.target.value)}
-              placeholder="Montant souhaité"
+              placeholder={t('txPage.desiredAmount')}
               className="bg-secondary/30 border-border"
             />
           </div>
@@ -560,18 +566,18 @@ function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRe
                   reason: rejectReason || undefined,
                   counterAmount: counterAmount ? Number(counterAmount) : undefined,
                 });
-                toast.success('Offre refusée');
+                toast.success(t('txPage.offerRejectedToast'));
               }}
               disabled={isRejecting}
             >
-              {isRejecting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Envoi...</> : 'Confirmer le refus'}
+              {isRejecting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('txPage.sending')}</> : t('txPage.confirmReject')}
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowRejectForm(false)}
               disabled={isRejecting}
             >
-              Annuler
+              {t('profile.cancel')}
             </Button>
           </div>
         </div>

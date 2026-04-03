@@ -42,7 +42,7 @@ export function ProfileForm() {
     try {
       await updateProfile.mutateAsync({ bio: form.bio });
       await refreshProfile();
-      toast.success('Bio mise à jour');
+      toast.success(t('profile.bioUpdated'));
       setEditingBio(false);
     } catch (error: any) {
       toast.error(error.message);
@@ -173,15 +173,15 @@ export function ProfileForm() {
           className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
         >
           <Flame className="h-6 w-6 text-primary mb-2" />
-          <p className="font-semibold text-foreground text-sm">Explorer</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Découvrir</p>
+          <p className="font-semibold text-foreground text-sm">{t('profile.explore')}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{t('profile.swipe')}</p>
         </button>
         <button
           onClick={() => navigate('/matches')}
           className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
         >
           <Heart className="h-6 w-6 text-primary mb-2" />
-          <p className="font-semibold text-foreground text-sm">Matches</p>
+          <p className="font-semibold text-foreground text-sm">{t('nav.matches')}</p>
           <p className="text-xs text-muted-foreground mt-0.5">{stats?.matches ?? 0}</p>
         </button>
         <button
@@ -189,7 +189,7 @@ export function ProfileForm() {
           className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-left transition-colors active:bg-amber-500/20"
         >
           <Star className="h-6 w-6 text-amber-500 mb-2" />
-          <p className="font-semibold text-foreground text-sm">Favoris</p>
+          <p className="font-semibold text-foreground text-sm">{t('nav.favorites')}</p>
           <p className="text-xs text-muted-foreground mt-0.5">{favorites.data?.length ?? 0}</p>
         </button>
       </div>
@@ -202,7 +202,7 @@ export function ProfileForm() {
         >
           <Eye className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{stats?.biens_vus ?? 0}</p>
-          <p className="text-[10px] text-muted-foreground">Vus</p>
+          <p className="text-[10px] text-muted-foreground">{t('profile.seen')}</p>
         </button>
         <button
           onClick={() => navigate('/visits')}
@@ -210,7 +210,7 @@ export function ProfileForm() {
         >
           <CalendarDays className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{stats?.visites ?? 0}</p>
-          <p className="text-[10px] text-muted-foreground">Visites</p>
+          <p className="text-[10px] text-muted-foreground">{t('nav.visits')}</p>
           {pendingVisitsCount > 0 && (
             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
               {pendingVisitsCount}
@@ -223,7 +223,7 @@ export function ProfileForm() {
         >
           <TrendingUp className="h-4 w-4 text-primary mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{Math.round(scoreValue / 10)}<span className="text-xs text-muted-foreground">/10</span></p>
-          <p className="text-[10px] text-muted-foreground">Score</p>
+          <p className="text-[10px] text-muted-foreground">{t('profile.score')}</p>
         </button>
       </div>
 
@@ -236,9 +236,9 @@ export function ProfileForm() {
           <div className="flex items-center gap-3">
             <SlidersHorizontal className="h-5 w-5 text-primary" />
             <div className="text-left">
-              <p className="font-semibold text-foreground text-sm">Préférences de recherche</p>
+              <p className="font-semibold text-foreground text-sm">{t('profile.searchPreferences')}</p>
               <p className="text-xs text-muted-foreground">
-                {preferences.data?.is_complete ? 'Configuré ✅' : 'À configurer'}
+                {preferences.data?.is_complete ? t('profile.configured') : t('profile.toConfigure')}
               </p>
             </div>
           </div>
@@ -255,8 +255,8 @@ export function ProfileForm() {
           <div className="flex items-center gap-3">
             <Settings className="h-5 w-5 text-muted-foreground" />
             <div className="text-left">
-              <p className="font-semibold text-foreground text-sm">Paramètres du compte</p>
-              <p className="text-xs text-muted-foreground">Infos personnelles, devise, déconnexion</p>
+              <p className="font-semibold text-foreground text-sm">{t('profile.accountSettings')}</p>
+              <p className="text-xs text-muted-foreground">{t('profile.accountSettingsDesc')}</p>
             </div>
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground" />

@@ -106,7 +106,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
               }
             }}
           >
-            <Share2 className="h-4 w-4" /> Partager
+            <Share2 className="h-4 w-4" /> {t('property.share')}
           </Button>
           <Button
             variant="outline"
@@ -116,7 +116,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
               toast.success('Ajouté à la collection "À visiter"');
             }}
           >
-            <FolderPlus className="h-4 w-4" /> Collection
+            <FolderPlus className="h-4 w-4" /> {t('property.collection')}
           </Button>
         </div>
 
@@ -152,27 +152,27 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 space-y-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-emerald-500" />
-              <h3 className="font-semibold text-foreground text-sm">Indicateurs d'investissement</h3>
+              <h3 className="font-semibold text-foreground text-sm">{t('property.investmentIndicators')}</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-muted-foreground">ROI estimé</p>
+                <p className="text-xs text-muted-foreground">{t('property.estimatedRoi')}</p>
                 <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                   {Math.round(8 + (property.prix % 7))}%
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Revenu mensuel potentiel</p>
+                <p className="text-xs text-muted-foreground">{t('property.monthlyRevenue')}</p>
                 <p className="text-lg font-bold text-foreground">
                   {displayPrice(Math.round(property.prix * 0.008), property.prix_currency)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Taux d'occupation estimé</p>
+                <p className="text-xs text-muted-foreground">{t('property.occupancyRate')}</p>
                 <p className="text-lg font-bold text-foreground">{75 + (property.prix % 20)}%</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Disponible depuis</p>
+                <p className="text-xs text-muted-foreground">{t('property.availableSince')}</p>
                 <p className="text-lg font-bold text-foreground">
                   {Math.max(1, Math.round((Date.now() - new Date(property.created_at).getTime()) / 86400000))}j
                 </p>
@@ -181,7 +181,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
             {(property as any).is_good_deal && (
               <div className="flex items-center gap-2 bg-emerald-500/20 rounded-lg px-3 py-2">
                 <Flame className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Bonne affaire !</span>
+                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{t('property.goodDeal')}</span>
               </div>
             )}
           </div>
@@ -192,13 +192,13 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           {(property as any).view_count > 0 && (
             <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-lg px-3 py-2">
               <Eye className="h-4 w-4 text-orange-500" />
-              <span className="text-sm text-foreground">{(property as any).view_count} personnes ont vu ce bien aujourd'hui</span>
+              <span className="text-sm text-foreground">{(property as any).view_count} {t('property.peopleViewed')}</span>
             </div>
           )}
           {(property as any).like_count > 0 && (
             <div className="flex items-center gap-2 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
               <Users className="h-4 w-4 text-rose-500" />
-              <span className="text-sm text-foreground">{(property as any).like_count} personnes intéressées</span>
+              <span className="text-sm text-foreground">{(property as any).like_count} {t('property.peopleInterested')}</span>
             </div>
           )}
         </div>
@@ -216,9 +216,9 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
         <div className="bg-card border border-border rounded-xl p-4 space-y-3">
           <div className="flex items-center gap-2">
             <Briefcase className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-foreground text-sm">Besoin d'un professionnel ?</h3>
+            <h3 className="font-semibold text-foreground text-sm">{t('property.needProfessional')}</h3>
           </div>
-          <p className="text-xs text-muted-foreground">SomaGate peut vous mettre en relation avec des experts locaux.</p>
+          <p className="text-xs text-muted-foreground">{t('property.proDescription')}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: 'Avocat', emoji: '⚖️' },

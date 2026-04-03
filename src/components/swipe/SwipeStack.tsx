@@ -141,9 +141,9 @@ export function SwipeStack({ filters }: SwipeStackProps) {
     return (
       <div className="flex h-full min-h-0 flex-col items-center justify-center overflow-hidden overscroll-none p-6 text-center sm:p-8">
         <img src={iconMatches} alt="" className="h-16 w-16 object-contain mb-4" />
-        <h2 className="text-xl font-semibold mb-2 text-foreground">Toutes les maisons ne sont pas faites pour tout le monde.</h2>
-        <p className="text-muted-foreground mb-4">Nous cherchons votre future connexion.</p>
-        <p className="text-xs text-muted-foreground/60">Revenez plus tard ou ajustez vos filtres pour découvrir de nouveaux biens !</p>
+        <h2 className="text-xl font-semibold mb-2 text-foreground">{t('swipe.allHousesNotForEveryone')}</h2>
+        <p className="text-muted-foreground mb-4">{t('swipe.searchingConnection')}</p>
+        <p className="text-xs text-muted-foreground/60">{t('swipe.comeBackLater')}</p>
       </div>
     );
   }

@@ -7,9 +7,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { MapPin, ArrowRight, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
+import { useTranslation } from 'react-i18next';
 import type { TransactionStatus } from '@/types/workflow';
 
 export default function MyTransactions() {
+  const { t } = useTranslation();
   const { data: transactions, isLoading } = useMyTransactions();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ export default function MyTransactions() {
       <PageTopBar>
         <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
           <FileText className="h-4 w-4 text-primary" />
-          <span className="text-foreground font-semibold">Mes Transactions</span>
+          <span className="text-foreground font-semibold">{t('transaction.myTransactions')}</span>
         </div>
       </PageTopBar>
       <div className="p-4 max-w-lg mx-auto">
@@ -71,7 +73,7 @@ export default function MyTransactions() {
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {isBuyer ? 'Acheteur' : 'Vendeur'}
+                        {isBuyer ? t('dashboard.buyer') : t('dashboard.seller')}
                       </p>
                     </div>
                   </div>

@@ -4,6 +4,7 @@ import { PageTopBar } from '@/components/layout/PageTopBar';
 import { Button } from '@/components/ui/button';
 import { Crown, Check, Star, Rocket, Shield, Eye } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 const PLANS = [
   {
@@ -47,6 +48,7 @@ const PLANS = [
 ];
 
 export default function Premium() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { profile } = useAuth();
 
@@ -62,7 +64,7 @@ export default function Premium() {
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto">
             <Crown className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">Passez au niveau supérieur</h2>
+          <h2 className="text-2xl font-bold text-foreground">{t('premium.goToNextLevel')}</h2>
           <p className="text-sm text-muted-foreground">Débloquez toutes les fonctionnalités de SomaGate et trouvez votre bien idéal plus rapidement.</p>
         </div>
 
@@ -111,7 +113,7 @@ export default function Premium() {
                 variant={plan.current ? 'outline' : plan.popular ? 'default' : 'secondary'}
                 disabled={plan.current}
               >
-                {plan.current ? 'Plan actuel' : 'Bientôt disponible'}
+                {plan.current ? t('premium.currentPlan') : t('premium.comingSoon')}
               </Button>
             </div>
           ))}
@@ -119,7 +121,7 @@ export default function Premium() {
 
         {/* FAQ */}
         <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <h3 className="font-semibold text-foreground">Questions fréquentes</h3>
+          <h3 className="font-semibold text-foreground">{t('premium.faq')}</h3>
           <div className="space-y-2">
             <div>
               <p className="text-sm font-medium text-foreground">Quand les abonnements seront-ils disponibles ?</p>

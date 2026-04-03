@@ -2,6 +2,7 @@ import { TransactionStatus as TxStatus, STATUS_LABELS, STATUS_COLORS } from '@/t
 import { Check, Clock, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
+import { useTranslation } from 'react-i18next';
 
 interface TransactionStatusBadgeProps {
   status: TxStatus;
@@ -15,17 +16,6 @@ export function TransactionStatusBadge({ status }: TransactionStatusBadgeProps) 
   );
 }
 
-const TIMELINE_STEPS: { status: TxStatus; label: string }[] = [
-  { status: 'matched', label: 'Match' },
-  { status: 'visit_requested', label: 'Visite demandée' },
-  { status: 'visit_confirmed', label: 'Visite confirmée' },
-  { status: 'visit_completed', label: 'Visite effectuée' },
-  { status: 'intention_expressed', label: 'Intention' },
-  { status: 'offer_made', label: 'Offre' },
-  { status: 'documents_generated', label: 'Documents' },
-  { status: 'deal_finalized', label: 'Finalisé' },
-];
-
 const STATUS_ORDER: TxStatus[] = [
   'matched', 'visit_requested', 'visit_proposed', 'visit_confirmed',
   'visit_completed', 'intention_expressed', 'offer_made',
@@ -38,8 +28,20 @@ interface TransactionTimelineProps {
 }
 
 export function TransactionTimeline({ currentStatus, logs }: TransactionTimelineProps) {
+  const { t } = useTranslation();
   const currentIdx = STATUS_ORDER.indexOf(currentStatus);
   const isCancelled = currentStatus === 'deal_cancelled' || currentStatus === 'visit_cancelled' || currentStatus === 'archived';
+
+  const TIMELINE_STEPS: { status: TxStatus; label: string }[] = [
+    { status: 'matched', label: t('timeline.match') },
+    { status: 'visit_requested', label: t('timeline.visitRequested') },
+    { status: 'visit_confirmed', label: t('timeline.visitConfirmed') },
+    { status: 'visit_completed', label: t('timeline.visitCompleted') },
+    { status: 'intention_expressed', label: t('timeline.intention') },
+    { status: 'offer_made', label: t('timeline.offer') },
+    { status: 'documents_generated', label: t('timeline.documents') },
+    { status: 'deal_finalized', label: t('timeline.finalized') },
+  ];
 
   return (
     <div className="space-y-0">

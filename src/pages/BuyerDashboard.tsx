@@ -14,6 +14,7 @@ import { ChevronRight, ArrowRight, Bell, TrendingUp, Heart, Sparkles } from 'luc
 import { SmartAlertService } from '@/services/smartAlertService';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
+import { useTranslation } from 'react-i18next';
 import type { TransactionStatus } from '@/types/workflow';
 
 import iconExplore from '@/assets/icons/appsearch.png';
@@ -26,6 +27,7 @@ import iconMap from '@/assets/icons/appmap.png';
 import iconSearch from '@/assets/icons/explore.png';
 
 export default function BuyerDashboard() {
+  const { t } = useTranslation();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const { data: transactions, isLoading: txLoading } = useMyTransactions();
@@ -76,7 +78,7 @@ export default function BuyerDashboard() {
   const recentVisits = (visits.data || []).slice(0, 5);
   const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
 
-  const displayName = profile?.full_name || profile?.first_name || 'Acheteur';
+  const displayName = profile?.full_name || profile?.first_name || t('dashboard.buyer');
   const scoreVal = userScore?.score ?? 50;
 
   return (
@@ -84,8 +86,8 @@ export default function BuyerDashboard() {
       <div className="flex h-full min-h-0 flex-col">
         <PageTopBar>
           <div>
-            <p className="text-lg font-bold text-foreground">Bonjour, {displayName} 👋</p>
-            <p className="text-xs text-muted-foreground">Trouvez votre bien idéal</p>
+            <p className="text-lg font-bold text-foreground">{t('dashboard.hello', { name: displayName })}</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.findIdeal')}</p>
           </div>
         </PageTopBar>
 
@@ -97,8 +99,8 @@ export default function BuyerDashboard() {
               className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-left transition-colors active:bg-primary/20"
             >
               <img src={iconExplore} alt="" className="h-7 w-7 object-contain mb-2" />
-              <p className="font-semibold text-foreground text-sm">Explorer</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Découvrir</p>
+              <p className="font-semibold text-foreground text-sm">{t('dashboard.explore')}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('profile.swipe')}</p>
             </button>
             <button
               onClick={() => navigate('/matches')}
@@ -126,7 +128,7 @@ export default function BuyerDashboard() {
             >
               <img src={iconSearch} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{stats?.swipes ?? 0}</p>
-              <p className="text-[10px] text-muted-foreground">Vus</p>
+              <p className="text-[10px] text-muted-foreground">{t('dashboard.seen')}</p>
             </button>
             <button
               onClick={() => navigate('/visits')}
@@ -134,7 +136,7 @@ export default function BuyerDashboard() {
             >
               <img src={iconVisits} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{recentVisits.length}</p>
-              <p className="text-[10px] text-muted-foreground">Visites</p>
+              <p className="text-[10px] text-muted-foreground">{t('nav.visits')}</p>
               {pendingVisitsCount > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center px-1">
                   {pendingVisitsCount}
@@ -147,7 +149,7 @@ export default function BuyerDashboard() {
             >
               <img src={iconPrice} alt="" className="h-5 w-5 object-contain mx-auto mb-1" />
               <p className="text-lg font-bold text-foreground">{Math.round(scoreVal / 10)}<span className="text-xs text-muted-foreground">/10</span></p>
-              <p className="text-[10px] text-muted-foreground">Score</p>
+              <p className="text-[10px] text-muted-foreground">{t('dashboard.score')}</p>
             </button>
           </div>
 
@@ -156,9 +158,9 @@ export default function BuyerDashboard() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-amber-400" />
-                <h3 className="font-bold text-foreground text-sm">Ils vous correspondent</h3>
+                <h3 className="font-bold text-foreground text-sm">{t('dashboard.theyMatchYou')}</h3>
               </div>
-              <button onClick={() => navigate('/explore')} className="text-xs text-primary font-medium">Voir tout</button>
+              <button onClick={() => navigate('/explore')} className="text-xs text-primary font-medium">{t('dashboard.viewAll')}</button>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
               {(transactions || []).slice(0, 5).map((tx: any) => {
@@ -197,7 +199,7 @@ export default function BuyerDashboard() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <h3 className="font-bold text-foreground text-sm">Alertes découverte</h3>
+                <h3 className="font-bold text-foreground text-sm">{t('dashboard.discoveryAlerts')}</h3>
               </div>
               <div className="space-y-2">
                 {smartAlerts.slice(0, 4).map((alert, i) => (
@@ -269,7 +271,7 @@ export default function BuyerDashboard() {
           {/* Active Transactions */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-foreground">Transactions actives</h3>
+              <h3 className="font-semibold text-foreground">{t('dashboard.activeTransactions')}</h3>
               {activeTransactions.length > 0 && (
                 <button
                   onClick={() => navigate('/mes-transactions')}
@@ -287,8 +289,8 @@ export default function BuyerDashboard() {
             ) : activeTransactions.length === 0 ? (
               <div className="bg-card border border-border rounded-xl p-6 text-center">
                 <img src={iconDoc} alt="" className="h-8 w-8 object-contain mx-auto mb-2 opacity-30" />
-                <p className="text-sm text-muted-foreground">Aucune transaction en cours</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">Explorez et matchez pour démarrer !</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.noActiveTransaction')}</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">{t('dashboard.exploreToStart')}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -334,7 +336,7 @@ export default function BuyerDashboard() {
             <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
               <span className="text-2xl">✅</span>
               <div>
-                <p className="font-semibold text-foreground text-sm">Client Certifié</p>
+                <p className="font-semibold text-foreground text-sm">{t('dashboard.certifiedClient')}</p>
                 <p className="text-xs text-muted-foreground">Votre profil est vérifié et de confiance</p>
               </div>
             </div>

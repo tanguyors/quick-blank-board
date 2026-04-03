@@ -9,17 +9,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { convertCurrency, formatPrice } from '@/lib/currencies';
-
-const STATUS_LABELS: Record<string, string> = {
-  available: 'Disponible', sold: 'Vendu', rented: 'Loué', draft: 'Brouillon',
-};
+import { useTranslation } from 'react-i18next';
 
 export function OwnerPropertyTab() {
+  const { t } = useTranslation();
   const { data: properties, isLoading } = useMyProperties();
   const { profile } = useProfile();
   const preferredCurrency = profile.data?.preferred_currency || 'EUR';
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const STATUS_LABELS: Record<string, string> = {
+    available: t('property.available'), sold: t('property.sold'), rented: t('property.rented'), draft: t('property.draft'),
+  };
 
   const boostProperty = useMutation({
     mutationFn: async (propertyId: string) => {
@@ -47,13 +49,13 @@ export function OwnerPropertyTab() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Mes biens</h2>
+        <h2 className="text-xl font-bold text-foreground">{t('property.myProperties')}</h2>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => navigate('/map')} className="gap-2">
             <MapPin className="h-4 w-4" /> Carte
           </Button>
           <Button onClick={() => navigate('/properties/new')} className="gap-2">
-            <Plus className="h-4 w-4" /> Ajouter
+            <Plus className="h-4 w-4" /> {t('property.add')}
           </Button>
         </div>
       </div>
@@ -61,10 +63,10 @@ export function OwnerPropertyTab() {
       {!properties?.length ? (
         <div className="bg-card rounded-2xl border border-border p-12 text-center">
           <Eye className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-foreground mb-2">Aucun bien pour le moment</h3>
+          <h3 className="text-lg font-bold text-foreground mb-2">{t('property.noProperty')}</h3>
           <p className="text-muted-foreground text-sm mb-6">Commencez par ajouter votre premier bien immobilier</p>
           <Button onClick={() => navigate('/properties/new')} className="gap-2">
-            <Plus className="h-4 w-4" /> Ajouter un bien
+            <Plus className="h-4 w-4" /> {t('property.addProperty')}
           </Button>
         </div>
       ) : (
@@ -83,7 +85,7 @@ export function OwnerPropertyTab() {
                     <div className="flex gap-1 mb-1 flex-wrap">
                       <Badge variant="outline" className="text-xs">{property.type}</Badge>
                       <Badge variant={property.is_published ? 'default' : 'secondary'} className="text-xs">
-                        {property.is_published ? 'Publié' : 'Non publié'}
+                        {property.is_published ? t('property.published') : t('property.unpublished')}
                       </Badge>
                       <Badge variant="outline" className="text-xs">{STATUS_LABELS[property.status]}</Badge>
                     </div>

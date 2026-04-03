@@ -84,8 +84,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top bar — padding sous l’heure / Dynamic Island (safe area) */}
-      <div className="flex items-center justify-between px-5 pb-3 z-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
+      {/* Top bar — fixed like a native app */}
+      <div className="sticky top-0 z-50 flex items-center justify-between px-5 pb-3 bg-background/95 backdrop-blur-md border-b border-border/50 pt-[max(1.25rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-2">
           <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
           <span className="font-semibold text-lg text-foreground">SomaGate</span>
@@ -152,7 +152,7 @@ export default function Home() {
         <div className="mx-5 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <Heart className="h-5 w-5 text-rose-500 fill-rose-500" />
-            <h3 className="font-bold text-foreground">Coup de cœur du jour</h3>
+            <h3 className="font-bold text-foreground">{t('home.coupDeCoeur')}</h3>
           </div>
           <div
             className="rounded-2xl overflow-hidden border-2 border-rose-500/30 bg-card shadow-lg cursor-pointer"
@@ -185,17 +185,17 @@ export default function Home() {
         <div className="bg-card rounded-2xl border border-border p-3 text-center">
           <Users className="h-5 w-5 text-primary mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{platformStats?.users || '150'}+</p>
-          <p className="text-[10px] text-muted-foreground">Membres actifs</p>
+          <p className="text-[10px] text-muted-foreground">{t('home.activeMembers')}</p>
         </div>
         <div className="bg-card rounded-2xl border border-border p-3 text-center">
           <TrendingUp className="h-5 w-5 text-primary mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">{platformStats?.transactions || '35'}+</p>
-          <p className="text-[10px] text-muted-foreground">Transactions</p>
+          <p className="text-[10px] text-muted-foreground">{t('nav.transactions')}</p>
         </div>
         <div className="bg-card rounded-2xl border border-border p-3 text-center">
           <Shield className="h-5 w-5 text-primary mx-auto mb-1" />
           <p className="text-lg font-bold text-foreground">98%</p>
-          <p className="text-[10px] text-muted-foreground">Taux satisfaction</p>
+          <p className="text-[10px] text-muted-foreground">{t('home.satisfaction')}</p>
         </div>
       </div>
 
@@ -204,15 +204,15 @@ export default function Home() {
         <div className="flex items-center gap-3 bg-card rounded-xl border border-border p-3">
           <Clock className="h-4 w-4 text-primary flex-shrink-0" />
           <div>
-            <p className="text-xs font-medium text-foreground">Temps moyen avant visite</p>
-            <p className="text-xs text-muted-foreground">48h après le match</p>
+            <p className="text-xs font-medium text-foreground">{t('home.avgVisitTime')}</p>
+            <p className="text-xs text-muted-foreground">{t('home.avgVisitValue')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 bg-card rounded-xl border border-border p-3">
           <Star className="h-4 w-4 text-amber-400 fill-amber-400 flex-shrink-0" />
           <div>
-            <p className="text-xs font-medium text-foreground">Note moyenne des vendeurs</p>
-            <p className="text-xs text-muted-foreground">4.8/5 basée sur les retours utilisateurs</p>
+            <p className="text-xs font-medium text-foreground">{t('home.sellerRating')}</p>
+            <p className="text-xs text-muted-foreground">{t('home.sellerRatingValue')}</p>
           </div>
         </div>
       </div>
@@ -240,11 +240,11 @@ export default function Home() {
       {/* CTA section */}
       <div className="px-5 pb-8 pt-2 space-y-3">
         <Button
-          className="w-full h-14 rounded-2xl text-base font-semibold shadow-lg shadow-primary/20"
+          className="w-full h-14 rounded-2xl text-sm font-semibold shadow-lg shadow-primary/20 overflow-hidden"
           onClick={() => navigate('/auth')}
         >
-          {t('home.ctaSwipe')}
-          <ArrowRight className="h-5 w-5 ml-2" />
+          <span className="truncate">{t('home.ctaSwipe')}</span>
+          <ArrowRight className="h-5 w-5 ml-1 shrink-0" />
         </Button>
         <Button
           variant="outline"

@@ -6,6 +6,7 @@ import { DollarSign, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import type { WfTransaction } from '@/types/workflow';
+import { useTranslation } from 'react-i18next';
 
 interface OfferFormProps {
   transaction: WfTransaction;
@@ -13,23 +14,8 @@ interface OfferFormProps {
   isLoading: boolean;
 }
 
-const OFFER_TYPES = [
-  { value: 'asking_price', label: 'Au prix affiché', description: 'Accepter le prix demandé' },
-  { value: 'negotiation', label: 'Négociation', description: 'Proposer un autre montant' },
-  { value: 'upfront', label: 'Paiement initial (location)', description: 'Paiement anticipé pour location' },
-  { value: 'monthly', label: 'Mensuel (location)', description: 'Offre de loyer mensuel' },
-];
-
-const EXCHANGE_DURATIONS = [
-  { value: '1_week', label: '1 semaine' },
-  { value: '2_weeks', label: '2 semaines' },
-  { value: '1_month', label: '1 mois' },
-  { value: '3_months', label: '3 mois' },
-  { value: '6_months', label: '6 mois' },
-  { value: 'flexible', label: 'Flexible' },
-];
-
 export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProps) {
+  const { t } = useTranslation();
   const [offerType, setOfferType] = useState('');
   const [amount, setAmount] = useState('');
   const [details, setDetails] = useState('');
@@ -42,15 +28,31 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
   const currency = property?.prix_currency || 'IDR';
   const isHomeExchange = property?.operations === 'home_exchange';
 
+  const OFFER_TYPES = [
+    { value: 'asking_price', label: t('offer.atListedPrice'), description: t('offer.acceptListedPrice') },
+    { value: 'negotiation', label: t('offer.negotiation'), description: t('offer.proposeAmount') },
+    { value: 'upfront', label: t('offer.upfront'), description: t('offer.upfrontDesc') },
+    { value: 'monthly', label: t('offer.monthly'), description: t('offer.monthlyDesc') },
+  ];
+
+  const EXCHANGE_DURATIONS = [
+    { value: '1_week', label: t('offer.oneWeek') },
+    { value: '2_weeks', label: t('offer.twoWeeks') },
+    { value: '1_month', label: t('offer.oneMonth') },
+    { value: '3_months', label: t('offer.threeMonths') },
+    { value: '6_months', label: t('offer.sixMonths') },
+    { value: 'flexible', label: t('offer.flexible') },
+  ];
+
   const handleSubmit = async () => {
     if (isHomeExchange) {
       if (!exchangeDuration) {
-        toast.error('Choisissez une durée d\'échange');
+        toast.error(t('offer.chooseExchangeDuration'));
         return;
       }
       const exchangeDetails = [
-        `Proposition d'échange — Durée : ${EXCHANGE_DURATIONS.find(d => d.value === exchangeDuration)?.label}`,
-        exchangeCompensation ? `Complément financier proposé : ${exchangeCompensation} ${preferredCurrency}` : null,
+        `${t('offer.proposeExchange')} — ${t('offer.exchangeDuration')} : ${EXCHANGE_DURATIONS.find(d => d.value === exchangeDuration)?.label}`,
+        exchangeCompensation ? `${t('offer.financialComplement')} : ${exchangeCompensation} ${preferredCurrency}` : null,
         details || null,
       ].filter(Boolean).join('\n');
 
@@ -59,21 +61,21 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
         amount: Number(exchangeCompensation) || 0,
         details: exchangeDetails,
       });
-      toast.success('Proposition d\'échange envoyée !');
+      toast.success(t('offer.exchangeProposalSent'));
       return;
     }
 
     if (!offerType) {
-      toast.error('Choisissez un type d\'offre');
+      toast.error(t('offer.chooseOfferType'));
       return;
     }
     const finalAmount = offerType === 'asking_price' ? askingPrice : Number(amount);
     if (!finalAmount || finalAmount <= 0) {
-      toast.error('Montant invalide');
+      toast.error(t('offer.invalidAmount'));
       return;
     }
     await onMakeOffer({ offerType, amount: finalAmount, details: details || undefined });
-    toast.success('Offre envoyée !');
+    toast.success(t('offer.offerSent'));
   };
 
   // Home Exchange mode
@@ -82,16 +84,16 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
       <div className="bg-card rounded-xl p-4 border border-border space-y-4">
         <div className="flex items-center gap-2">
           <RefreshCw className="h-5 w-5 text-cyan-400" />
-          <h3 className="font-semibold text-foreground">Proposer un échange</h3>
+          <h3 className="font-semibold text-foreground">{t('offer.proposeExchange')}</h3>
         </div>
 
         <p className="text-sm text-muted-foreground">
-          Proposez un échange de votre bien avec celui-ci. Convenez ensemble des modalités.
+          {t('offer.exchangeDesc')}
         </p>
 
         {/* Exchange duration */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Durée de l'échange *</label>
+          <label className="text-sm font-medium text-foreground">{t('offer.exchangeDuration')} *</label>
           <div className="grid grid-cols-3 gap-2">
             {EXCHANGE_DURATIONS.map(d => (
               <button
@@ -112,15 +114,15 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
 
         {/* Optional compensation */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Complément financier (optionnel)</label>
+          <label className="text-sm font-medium text-foreground">{t('offer.financialComplement')}</label>
           <p className="text-xs text-muted-foreground">
-            Si les biens ont une valeur différente, vous pouvez proposer un ajustement.
+            {t('offer.complementDesc')}
           </p>
           <Input
             type="number"
             value={exchangeCompensation}
             onChange={e => setExchangeCompensation(e.target.value)}
-            placeholder="Montant (optionnel)"
+            placeholder={t('offer.amountOptional')}
             className="bg-secondary/30 border-border"
           />
         </div>
@@ -129,13 +131,13 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
         <Textarea
           value={details}
           onChange={e => setDetails(e.target.value)}
-          placeholder="Conditions, périodes souhaitées, détails de votre bien..."
+          placeholder={t('offer.conditionsPlaceholder')}
           rows={3}
           className="bg-secondary/30 border-border"
         />
 
         <Button className="w-full" onClick={handleSubmit} disabled={isLoading || !exchangeDuration}>
-          {isLoading ? 'Envoi...' : 'Envoyer la proposition d\'échange'}
+          {isLoading ? t('offer.sending') : t('offer.sendExchangeProposal')}
         </Button>
       </div>
     );
@@ -146,11 +148,11 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
     <div className="bg-card rounded-xl p-4 border border-border space-y-4">
       <div className="flex items-center gap-2">
         <DollarSign className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold text-foreground">Faire une offre</h3>
+        <h3 className="font-semibold text-foreground">{t('offer.makeOffer')}</h3>
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Prix affiché : <span className="text-foreground font-bold">{displayPrice(askingPrice, currency)}</span>
+        {t('offer.listedPrice')} : <span className="text-foreground font-bold">{displayPrice(askingPrice, currency)}</span>
       </p>
 
       {/* Offer type selection */}
@@ -185,12 +187,12 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
       {/* Amount input - shown for non-asking-price offers */}
       {offerType && offerType !== 'asking_price' && (
         <div className="space-y-2">
-          <label className="text-sm text-muted-foreground">Montant ({preferredCurrency})</label>
+          <label className="text-sm text-muted-foreground">{t('offer.amount')} ({preferredCurrency})</label>
           <Input
             type="number"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            placeholder="Saisissez votre montant"
+            placeholder={t('offer.enterAmount')}
             className="bg-secondary/30 border-border"
           />
         </div>
@@ -200,13 +202,13 @@ export function OfferForm({ transaction, onMakeOffer, isLoading }: OfferFormProp
       <Textarea
         value={details}
         onChange={e => setDetails(e.target.value)}
-        placeholder="Commentaires ou conditions (optionnel)"
+        placeholder={t('offer.commentsPlaceholder')}
         rows={2}
         className="bg-secondary/30 border-border"
       />
 
       <Button className="w-full" onClick={handleSubmit} disabled={isLoading || !offerType}>
-        {isLoading ? 'Envoi...' : 'Envoyer l\'offre'}
+        {isLoading ? t('offer.sending') : t('offer.sendOffer')}
       </Button>
     </div>
   );
