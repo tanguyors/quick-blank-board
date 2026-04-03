@@ -8,10 +8,29 @@ interface TransactionStatusBadgeProps {
   status: TxStatus;
 }
 
+const STATUS_I18N: Record<string, string> = {
+  matched: 'status.matched',
+  visit_requested: 'status.visitRequested',
+  visit_proposed: 'status.datesProposed',
+  visit_confirmed: 'status.visitConfirmed',
+  visit_completed: 'status.visitCompleted',
+  visit_cancelled: 'status.visitCancelled',
+  visit_rescheduled: 'status.visitRescheduled',
+  intention_expressed: 'status.intentionExpressed',
+  offer_made: 'status.offerPending',
+  documents_generated: 'status.documentsGenerated',
+  in_validation: 'status.inValidation',
+  deal_finalized: 'status.dealFinalized',
+  deal_cancelled: 'status.dealCancelled',
+  archived: 'status.archived',
+};
+
 export function TransactionStatusBadge({ status }: TransactionStatusBadgeProps) {
+  const { t } = useTranslation();
+  const label = STATUS_I18N[status] ? t(STATUS_I18N[status]) : STATUS_LABELS[status];
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[status]}`}>
-      {STATUS_LABELS[status]}
+      {label}
     </span>
   );
 }

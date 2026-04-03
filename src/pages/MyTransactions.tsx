@@ -33,8 +33,8 @@ export default function MyTransactions() {
         ) : !transactions?.length ? (
           <div className="text-center p-8">
             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-30" />
-            <p className="text-muted-foreground">Aucune transaction en cours</p>
-            <p className="text-muted-foreground/60 text-xs mt-1">Vos transactions apparaîtront ici après un match.</p>
+            <p className="text-muted-foreground">{t('transaction.noTransaction')}</p>
+            <p className="text-muted-foreground/60 text-xs mt-1">{t('transaction.transactionsWillAppear')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -57,7 +57,7 @@ export default function MyTransactions() {
                       <div className="flex items-start justify-between">
                         <div>
                           <p className="font-semibold text-foreground text-sm capitalize">
-                            {property?.type || 'Bien'}
+                            {property?.type || t('property.property')}
                           </p>
                           <div className="flex items-center gap-1 text-muted-foreground mt-0.5">
                             <MapPin className="h-3 w-3" />
@@ -69,7 +69,7 @@ export default function MyTransactions() {
                       <div className="flex items-center justify-between mt-2">
                         <TransactionStatusBadge status={tx.status as TransactionStatus} />
                         <span className="text-xs text-muted-foreground">
-                          {format(new Date(tx.updated_at), 'dd MMM', { locale: fr })}
+                          {format(new Date(tx.updated_at), 'dd MMM')}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">

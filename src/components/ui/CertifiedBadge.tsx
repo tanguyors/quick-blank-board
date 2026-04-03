@@ -1,10 +1,16 @@
 import { Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface CertifiedBadgeProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   showLabel?: boolean;
+}
+
+function CertifiedLabel() {
+  const { t } = useTranslation();
+  return <>{t('profile.certifiedClient')}</>;
 }
 
 export function CertifiedBadge({ className, size = 'sm', showLabel = true }: CertifiedBadgeProps) {
@@ -29,7 +35,7 @@ export function CertifiedBadge({ className, size = 'sm', showLabel = true }: Cer
       )}
     >
       <Shield className={iconSizes[size]} />
-      {showLabel && 'Client Certifié'}
+      {showLabel && <CertifiedLabel />}
     </span>
   );
 }
