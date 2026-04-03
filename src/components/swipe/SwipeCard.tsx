@@ -5,13 +5,23 @@ import { useTranslation } from 'react-i18next';
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
+import iconFavorites from '@/assets/icons/favorites.png';
+import { PropertySellerCard } from '@/components/properties/PropertySellerCard';
+import type { OwnerProfilePublic, OwnerScorePublic } from '@/lib/enrichPropertySellers';
 
 interface SwipeCardProps {
-  property: any;
+  property: any & {
+    owner_profile?: OwnerProfilePublic | null;
+    owner_score?: OwnerScorePublic | null;
+  };
   onInfoClick?: () => void;
+  /** Affiché en haut à droite de la photo */
+  onFavoriteClick?: () => void;
+  isFavorite?: boolean;
+  favoriteDisabled?: boolean;
 }
 
-export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
+export function SwipeCard({ property, onInfoClick, onFavoriteClick, isFavorite, favoriteDisabled }: SwipeCardProps) {
   const { displayPrice } = useDisplayPrice();
   const { t } = useTranslation();
   const primaryMedia = property.property_media?.find((m: any) => m.is_primary) || property.property_media?.[0];
@@ -29,15 +39,44 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
 
         {/* Home Exchange badge */}
         {property.operations === 'home_exchange' && (
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-4 left-4 z-[15]">
             <span className="bg-cyan-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
               Home Exchange
             </span>
           </div>
         )}
 
+        {onFavoriteClick && (
+          <button
+            type="button"
+            disabled={favoriteDisabled}
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              onFavoriteClick();
+            }}
+            className={`absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full shadow-lg transition-colors disabled:opacity-50 ${
+              isFavorite
+                ? 'bg-primary ring-2 ring-primary/40'
+                : 'bg-white ring-1 ring-black/10 hover:bg-neutral-50 dark:bg-card dark:ring-white/15 dark:hover:bg-muted'
+            }`}
+            aria-label={t('property.favorite')}
+            aria-pressed={isFavorite}
+          >
+            <img src={iconFavorites} alt="" className="h-5 w-5 object-contain" />
+          </button>
+        )}
+
         {/* Bottom overlay */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/80 to-transparent p-5 pt-16">
+          <div className="mb-3">
+            <PropertySellerCard
+              variant="compact"
+              profile={property.owner_profile}
+              score={property.owner_score}
+            />
+          </div>
           <h3 className="text-2xl font-bold text-foreground">{property.type}</h3>
           <div className="flex items-center gap-1 mt-1 text-muted-foreground">
             <img src={iconMap} alt="" className="h-4 w-4 object-contain" />

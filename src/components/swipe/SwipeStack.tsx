@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
 import iconMatches from '@/assets/icons/matches.png';
-import iconFavorites from '@/assets/icons/favorites.png';
 
 interface SwipeStackProps {
   filters?: ExploreFilterValues;
@@ -51,11 +50,13 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         setCurrentIndex(prev => prev + 1);
         if (result.matched) setShowMatch(true);
       }, 300);
-    } catch {
+    } catch (err) {
+      console.error('handleMatch', err);
+      toast.error(t('explore.swipeActionError'));
       setSwipeDirection(null);
       setOffset({ x: 0, y: 0 });
     }
-  }, [currentProperty, swipe]);
+  }, [currentProperty, swipe, t]);
 
   const handlePass = useCallback(async () => {
     if (!currentProperty || swipe.isPending) return;
@@ -71,11 +72,13 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         setOffset({ x: 0, y: 0 });
         setCurrentIndex(prev => prev + 1);
       }, 300);
-    } catch {
+    } catch (err) {
+      console.error('handlePass', err);
+      toast.error(t('explore.swipeActionError'));
       setSwipeDirection(null);
       setOffset({ x: 0, y: 0 });
     }
-  }, [currentProperty, swipe]);
+  }, [currentProperty, swipe, t]);
 
   const handleSuperLike = useCallback(async () => {
     if (!currentProperty || swipe.isPending) return;
@@ -94,11 +97,13 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         if (result.matched) setShowMatch(true);
       }, 300);
       toast.success('⭐ Super Like envoyé !');
-    } catch {
+    } catch (err) {
+      console.error('handleSuperLike', err);
+      toast.error(t('explore.swipeActionError'));
       setSwipeDirection(null);
       setOffset({ x: 0, y: 0 });
     }
-  }, [currentProperty, swipe]);
+  }, [currentProperty, swipe, t]);
 
   const handleFavorite = useCallback(async () => {
     if (!currentProperty || addFavorite.isPending) return;
@@ -183,7 +188,13 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
         >
-          <SwipeCard property={currentProperty} onInfoClick={() => setShowDetail(true)} />
+          <SwipeCard
+            property={currentProperty}
+            onInfoClick={() => setShowDetail(true)}
+            onFavoriteClick={handleFavorite}
+            isFavorite={isFavorite(currentProperty.id)}
+            favoriteDisabled={addFavorite.isPending}
+          />
         </div>
       </div>
 
@@ -198,44 +209,40 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-4 py-3 flex-shrink-0">
+      <div className="relative z-[60] flex shrink-0 items-center justify-center gap-4 border-t border-border/40 bg-background/95 py-3 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
         {currentIndex > 0 && (
           <button
+            type="button"
             onClick={() => { setCurrentIndex(i => Math.max(0, i - 1)); }}
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-secondary"
             aria-label="Retour"
           >
             <Undo2 className="h-4 w-4" />
           </button>
         )}
         <button
+          type="button"
           onClick={handlePass}
           disabled={swipe.isPending}
-          className="w-14 h-14 rounded-full border-2 border-destructive flex items-center justify-center text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-destructive text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
           aria-label={t('explore.pass')}
         >
           <X className="h-6 w-6" />
         </button>
         <button
-          onClick={handleFavorite}
-          disabled={addFavorite.isPending}
-          className="w-11 h-11 rounded-full bg-foreground flex items-center justify-center hover:bg-foreground/80 transition-colors"
-          aria-label={t('property.favorite')}
-        >
-          <img src={iconFavorites} alt="" className="h-5 w-5 object-contain" />
-        </button>
-        <button
+          type="button"
           onClick={handleSuperLike}
           disabled={swipe.isPending}
-          className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:from-amber-500 hover:to-amber-700 transition-all active:scale-95"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/30 transition-all hover:from-amber-500 hover:to-amber-700 active:scale-95"
           aria-label="Super Like"
         >
           <Star className="h-6 w-6 text-white fill-white" />
         </button>
         <button
+          type="button"
           onClick={handleMatch}
           disabled={swipe.isPending}
-          className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center hover:bg-primary transition-colors"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary transition-colors hover:bg-primary"
           aria-label="Match"
         >
           <img src={iconMatches} alt="" className="h-7 w-7 object-contain" />

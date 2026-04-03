@@ -21,7 +21,7 @@ export function Header() {
 
   return (
     <header
-      className="z-40 flex shrink-0 flex-col gap-2 border-b border-border bg-background px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] lg:hidden"
+      className="fixed inset-x-0 top-0 z-40 flex shrink-0 flex-col gap-2 border-b border-border bg-background px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] lg:hidden"
       role="banner"
     >
       <div className="flex items-center justify-between gap-2">

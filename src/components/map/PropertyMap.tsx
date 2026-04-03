@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Filter, X, ArrowLeft, Heart, Star, MessageCircle } from 'lucide-react';
 import logoSoma from '@/assets/logo-soma.png';
+import { enrichPropertiesWithSellerPublic } from '@/lib/enrichPropertySellers';
 import { PropertyDetailSheet } from './PropertyDetailSheet';
 import { useAuth } from '@/hooks/useAuth';
 import { useSwipe } from '@/hooks/useSwipes';
@@ -117,7 +118,7 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
       if (filters.maxPrice) query = query.lte('prix', Number(filters.maxPrice));
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return enrichPropertiesWithSellerPublic(data || []);
     },
   });
 
@@ -276,7 +277,13 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
 
       {/* Full-screen map */}
       <div className="flex-1 relative">
-        <MapContainer center={[-8.45, 115.26]} zoom={10} className="h-full w-full" style={{ minHeight: '100%' }}>
+        <MapContainer
+          center={[-8.45, 115.26]}
+          zoom={10}
+          className="h-full w-full"
+          style={{ minHeight: '100%' }}
+          closePopupOnClick={false}
+        >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -288,8 +295,20 @@ export function PropertyMap({ embedded = false }: PropertyMapProps) {
                 position={[p.latitude, p.longitude]}
                 icon={priceIcons.get(p.id) || createPriceIcon('—')}
               >
-                <Popup maxWidth={260} minWidth={200}>
-                  <div className="min-w-[180px]">
+                <Popup
+                  maxWidth={260}
+                  minWidth={200}
+                  eventHandlers={{
+                    add: e => {
+                      const el = (e.target as L.Popup).getElement?.();
+                      if (el) {
+                        L.DomEvent.disableClickPropagation(el);
+                        L.DomEvent.disableScrollPropagation(el);
+                      }
+                    },
+                  }}
+                >
+                  <div className="min-w-[180px]" onClick={ev => ev.stopPropagation()}>
                     {(() => {
                       const primaryImg = (p.property_media as any[])?.find((m: any) => m.is_primary) || (p.property_media as any[])?.[0];
                       return primaryImg ? (

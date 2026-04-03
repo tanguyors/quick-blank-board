@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { enrichPropertiesWithSellerPublic } from '@/lib/enrichPropertySellers';
 import { useAuth } from './useAuth';
 import { WorkflowService } from '@/services/workflowService';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
@@ -45,8 +46,9 @@ export function useExplorableProperties(filters?: ExploreFilterValues) {
       const { data, error } = await query;
       if (error) throw error;
       const filtered = data?.filter(p => !swipedIds.has(p.id)) || [];
+      const withSeller = await enrichPropertiesWithSellerPublic(filtered);
       // Sort: boosted properties first, then by creation date
-      return filtered.sort((a, b) => {
+      return withSeller.sort((a, b) => {
         const aBoosted = a.boosted_until && new Date(a.boosted_until) > new Date() ? 1 : 0;
         const bBoosted = b.boosted_until && new Date(b.boosted_until) > new Date() ? 1 : 0;
         return bBoosted - aBoosted;
@@ -71,11 +73,11 @@ export function useSwipe() {
         .insert({ user_id: user!.id, property_id: propertyId, direction });
       if (swipeError) throw swipeError;
 
-      // Track view stats
+      // Stats (best-effort) — ne pas utiliser .catch() : le client Supabase n’expose pas toujours une Promise native sur .rpc()
       if (direction === 'right') {
-        await supabase.rpc('increment_property_like', { prop_id: propertyId }).catch(() => {});
+        await supabase.rpc('increment_property_like', { prop_id: propertyId });
       } else {
-        await supabase.rpc('increment_property_pass', { prop_id: propertyId }).catch(() => {});
+        await supabase.rpc('increment_property_pass', { prop_id: propertyId });
       }
 
       if (direction === 'right') {

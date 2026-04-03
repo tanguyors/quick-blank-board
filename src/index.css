@@ -108,6 +108,11 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/** Petit air sous le contenu (la barre du bas est gérée par le padding de <main> dans AppLayout). */
+.pb-nav-scroll {
+  padding-bottom: 1rem;
+}
 .pt-safe {
   padding-top: env(safe-area-inset-top, 0px);
 }

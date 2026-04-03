@@ -91,7 +91,7 @@ export function ProfileForm() {
   const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
 
   return (
-    <div className="max-w-lg mx-auto pb-8">
+    <div className="max-w-lg mx-auto pb-nav-scroll">
       {/* Avatar + Name section */}
       <div className="flex flex-col items-center pt-6 pb-4">
         <AvatarUpload

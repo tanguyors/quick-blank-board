@@ -83,7 +83,7 @@ export default function BuyerDashboard() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-col">
         <PageTopBar>
           <div>
             <p className="text-lg font-bold text-foreground">{t('dashboard.hello', { name: displayName })}</p>
@@ -91,7 +91,7 @@ export default function BuyerDashboard() {
           </div>
         </PageTopBar>
 
-        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-y-contain px-4 pb-6">
+        <div className="space-y-5 px-4 pb-nav-scroll">
           {/* Quick Actions */}
           <div className="grid grid-cols-3 gap-3">
             <button

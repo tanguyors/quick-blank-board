@@ -55,7 +55,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="z-50 shrink-0 w-full border-t border-border bg-background lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 w-full shrink-0 border-t border-border bg-background lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Navigation mobile"
     >

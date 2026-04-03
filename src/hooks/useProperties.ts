@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { enrichPropertiesWithSellerPublic } from '@/lib/enrichPropertySellers';
 import { useAuth } from './useAuth';
 import type { TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 
@@ -30,7 +31,9 @@ export function useProperty(id: string | undefined) {
         .eq('id', id!)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      if (!data) return null;
+      const [enriched] = await enrichPropertiesWithSellerPublic([data]);
+      return enriched;
     },
     enabled: !!id,
   });

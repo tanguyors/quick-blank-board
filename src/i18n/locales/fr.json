@@ -177,7 +177,10 @@
     "passwordHint": "Dernière modification : il y a plus de 30 jours",
     "changePassword": "Changer le mot de passe",
     "dangerActions": "Actions irréversibles sur votre compte",
-    "deleteAccountPermanent": "Supprimer définitivement mon compte"
+    "deleteAccountPermanent": "Supprimer définitivement mon compte",
+    "myProfile": "Mon profil",
+    "aboutActivity": "À propos de mon activité",
+    "activityPlaceholder": "Décrivez votre activité immobilière..."
   },
   "property": {
     "noPhoto": "Pas de photo",
@@ -229,7 +232,9 @@
     "collection": "Collection",
     "linkCopied": "Lien copié !",
     "addedToCollection": "Ajouté à la collection",
-    "goodDeal": "Bonne affaire !"
+    "goodDeal": "Bonne affaire !",
+    "seller": "Vendeur",
+    "sellerProfile": "Profil du vendeur"
   },
   "explore": {
     "allowLocation": "Autoriser la localisation",
@@ -272,7 +277,8 @@
     "minBedrooms": "Chambres minimum",
     "all": "Tous",
     "reset": "Réinitialiser",
-    "apply": "Appliquer"
+    "apply": "Appliquer",
+    "swipeActionError": "Impossible d'enregistrer votre choix. Réessayez."
   },
   "common": {
     "configured": "Configuré ✅",
@@ -550,10 +556,5 @@
     "conversations": "conversations",
     "noConversations": "Aucune conversation pour le moment",
     "user": "Utilisateur"
-  },
-  "owner": {
-    "myProfile": "Mon Profil",
-    "aboutActivity": "À propos de mon activité",
-    "activityPlaceholder": "Décrivez votre activité immobilière..."
   }
 }

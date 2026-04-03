@@ -34,7 +34,7 @@ export default function NotaireDashboard() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-col">
         {/* Header */}
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border bg-background px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function NotaireDashboard() {
         </div>
 
         {/* Content */}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain pb-6">
+        <div className="pb-nav-scroll">
           {activeTab === 'overview' && <NotaireOverview />}
           {activeTab === 'documents' && <NotaireDocuments />}
           {activeTab === 'transactions' && <NotaireTransactions />}

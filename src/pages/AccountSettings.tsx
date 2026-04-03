@@ -59,7 +59,7 @@ export default function AccountSettings() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-0">
         <PageTopBar>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/profile')} className="text-foreground">
@@ -69,7 +69,7 @@ export default function AccountSettings() {
           </div>
         </PageTopBar>
 
-        <div className="flex-1 overflow-y-auto p-4 max-w-lg mx-auto w-full space-y-4 pb-8">
+        <div className="max-w-lg mx-auto w-full space-y-4 p-4 pb-nav-scroll">
           {/* Personal info */}
           <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
             <div className="flex items-center gap-2">

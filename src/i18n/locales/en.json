@@ -177,7 +177,10 @@
     "passwordHint": "Last changed: over 30 days ago",
     "changePassword": "Change password",
     "dangerActions": "Irreversible actions on your account",
-    "deleteAccountPermanent": "Permanently delete my account"
+    "deleteAccountPermanent": "Permanently delete my account",
+    "myProfile": "My profile",
+    "aboutActivity": "About my activity",
+    "activityPlaceholder": "Describe your real estate activity..."
   },
   "property": {
     "noPhoto": "No photo",
@@ -229,7 +232,9 @@
     "collection": "Collection",
     "linkCopied": "Link copied!",
     "addedToCollection": "Added to collection",
-    "goodDeal": "Good deal!"
+    "goodDeal": "Good deal!",
+    "seller": "Seller",
+    "sellerProfile": "Seller profile"
   },
   "explore": {
     "allowLocation": "Allow location",
@@ -272,7 +277,8 @@
     "minBedrooms": "Minimum bedrooms",
     "all": "All",
     "reset": "Reset",
-    "apply": "Apply"
+    "apply": "Apply",
+    "swipeActionError": "Could not save your choice. Please try again."
   },
   "common": {
     "configured": "Configured ✅",
@@ -550,10 +556,5 @@
     "conversations": "conversations",
     "noConversations": "No conversations yet",
     "user": "User"
-  },
-  "owner": {
-    "myProfile": "My Profile",
-    "aboutActivity": "About my activity",
-    "activityPlaceholder": "Describe your real estate activity..."
   }
 }

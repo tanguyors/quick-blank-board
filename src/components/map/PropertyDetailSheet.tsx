@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
+import { PropertySellerCard } from '@/components/properties/PropertySellerCard';
+import type { OwnerProfilePublic, OwnerScorePublic } from '@/lib/enrichPropertySellers';
 
 interface PropertyData {
   id: string;
@@ -30,6 +32,8 @@ interface PropertyData {
   equipements?: any;
   owner_id: string;
   property_media?: { url: string; is_primary: boolean; type?: string }[];
+  owner_profile?: OwnerProfilePublic | null;
+  owner_score?: OwnerScorePublic | null;
 }
 
 interface PropertyDetailSheetProps {
@@ -135,6 +139,10 @@ export function PropertyDetailSheet({
               <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-4 w-4 object-contain" />{property.chambres}</span>
               <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
             </div>
+
+            {!isOwner && (
+              <PropertySellerCard profile={property.owner_profile} score={property.owner_score} />
+            )}
 
             {/* Disclaimer */}
             <div className="bg-amber-50 dark:bg-amber-500/10 border-2 border-amber-400 dark:border-amber-500/40 rounded-xl p-4 flex items-start gap-3">

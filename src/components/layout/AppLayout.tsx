@@ -26,9 +26,14 @@ export function AppLayout({ children, hideHeader, lockMainScroll }: AppLayoutPro
         <main
           className={cn(
             'min-h-0 flex-1 touch-pan-y',
+            /* Chrome mobile : header + barre du bas en position fixed — réserve l’espace pour le contenu */
+            !hideNav &&
+              'pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] lg:pb-0',
+            !hideHeader &&
+              'pt-[calc(env(safe-area-inset-top,0px)+6.75rem)] lg:pt-0',
             lockMainScroll
               ? 'flex flex-col overflow-hidden overscroll-none'
-              : 'overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]',
+              : 'overflow-y-auto overscroll-y-auto [-webkit-overflow-scrolling:touch]',
           )}
           role="main"
         >

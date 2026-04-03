@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
+import { PropertySellerCard } from '@/components/properties/PropertySellerCard';
 import { useTranslation } from 'react-i18next';
 
 import iconMap from '@/assets/icons/map.png';
@@ -89,6 +90,13 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-5 w-5 object-contain" />{property.chambres}</span>
           <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
         </div>
+
+        {!isOwner && (
+          <PropertySellerCard
+            profile={(property as any).owner_profile}
+            score={(property as any).owner_score}
+          />
+        )}
 
         {/* Share & Collection buttons */}
         <div className="flex gap-2">

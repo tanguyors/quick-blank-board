@@ -116,8 +116,9 @@ export function ChatBot() {
     <>
       {/* FAB Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-110 transition-transform lg:bottom-6"
+        className="fixed bottom-48 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-110 lg:bottom-6"
         aria-label="Ouvrir le chatbot"
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
@@ -131,7 +132,7 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-36 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] h-[460px] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden lg:bottom-22"
+            className="fixed bottom-64 right-4 z-50 flex h-[460px] w-[340px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl lg:bottom-22"
           >
             {/* Header */}
             <div className="px-4 py-3 border-b border-border bg-primary/5 flex items-center gap-3">

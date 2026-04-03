@@ -17,7 +17,7 @@ export default function Favorites() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-col">
         <PageTopBar>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
@@ -30,7 +30,7 @@ export default function Favorites() {
           </div>
         </PageTopBar>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 pb-6">
+        <div className="px-4 pb-nav-scroll">
           {favorites.isLoading ? (
             <div className="flex items-center justify-center p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
