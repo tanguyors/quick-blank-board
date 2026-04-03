@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale/fr';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import iconNotifications from '@/assets/icons/notifications.png';
 
 export function NotificationBell() {
+  const { t } = useTranslation();
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const navigate = useNavigate();
   const count = unreadCount.data || 0;
@@ -20,7 +21,7 @@ export function NotificationBell() {
       <PopoverTrigger asChild>
         <button
           className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Notifications"
+          aria-label={t('nav.notifications')}
         >
           <img src={iconNotifications} alt="" className="h-5 w-5 object-contain" />
           {count > 0 && (
@@ -36,13 +37,13 @@ export function NotificationBell() {
         sideOffset={8}
       >
         <div className="px-4 py-3 border-b border-border">
-          <h3 className="font-semibold text-foreground text-sm">Notifications</h3>
+          <h3 className="font-semibold text-foreground text-sm">{t('nav.notifications')}</h3>
         </div>
 
         {!recentNotifs.length ? (
           <div className="p-6 text-center">
             <img src={iconNotifications} alt="" className="h-8 w-8 object-contain mx-auto mb-2 opacity-30" />
-            <p className="text-muted-foreground text-sm">Aucune notification</p>
+            <p className="text-muted-foreground text-sm">{t('notifications.noNotifications', 'No notifications')}</p>
           </div>
         ) : (
           <div className="max-h-72 overflow-y-auto">
@@ -65,7 +66,7 @@ export function NotificationBell() {
                     <p className="font-medium text-foreground text-xs leading-snug">{notif.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.message}</p>
                     <p className="text-[10px] text-muted-foreground/70 mt-1">
-                      {format(new Date(notif.created_at), "dd MMM 'à' HH:mm", { locale: fr })}
+                      {format(new Date(notif.created_at), 'dd MMM HH:mm')}
                     </p>
                   </div>
                   {!notif.read_at && (
@@ -87,7 +88,7 @@ export function NotificationBell() {
               navigate('/notifications');
             }}
           >
-            Voir toutes les notifications
+            {t('notifications.viewAll', 'View all notifications')}
           </Button>
         </div>
       </PopoverContent>

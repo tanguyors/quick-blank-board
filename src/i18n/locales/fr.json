@@ -372,6 +372,11 @@
     "refusalImpact": "Les refus de visites peuvent diminuer votre score SomaGate.",
     "historyKept": "En cas de litige ou de doute, SOMA GATE conserve l'historique complet du projet."
   },
+  "notifications": {
+    "noNotifications": "Aucune notification",
+    "viewAll": "Voir toutes les notifications",
+    "markAllRead": "Tout marquer comme lu"
+  },
   "txPage": {
     "title": "Transaction",
     "notFound": "Transaction introuvable",
