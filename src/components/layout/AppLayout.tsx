@@ -26,7 +26,7 @@ export function AppLayout({ children, hideHeader }: AppLayoutProps) {
         </main>
         {!hideNav && <BottomNav />}
       </div>
-      {!hideNav && <ChatBot />}
+      {!hideNav && !pathname.startsWith('/transaction/') && !pathname.startsWith('/messages/') && <ChatBot />}
     </div>
   );
 }

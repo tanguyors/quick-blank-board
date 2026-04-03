@@ -1,81 +1,84 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Tu es l'assistant IA de Soma Gate, la première plateforme d'intelligence immobilière à Bali.
+const CHAT_API_URL = "https://apichatbot-proxy.vercel.app/api/chat";
+const CHAT_API_KEY = "MonSecret-Chatbot-2026-SOMA";
 
-Tu aides les utilisateurs avec :
-- Les questions sur l'immobilier à Bali (prix, quartiers, tendances)
-- L'explication des concepts Freehold vs Leasehold
-- La navigation dans l'application
-- Les questions sur les transactions et la sécurité
-- Les conseils d'investissement immobilier
-
+const SYSTEM_CONTEXT = `Tu es l'assistant IA de SomaGate, la première plateforme d'intelligence immobilière à Bali.
 Règles :
-- Réponds toujours en français
-- Sois concis et professionnel
+- Réponds dans la langue de l'utilisateur
+- Sois concis, professionnel et utile
 - Si tu ne sais pas, dis-le honnêtement
-- Mentionne que Soma Gate peut mettre en relation avec un conseiller si nécessaire
-
-Rappel Freehold/Leasehold :
-- Freehold = propriété complète et permanente (bien + terrain pour toujours)
-- Leasehold = propriété temporaire (murs uniquement, 20-40 ans, ground rent)`;
+- Ne donne jamais de conseil juridique ou financier
+- Mentionne que SomaGate peut mettre en relation avec un professionnel si nécessaire
+- Base tes réponses sur le contexte fourni ci-dessous quand il est pertinent`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const { message, messages } = await req.json();
+    const userMessage = message || messages?.[messages.length - 1]?.content || "";
+    if (!userMessage) throw new Error("No message provided");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // RAG: Search relevant documents
+    let ragContext = "";
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+      if (supabaseUrl && supabaseKey) {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const { data } = await supabase.rpc("search_rag_documents", {
+          query_text: userMessage,
+          match_count: 4,
+        });
+        if (data?.length) {
+          ragContext = data.map((d: any) => `[${d.category}] ${d.title}: ${d.content}`).join("\n\n");
+        }
+      }
+    } catch (e) {
+      console.error("RAG search error:", e);
+    }
+
+    // Build enriched message with RAG context
+    const enrichedMessage = ragContext
+      ? `${SYSTEM_CONTEXT}\n\n[CONTEXTE SOMAGATE]\n${ragContext}\n\n[QUESTION]\n${userMessage}`
+      : `${SYSTEM_CONTEXT}\n\n[QUESTION]\n${userMessage}`;
+
+    // Call external chatbot API
+    const response = await fetch(CHAT_API_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
+        "x-api-key": CHAT_API_KEY,
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages,
-        ],
-        stream: true,
-      }),
+      body: JSON.stringify({ message: enrichedMessage }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Trop de requêtes. Veuillez réessayer dans quelques instants." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Crédits insuffisants. Veuillez recharger votre compte." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Erreur du service IA" }), {
-        status: 500,
+      const errorText = await response.text();
+      console.error("Chatbot API error:", response.status, errorText);
+      return new Response(JSON.stringify({
+        reply: "Désolé, je suis temporairement indisponible. Veuillez réessayer dans quelques instants."
+      }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    const data = await response.json();
+    return new Response(JSON.stringify({ reply: data.reply || data.message || data.response || "Pas de réponse" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("chatbot error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), {
-      status: 500,
+    return new Response(JSON.stringify({ reply: "Erreur de connexion. Veuillez réessayer." }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { PushNotificationsSetup } from "@/components/push/PushNotificationsSetup";
 
 import { PageLoader } from "@/components/ui/PageLoader";
 
@@ -48,6 +49,8 @@ const CGV = lazy(() => import("./pages/CGV"));
 const CGVAbonnement = lazy(() => import("./pages/CGVAbonnement"));
 const Confidentialite = lazy(() => import("./pages/Confidentialite"));
 const Actualites = lazy(() => import("./pages/Actualites"));
+const HomeExchange = lazy(() => import("./pages/HomeExchange"));
+const Premium = lazy(() => import("./pages/Premium"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,6 +67,7 @@ const App = () => (
   <ThemeProvider defaultTheme="light">
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PushNotificationsSetup />
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -107,6 +111,8 @@ const App = () => (
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/buyer/preferences" element={<ProtectedRoute><BuyerPreferences /></ProtectedRoute>} />
+                <Route path="/home-exchange" element={<ProtectedRoute><HomeExchange /></ProtectedRoute>} />
+                <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
                 <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

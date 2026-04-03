@@ -249,5 +249,11 @@
     "configured": "Configuré ✅",
     "toConfigure": "À configurer",
     "loading": "Chargement..."
+  },
+  "favorites": {
+    "noFavorites": "Aucun favori pour le moment",
+    "addHint": "Appuyez sur le coeur dans Decouvrir pour ajouter un bien",
+    "viewProperty": "Voir le bien",
+    "properties": "bien(s)"
   }
 }

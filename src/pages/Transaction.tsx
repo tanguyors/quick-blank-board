@@ -11,14 +11,17 @@ import { SecurityBanner } from '@/components/workflow/SecurityAlert';
 import { OfferForm } from '@/components/workflow/OfferForm';
 import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
-import { ArrowLeft, FileText, CheckCircle, Loader2, Download } from 'lucide-react';
+import { ArrowLeft, FileText, CheckCircle, Loader2, Download, DollarSign, Archive } from 'lucide-react';
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
 import { Button } from '@/components/ui/button';
 import { DocumentGenerationService } from '@/services/documentGenerationService';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { TransactionExportService } from '@/services/transactionExportService';
+import { WorkflowService } from '@/services/workflowService';
 import type { TransactionStatus as TxStatus, WfTransaction } from '@/types/workflow';
 
 type TabId = 'apercu' | 'visite' | 'messages' | 'documents';
@@ -34,7 +37,8 @@ export default function Transaction() {
   const {
     transaction, logs, messages, documents,
     requestVisit, proposeVisitDates, refuseVisit, confirmVisit,
-    completeVisit, rescheduleVisit, expressIntention, makeOffer, finalizeDeal,
+    completeVisit, rescheduleVisit, expressIntention, makeOffer,
+    acceptOffer, rejectOffer, finalizeDeal,
     submitFeedback, sendMessage,
   } = useTransaction(id!);
 
@@ -81,20 +85,39 @@ export default function Transaction() {
             <TransactionStatusBadge status={tx.status as TxStatus} />
           </div>
           {['deal_finalized', 'archived', 'deal_cancelled'].includes(tx.status) && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={async () => {
-                try {
-                  await TransactionExportService.exportTransaction(tx.id);
-                  toast.success('Dossier téléchargé !');
-                } catch (err) {
-                  toast.error('Erreur lors du téléchargement');
-                }
-              }}
-            >
-              <Download className="h-4 w-4 mr-1" /> Dossier
-            </Button>
+            <div className="flex gap-1">
+              {['deal_finalized', 'deal_cancelled'].includes(tx.status) && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={async () => {
+                    try {
+                      await WorkflowService.updateStatus(tx.id, 'archived', user!.id);
+                      toast.success('Transaction archivée');
+                      transaction.refetch();
+                    } catch (err) {
+                      toast.error('Erreur lors de l\'archivage');
+                    }
+                  }}
+                >
+                  <Archive className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await TransactionExportService.exportTransaction(tx.id);
+                    toast.success('Dossier téléchargé !');
+                  } catch (err) {
+                    toast.error('Erreur lors du téléchargement');
+                  }
+                }}
+              >
+                <Download className="h-4 w-4 mr-1" /> Dossier
+              </Button>
+            </div>
           )}
         </div>
 
@@ -126,9 +149,13 @@ export default function Transaction() {
               isBuyer={isBuyer}
               displayPrice={displayPrice}
               onMakeOffer={async (args) => makeOffer.mutateAsync(args)}
+              onAcceptOffer={async () => acceptOffer.mutateAsync()}
+              onRejectOffer={async (args) => rejectOffer.mutateAsync(args)}
               onFinalizeDeal={async () => finalizeDeal.mutateAsync()}
               onSubmitFeedback={async (fb) => submitFeedback.mutateAsync(fb)}
               isMakingOffer={makeOffer.isPending}
+              isAcceptingOffer={acceptOffer.isPending}
+              isRejectingOffer={rejectOffer.isPending}
               isFinalizing={finalizeDeal.isPending}
               isSubmittingFeedback={submitFeedback.isPending}
             />
@@ -184,13 +211,17 @@ export default function Transaction() {
   );
 }
 
-function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, onMakeOffer, onFinalizeDeal, onSubmitFeedback, isMakingOffer, isFinalizing, isSubmittingFeedback }: {
+function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, onMakeOffer, onAcceptOffer, onRejectOffer, onFinalizeDeal, onSubmitFeedback, isMakingOffer, isAcceptingOffer, isRejectingOffer, isFinalizing, isSubmittingFeedback }: {
   tx: WfTransaction; property: any; primaryMedia: any; logs: any; isBuyer: boolean;
   displayPrice: (amount: number, fromCurrency: string) => string;
   onMakeOffer: (args: { offerType: string; amount: number; details?: string }) => Promise<any>;
+  onAcceptOffer: () => Promise<any>;
+  onRejectOffer: (args: { reason?: string; counterAmount?: number }) => Promise<any>;
   onFinalizeDeal: () => Promise<any>;
   onSubmitFeedback: (fb: Record<string, any>) => Promise<any>;
   isMakingOffer: boolean;
+  isAcceptingOffer: boolean;
+  isRejectingOffer: boolean;
   isFinalizing: boolean;
   isSubmittingFeedback: boolean;
 }) {
@@ -251,8 +282,45 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
         />
       )}
 
+      {/* Seller: accept/reject offer */}
+      {status === 'offer_made' && !isBuyer && (tx.offer_type === 'home_exchange' || !!tx.offer_amount) && (
+        <OfferResponse
+          tx={tx}
+          displayPrice={displayPrice}
+          onAccept={onAcceptOffer}
+          onReject={onRejectOffer}
+          isAccepting={isAcceptingOffer}
+          isRejecting={isRejectingOffer}
+        />
+      )}
+
+      {/* Buyer: waiting for seller response */}
+      {status === 'offer_made' && isBuyer && (tx.offer_type === 'home_exchange' ? (
+        <div className="bg-card rounded-xl p-4 border border-border space-y-2">
+          <h3 className="font-semibold text-foreground text-sm">Proposition d'échange envoyée</h3>
+          {tx.offer_details && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{tx.offer_details}</p>}
+          <p className="text-sm text-muted-foreground mt-2">En attente de la réponse du propriétaire...</p>
+        </div>
+      ) : !!tx.offer_amount && (
+        <div className="bg-card rounded-xl p-4 border border-border space-y-2">
+          <h3 className="font-semibold text-foreground text-sm">Offre envoyée</h3>
+          <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
+          {tx.offer_type && <p className="text-xs text-muted-foreground capitalize">Type: {tx.offer_type.replace('_', ' ')}</p>}
+          <p className="text-sm text-muted-foreground mt-2">En attente de la réponse du vendeur...</p>
+        </div>
+      ))}
+
+      {/* Offer rejected message - shown when back to intention_expressed after rejection */}
+      {status === 'intention_expressed' && isBuyer && tx.offer_details && tx.offer_details.startsWith('Offre refusée') && (
+        <div className="bg-red-500/10 rounded-xl p-4 border border-red-500/30 space-y-2">
+          <h3 className="font-semibold text-red-400 text-sm">Offre refusée</h3>
+          <p className="text-sm text-muted-foreground">{tx.offer_details}</p>
+          <p className="text-sm text-muted-foreground">Vous pouvez reformuler une offre ou arrêter la transaction.</p>
+        </div>
+      )}
+
       {/* Offer summary */}
-      {(status === 'offer_made' || status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
+      {(status === 'documents_generated' || status === 'in_validation') && tx.offer_amount && (
         <div className="bg-card rounded-xl p-4 border border-border space-y-2">
           <h3 className="font-semibold text-foreground text-sm">Offre</h3>
           <p className="text-primary font-bold text-lg">{displayPrice(tx.offer_amount, property?.prix_currency || 'IDR')}</p>
@@ -281,6 +349,7 @@ function ApercuTab({ tx, property, primaryMedia, logs, isBuyer, displayPrice, on
           <FeedbackQuestionnaire
             onSubmit={onSubmitFeedback}
             isLoading={isSubmittingFeedback}
+            alreadySubmitted={logs?.some((l: any) => l.action === 'feedback_submitted' && l.actor_id === (isBuyer ? tx.buyer_id : tx.seller_id))}
           />
         </>
       )}
@@ -391,6 +460,116 @@ function DocumentsTab({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function OfferResponse({ tx, displayPrice, onAccept, onReject, isAccepting, isRejecting }: {
+  tx: WfTransaction;
+  displayPrice: (amount: number, fromCurrency: string) => string;
+  onAccept: () => Promise<any>;
+  onReject: (args: { reason?: string; counterAmount?: number }) => Promise<any>;
+  isAccepting: boolean;
+  isRejecting: boolean;
+}) {
+  const [showRejectForm, setShowRejectForm] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [counterAmount, setCounterAmount] = useState('');
+  const property = tx.properties;
+  const currency = property?.prix_currency || 'IDR';
+
+  return (
+    <div className="bg-card rounded-xl p-4 border border-primary/30 space-y-4">
+      <div className="flex items-center gap-2">
+        <DollarSign className="h-5 w-5 text-primary" />
+        <h3 className="font-semibold text-foreground">Offre reçue</h3>
+      </div>
+
+      <div className="bg-primary/10 rounded-lg p-3 space-y-1">
+        <p className="text-primary font-bold text-xl">
+          {tx.offer_amount ? displayPrice(tx.offer_amount, currency) : ''}
+        </p>
+        {property?.prix && (
+          <p className="text-xs text-muted-foreground">
+            Prix affiché : {displayPrice(property.prix, currency)}
+          </p>
+        )}
+        {tx.offer_type && (
+          <p className="text-xs text-muted-foreground capitalize">Type : {tx.offer_type.replace('_', ' ')}</p>
+        )}
+        {tx.offer_details && (
+          <p className="text-sm text-muted-foreground mt-2">{tx.offer_details}</p>
+        )}
+      </div>
+
+      {!showRejectForm ? (
+        <div className="flex gap-2">
+          <Button
+            className="flex-1"
+            onClick={async () => {
+              await onAccept();
+              toast.success('Offre acceptée !');
+            }}
+            disabled={isAccepting || isRejecting}
+          >
+            {isAccepting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Acceptation...</> : 'Accepter'}
+          </Button>
+          <Button
+            variant="destructive"
+            className="flex-1"
+            onClick={() => setShowRejectForm(true)}
+            disabled={isAccepting || isRejecting}
+          >
+            Refuser
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Motif du refus (optionnel)</label>
+            <Textarea
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              placeholder="Expliquez pourquoi vous refusez cette offre..."
+              rows={2}
+              className="bg-secondary/30 border-border"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">Contre-proposition ({currency}) (optionnel)</label>
+            <Input
+              type="number"
+              value={counterAmount}
+              onChange={e => setCounterAmount(e.target.value)}
+              placeholder="Montant souhaité"
+              className="bg-secondary/30 border-border"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="destructive"
+              className="flex-1"
+              onClick={async () => {
+                await onReject({
+                  reason: rejectReason || undefined,
+                  counterAmount: counterAmount ? Number(counterAmount) : undefined,
+                });
+                toast.success('Offre refusée');
+              }}
+              disabled={isRejecting}
+            >
+              {isRejecting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Envoi...</> : 'Confirmer le refus'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowRejectForm(false)}
+              disabled={isRejecting}
+            >
+              Annuler
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

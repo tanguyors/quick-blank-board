@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 interface FeedbackQuestionnaireProps {
   onSubmit: (feedback: Record<string, any>) => Promise<any>;
   isLoading: boolean;
+  alreadySubmitted?: boolean;
 }
 
 const QUESTIONS = [
@@ -40,10 +41,10 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
   );
 }
 
-export function FeedbackQuestionnaire({ onSubmit, isLoading }: FeedbackQuestionnaireProps) {
+export function FeedbackQuestionnaire({ onSubmit, isLoading, alreadySubmitted = false }: FeedbackQuestionnaireProps) {
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [comment, setComment] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(alreadySubmitted);
 
   const handleSubmit = async () => {
     const unanswered = QUESTIONS.filter(q => !ratings[q.key]);

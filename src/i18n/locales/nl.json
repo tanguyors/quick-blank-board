@@ -249,5 +249,11 @@
     "configured": "Geconfigureerd ✅",
     "toConfigure": "Te configureren",
     "loading": "Laden..."
+  },
+  "favorites": {
+    "noFavorites": "Nog geen favorieten",
+    "addHint": "Tik op het hart in Ontdekken om een woning toe te voegen",
+    "viewProperty": "Woning bekijken",
+    "properties": "woning(en)"
   }
 }

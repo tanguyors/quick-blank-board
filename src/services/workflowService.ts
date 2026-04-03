@@ -83,15 +83,75 @@ export class WorkflowService {
   }
 
   static async requestVisit(transactionId: string, buyerId: string) {
-    return this.updateStatus(transactionId, 'visit_requested', buyerId, {
+    const result = await this.updateStatus(transactionId, 'visit_requested', buyerId, {
       visit_requested_at: new Date().toISOString(),
     });
+
+    // Get seller ID to notify
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('seller_id, property_id')
+      .eq('id', transactionId)
+      .single();
+
+    if (tx) {
+      // Fetch property details
+      const { data: property } = await supabase
+        .from('properties')
+        .select('type, adresse')
+        .eq('id', tx.property_id)
+        .single();
+
+      const propertyLabel = property
+        ? `${property.type} — ${property.adresse}`
+        : 'votre bien';
+
+      // Notify seller
+      await this.createNotification(
+        tx.seller_id, transactionId, 'visit_requested',
+        'Demande de visite reçue 📋',
+        `Un acheteur souhaite visiter ${propertyLabel}. Proposez 3 créneaux de visite ou indiquez votre indisponibilité.`
+      );
+
+      // Notify buyer confirmation
+      await this.createNotification(
+        buyerId, transactionId, 'visit_requested',
+        'Demande de visite envoyée ✅',
+        `Votre demande de visite pour ${propertyLabel} a bien été envoyée. Le propriétaire reviendra vers vous avec des créneaux.`
+      );
+
+      // Send email to seller
+      EmailService.sendToUser(tx.seller_id, 'generic', {
+        subject: 'Nouvelle demande de visite',
+        message: `Un acheteur souhaite visiter ${propertyLabel}. Connectez-vous pour proposer des créneaux.`,
+        action_url: `https://app.somagate.com/transaction/${transactionId}`,
+      }).catch(e => console.error('Visit request email failed:', e));
+    }
+
+    return result;
   }
 
   static async proposeVisitDates(transactionId: string, sellerId: string, dates: { date: string; preference: number }[]) {
-    return this.updateStatus(transactionId, 'visit_proposed', sellerId, {
+    const result = await this.updateStatus(transactionId, 'visit_proposed', sellerId, {
       visit_proposed_dates: dates,
     });
+
+    // Notify buyer
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('buyer_id')
+      .eq('id', transactionId)
+      .single();
+
+    if (tx) {
+      await this.createNotification(
+        tx.buyer_id, transactionId, 'visit_proposed',
+        'Créneaux de visite proposés 📅',
+        'Le propriétaire vous a proposé des créneaux de visite. Confirmez celui qui vous convient.'
+      );
+    }
+
+    return result;
   }
 
   static async refuseVisit(transactionId: string, sellerId: string, reason: string, details?: string) {
@@ -101,6 +161,22 @@ export class WorkflowService {
     });
     // Penalize seller score
     await supabase.rpc('wf_calculate_user_score', { p_user_id: sellerId });
+
+    // Notify buyer
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('buyer_id')
+      .eq('id', transactionId)
+      .single();
+
+    if (tx) {
+      await this.createNotification(
+        tx.buyer_id, transactionId, 'visit_cancelled',
+        'Visite refusée',
+        `Le propriétaire a décliné la visite. Motif : ${reason}. Vous pouvez reformuler votre demande.`
+      );
+    }
+
     return result;
   }
 
@@ -249,7 +325,7 @@ export class WorkflowService {
       offer_details: details || null,
     });
 
-    // Notify seller by email about the offer
+    // Notify seller about the offer
     const { data: tx } = await supabase
       .from('wf_transactions')
       .select('seller_id, property_id')
@@ -261,6 +337,15 @@ export class WorkflowService {
         .select('type, adresse, prix_currency')
         .eq('id', tx.property_id)
         .single();
+
+      const propertyLabel = property ? `${property.type} — ${property.adresse}` : 'votre bien';
+
+      await this.createNotification(
+        tx.seller_id, transactionId, 'offer_made',
+        'Nouvelle offre reçue 💰',
+        `Un acheteur a fait une offre de ${amount.toLocaleString()} ${property?.prix_currency || 'IDR'} pour ${propertyLabel}. Acceptez, refusez ou faites une contre-offre.`
+      );
+
       EmailService.sendToUser(tx.seller_id, 'offer_made', {
         offer_amount: amount,
         offer_type: offerType,
@@ -271,11 +356,68 @@ export class WorkflowService {
       }).catch(e => console.error('Offer email failed:', e));
     }
 
-    // Auto-generate documents after offer
+    return result;
+  }
+
+  static async acceptOffer(transactionId: string, sellerId: string) {
+    // Accept = transition directly to documents_generated
+    const result = await this.updateStatus(transactionId, 'documents_generated', sellerId);
+
+    // Notify buyer
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('buyer_id')
+      .eq('id', transactionId)
+      .single();
+
+    if (tx) {
+      await this.createNotification(
+        tx.buyer_id, transactionId, 'offer_accepted',
+        'Offre acceptée ! 🎉',
+        'Le vendeur a accepté votre offre. Les documents sont en cours de préparation.'
+      );
+    }
+
+    // Generate documents
     try {
       await DocumentGenerationService.generateDocumentsForOffer(transactionId);
     } catch (e) {
       console.error('Document generation failed:', e);
+    }
+
+    return result;
+  }
+
+  static async rejectOffer(transactionId: string, sellerId: string, reason?: string, counterAmount?: number) {
+    // Reject = transition back to intention_expressed so buyer can re-offer
+    const additionalData: Record<string, any> = {
+      buyer_intention: 'offer',
+    };
+    if (counterAmount) {
+      additionalData.offer_details = `Offre refusée. Contre-proposition du vendeur : ${counterAmount.toLocaleString()}. ${reason || ''}`.trim();
+    } else if (reason) {
+      additionalData.offer_details = `Offre refusée. Motif : ${reason}`;
+    }
+
+    const result = await this.updateStatus(transactionId, 'intention_expressed', sellerId, additionalData);
+
+    // Notify buyer
+    const { data: tx } = await supabase
+      .from('wf_transactions')
+      .select('buyer_id')
+      .eq('id', transactionId)
+      .single();
+
+    if (tx) {
+      const message = counterAmount
+        ? `Le vendeur a refusé votre offre et propose un contre-montant de ${counterAmount.toLocaleString()}. Vous pouvez reformuler votre offre.`
+        : `Le vendeur a refusé votre offre. ${reason || 'Vous pouvez reformuler votre offre.'}`;
+
+      await this.createNotification(
+        tx.buyer_id, transactionId, 'offer_rejected',
+        'Offre refusée',
+        message
+      );
     }
 
     return result;
@@ -308,6 +450,9 @@ export class WorkflowService {
         ...updateData,
         deal_finalized_at: new Date().toISOString(),
       });
+
+      // Mark property as sold
+      await supabase.from('properties').update({ status: 'sold' }).eq('id', tx.property_id);
 
       // Certify both users
       await Promise.all([

@@ -13,6 +13,7 @@ import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
 import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useVisits } from '@/hooks/useVisits';
+import { useTranslation } from 'react-i18next';
 
 export function ProfileForm() {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ export function ProfileForm() {
     }
   };
 
+  const { t } = useTranslation();
   const displayName = profile.data?.full_name || profile.data?.first_name || user?.email || '';
 
   // Dynamic stats
@@ -83,7 +85,7 @@ export function ProfileForm() {
   });
 
   const scoreValue = userScore?.score ?? 50;
-  const scoreLevel = scoreValue >= 80 ? 'Expert' : scoreValue >= 60 ? 'Actif' : scoreValue >= 40 ? 'Observateur' : 'Débutant';
+  const scoreLevelKey = scoreValue >= 80 ? 'expert' : scoreValue >= 60 ? 'active' : scoreValue >= 40 ? 'observer' : 'beginner';
   const scoreEmoji = scoreValue >= 80 ? '🔥' : scoreValue >= 60 ? '⭐' : scoreValue >= 40 ? '🌱' : '🌱';
 
   const pendingVisitsCount = (visits.data || []).filter(v => v.status === 'pending').length;
@@ -100,7 +102,7 @@ export function ProfileForm() {
           }}
         />
         <h2 className="text-xl font-bold text-foreground mt-4">{displayName} 👋</h2>
-        <p className="text-sm text-muted-foreground">✨ Membre SomaGate</p>
+        <p className="text-sm text-muted-foreground">✨ {t('profile.member')}</p>
         {userScore?.certified && <CertifiedBadge size="md" className="mt-2" />}
       </div>
 
@@ -115,20 +117,20 @@ export function ProfileForm() {
               <Textarea
                 value={form.bio}
                 onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
-                placeholder="Ajoutez une biographie..."
+                placeholder={t('profile.bio')}
                 rows={3}
                 className="bg-transparent border-0 p-0 resize-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
                 autoFocus
               />
               <div className="flex justify-end gap-2">
-                <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditingBio(false); }}>Annuler</Button>
-                <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSaveBio(); }}>Enregistrer</Button>
+                <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditingBio(false); }}>{t('profile.cancel')}</Button>
+                <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSaveBio(); }}>{t('profile.save')}</Button>
               </div>
             </div>
           ) : (
             <div className="flex items-start justify-between">
               <p className={form.bio ? 'text-foreground' : 'text-muted-foreground'}>
-                {form.bio || 'Ajoutez une biographie...'}
+                {form.bio || t('profile.bio')}
               </p>
               <Pencil className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-2" />
             </div>
@@ -143,8 +145,8 @@ export function ProfileForm() {
             <div className="flex items-center gap-3">
               <span className="text-2xl">{scoreEmoji}</span>
               <div>
-                <p className="text-sm text-muted-foreground">Score de Chaleur</p>
-                <p className="font-semibold text-foreground">{scoreLevel}</p>
+                <p className="text-sm text-muted-foreground">{t('profile.heatScore')}</p>
+                <p className="font-semibold text-foreground">{t(`profile.${scoreLevelKey}`)}</p>
               </div>
             </div>
             <div className="text-right">
@@ -155,10 +157,10 @@ export function ProfileForm() {
           <div className="mt-3 h-1.5 bg-secondary rounded-full overflow-hidden">
             <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${scoreValue}%` }} />
           </div>
-          <p className="text-xs text-muted-foreground mt-2">↗ Explorez et visitez pour augmenter votre score</p>
+          <p className="text-xs text-muted-foreground mt-2">{t('profile.swipeToIncrease')}</p>
           {userScore?.certified && (
             <div className="mt-2 flex items-center gap-1.5 text-primary text-xs font-medium">
-              ✅ Client Certifié
+              ✅ {t('profile.certifiedClient')}
             </div>
           )}
         </div>

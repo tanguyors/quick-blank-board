@@ -249,5 +249,11 @@
     "configured": "已配置 ✅",
     "toConfigure": "待配置",
     "loading": "加载中..."
+  },
+  "favorites": {
+    "noFavorites": "还没有收藏",
+    "addHint": "在发现中点击爱心添加房产",
+    "viewProperty": "查看房产",
+    "properties": "房产"
   }
 }

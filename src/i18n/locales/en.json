@@ -249,5 +249,11 @@
     "configured": "Configured ✅",
     "toConfigure": "To configure",
     "loading": "Loading..."
+  },
+  "favorites": {
+    "noFavorites": "No favorites yet",
+    "addHint": "Tap the heart in Discover to add a property",
+    "viewProperty": "View property",
+    "properties": "propert(ies)"
   }
 }

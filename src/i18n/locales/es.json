@@ -249,5 +249,11 @@
     "configured": "Configurado ✅",
     "toConfigure": "Por configurar",
     "loading": "Cargando..."
+  },
+  "favorites": {
+    "noFavorites": "Sin favoritos por el momento",
+    "addHint": "Pulse el corazon en Descubrir para agregar una propiedad",
+    "viewProperty": "Ver propiedad",
+    "properties": "propiedad(es)"
   }
 }

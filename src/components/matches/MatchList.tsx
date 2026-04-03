@@ -57,7 +57,7 @@ export function MatchList() {
                   </span>
                 )}
                 <span className="bg-background/80 backdrop-blur-sm text-foreground text-xs px-3 py-1 rounded-full font-medium">
-                  {property?.operations === 'vente' ? t('property.sale') : t('property.rental')}
+                  {property?.operations === 'freehold' ? 'Freehold' : property?.operations === 'leasehold' ? 'Leasehold' : property?.operations === 'home_exchange' ? 'Home Exchange' : t('property.rental')}
                 </span>
               </div>
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">

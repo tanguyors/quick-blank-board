@@ -4,95 +4,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`;
 
-async function streamChat({
-  messages,
-  onDelta,
-  onDone,
-}: {
-  messages: Msg[];
-  onDelta: (deltaText: string) => void;
-  onDone: () => void;
-}) {
+/**
+ * Send message to chatbot via Supabase Edge Function (handles RAG + API proxy server-side)
+ */
+async function sendToAPI(userMessage: string, _history: Msg[]): Promise<string> {
   const resp = await fetch(CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ message: userMessage }),
   });
 
-  if (resp.status === 429) {
-    toast.error('Trop de requêtes. Veuillez réessayer dans quelques instants.');
-    onDone();
-    return;
-  }
-  if (resp.status === 402) {
-    toast.error('Crédits IA insuffisants.');
-    onDone();
-    return;
-  }
-  if (!resp.ok || !resp.body) throw new Error('Échec de la connexion au chatbot');
+  if (!resp.ok) throw new Error('API_ERROR');
 
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let textBuffer = '';
-  let streamDone = false;
-
-  while (!streamDone) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    textBuffer += decoder.decode(value, { stream: true });
-
-    let newlineIndex: number;
-    while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
-      let line = textBuffer.slice(0, newlineIndex);
-      textBuffer = textBuffer.slice(newlineIndex + 1);
-
-      if (line.endsWith('\r')) line = line.slice(0, -1);
-      if (line.startsWith(':') || line.trim() === '') continue;
-      if (!line.startsWith('data: ')) continue;
-
-      const jsonStr = line.slice(6).trim();
-      if (jsonStr === '[DONE]') {
-        streamDone = true;
-        break;
-      }
-
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-        if (content) onDelta(content);
-      } catch {
-        textBuffer = line + '\n' + textBuffer;
-        break;
-      }
-    }
-  }
-
-  // Final flush
-  if (textBuffer.trim()) {
-    for (let raw of textBuffer.split('\n')) {
-      if (!raw) continue;
-      if (raw.endsWith('\r')) raw = raw.slice(0, -1);
-      if (raw.startsWith(':') || raw.trim() === '') continue;
-      if (!raw.startsWith('data: ')) continue;
-      const jsonStr = raw.slice(6).trim();
-      if (jsonStr === '[DONE]') continue;
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-        if (content) onDelta(content);
-      } catch { /* ignore */ }
-    }
-  }
-
-  onDone();
+  const data = await resp.json();
+  return data.reply || 'Désolé, je n\'ai pas pu générer une réponse.';
 }
 
 export function ChatBot() {
@@ -115,28 +47,20 @@ export function ChatBot() {
     setInput('');
     setIsLoading(true);
 
-    let assistantSoFar = '';
-    const upsertAssistant = (chunk: string) => {
-      assistantSoFar += chunk;
-      setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last?.role === 'assistant') {
-          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-        }
-        return [...prev, { role: 'assistant', content: assistantSoFar }];
-      });
-    };
-
     try {
-      await streamChat({
-        messages: [...messages, userMsg],
-        onDelta: (chunk) => upsertAssistant(chunk),
-        onDone: () => setIsLoading(false),
-      });
-    } catch (e) {
-      console.error(e);
+      const reply = await sendToAPI(text, messages);
+      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    } catch (e: any) {
+      if (e.message === 'RATE_LIMIT') {
+        toast.error('Trop de requêtes. Réessayez dans quelques instants.');
+      } else if (e.message === 'AUTH_ERROR') {
+        toast.error('Erreur d\'authentification chatbot.');
+      } else {
+        toast.error('Erreur de connexion au chatbot');
+      }
+      console.error('Chatbot error:', e);
+    } finally {
       setIsLoading(false);
-      toast.error("Erreur de connexion au chatbot");
     }
   };
 
@@ -168,7 +92,7 @@ export function ChatBot() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-foreground">Assistant Soma Gate</h3>
-                <p className="text-[10px] text-muted-foreground">Intelligence immobilière</p>
+                <p className="text-[10px] text-muted-foreground">Intelligence immobilière · RAG</p>
               </div>
             </div>
 
@@ -181,7 +105,7 @@ export function ChatBot() {
                     Bonjour ! Je suis votre assistant immobilier. Comment puis-je vous aider ?
                   </p>
                   <div className="flex flex-wrap gap-1.5 mt-4 justify-center">
-                    {['Freehold vs Leasehold ?', 'Prix à Canggu ?', 'Comment matcher ?'].map(q => (
+                    {['Freehold vs Leasehold ?', 'Prix à Canggu ?', 'Comment fonctionne SomaGate ?', 'Sécurité anti-fraude ?'].map(q => (
                       <button
                         key={q}
                         onClick={() => { setInput(q); }}
@@ -197,21 +121,18 @@ export function ChatBot() {
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+                    className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                       msg.role === 'user'
                         ? 'bg-primary text-primary-foreground rounded-br-md'
                         : 'bg-secondary text-foreground rounded-bl-md'
                     }`}
                   >
                     {msg.content}
-                    {msg.role === 'assistant' && isLoading && i === messages.length - 1 && (
-                      <span className="inline-block w-1.5 h-4 bg-foreground/50 ml-0.5 animate-pulse" />
-                    )}
                   </div>
                 </div>
               ))}
 
-              {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
+              {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-secondary rounded-2xl rounded-bl-md px-4 py-3">
                     <div className="flex gap-1">

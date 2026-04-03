@@ -321,6 +321,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          apns_device_token: string | null
           avatar_url: string | null
           bio: string | null
           birth_date: string | null
@@ -343,6 +344,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          apns_device_token?: string | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null
@@ -365,6 +367,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          apns_device_token?: string | null
           avatar_url?: string | null
           bio?: string | null
           birth_date?: string | null

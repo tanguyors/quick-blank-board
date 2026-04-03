@@ -44,7 +44,13 @@ export function useExplorableProperties(filters?: ExploreFilterValues) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data?.filter(p => !swipedIds.has(p.id)) || [];
+      const filtered = data?.filter(p => !swipedIds.has(p.id)) || [];
+      // Sort: boosted properties first, then by creation date
+      return filtered.sort((a, b) => {
+        const aBoosted = a.boosted_until && new Date(a.boosted_until) > new Date() ? 1 : 0;
+        const bBoosted = b.boosted_until && new Date(b.boosted_until) > new Date() ? 1 : 0;
+        return bBoosted - aBoosted;
+      });
     },
     enabled: !!user,
   });
@@ -54,15 +60,23 @@ export function useSwipe() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ propertyId, direction, ownerId }: {
+    mutationFn: async ({ propertyId, direction, ownerId, isSuperLike }: {
       propertyId: string;
       direction: 'left' | 'right';
       ownerId: string;
+      isSuperLike?: boolean;
     }) => {
       const { error: swipeError } = await supabase
         .from('swipes')
         .insert({ user_id: user!.id, property_id: propertyId, direction });
       if (swipeError) throw swipeError;
+
+      // Track view stats
+      if (direction === 'right') {
+        await supabase.rpc('increment_property_like', { prop_id: propertyId }).catch(() => {});
+      } else {
+        await supabase.rpc('increment_property_pass', { prop_id: propertyId }).catch(() => {});
+      }
 
       if (direction === 'right') {
         const { data: match, error: matchError } = await supabase
@@ -89,7 +103,22 @@ export function useSwipe() {
           console.error('Failed to create workflow transaction:', e);
         }
 
-        return { matched: true };
+        // Super Like: send special notification to owner
+        if (isSuperLike) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', user!.id)
+            .single();
+          await supabase.from('wf_notifications').insert({
+            user_id: ownerId,
+            type: 'super_like',
+            title: '⭐ Super Like reçu !',
+            message: `${profile?.full_name || 'Un acheteur'} a eu un énorme coup de cœur pour votre bien !`,
+          });
+        }
+
+        return { matched: true, isSuperLike };
       }
       return { matched: false };
     },

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useEffect } from 'react';
+import { MessageDetectionService } from '@/services/messageDetectionService';
 
 export function useMessages(conversationId: string | undefined) {
   const { user } = useAuth();
@@ -51,16 +52,30 @@ export function useMessages(conversationId: string | undefined) {
 
   const sendMessage = useMutation({
     mutationFn: async (content: string) => {
+      // Check for phone numbers — block the message
+      if (MessageDetectionService.detectPhoneNumber(content)) {
+        throw new Error('PHONE_DETECTED');
+      }
+
+      // Check for suspicious keywords — flag but allow
+      const { isSuspicious, matchedKeywords } = MessageDetectionService.detectSuspiciousBehavior(content);
+
       const { error } = await supabase.from('messages').insert({
         conversation_id: conversationId!,
         sender_id: user!.id,
         content,
       });
       if (error) throw error;
+
       await supabase
         .from('conversations')
         .update({ last_message_at: new Date().toISOString() })
         .eq('id', conversationId!);
+
+      if (isSuspicious) {
+        return { suspicious: true, matchedKeywords };
+      }
+      return { suspicious: false };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });

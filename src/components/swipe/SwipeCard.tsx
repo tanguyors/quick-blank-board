@@ -27,6 +27,15 @@ export function SwipeCard({ property, onInfoClick }: SwipeCardProps) {
           </div>
         )}
 
+        {/* Home Exchange badge */}
+        {property.operations === 'home_exchange' && (
+          <div className="absolute top-4 left-4">
+            <span className="bg-cyan-500/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
+              Home Exchange
+            </span>
+          </div>
+        )}
+
         {/* Bottom overlay */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/80 to-transparent p-5 pt-16">
           <h3 className="text-2xl font-bold text-foreground">{property.type}</h3>

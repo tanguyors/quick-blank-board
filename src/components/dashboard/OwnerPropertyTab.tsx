@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Eye, MapPin } from 'lucide-react';
+import { Plus, Edit, Eye, MapPin, Rocket, Heart, X as XIcon, Users } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { convertCurrency, formatPrice } from '@/lib/currencies';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -16,6 +19,22 @@ export function OwnerPropertyTab() {
   const { profile } = useProfile();
   const preferredCurrency = profile.data?.preferred_currency || 'EUR';
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const boostProperty = useMutation({
+    mutationFn: async (propertyId: string) => {
+      const boostedUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h boost
+      const { error } = await supabase
+        .from('properties')
+        .update({ boosted_until: boostedUntil } as any)
+        .eq('id', propertyId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-properties'] });
+      toast.success('🚀 Bien boosté pour 24h !');
+    },
+  });
 
   if (isLoading) {
     return (
@@ -72,9 +91,25 @@ export function OwnerPropertyTab() {
                     <p className="text-sm font-bold text-primary">
                       {formatPrice(convertCurrency(property.prix, property.prix_currency, preferredCurrency), preferredCurrency)}
                     </p>
+                    {/* Stats */}
+                    <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-0.5"><Eye className="h-3 w-3" />{(property as any).view_count || 0}</span>
+                      <span className="flex items-center gap-0.5"><Heart className="h-3 w-3 text-primary" />{(property as any).like_count || 0}</span>
+                      <span className="flex items-center gap-0.5"><XIcon className="h-3 w-3 text-destructive" />{(property as any).pass_count || 0}</span>
+                    </div>
                     <div className="flex gap-1 mt-1">
                       <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => navigate(`/properties/${property.id}`)}><Eye className="h-3 w-3" /></Button>
                       <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => navigate(`/properties/${property.id}/edit`)}><Edit className="h-3 w-3" /></Button>
+                      <Button
+                        size="sm"
+                        variant={(property as any).boosted_until && new Date((property as any).boosted_until) > new Date() ? 'default' : 'outline'}
+                        className="h-7 px-2 gap-1"
+                        onClick={() => boostProperty.mutate(property.id)}
+                        disabled={boostProperty.isPending || ((property as any).boosted_until && new Date((property as any).boosted_until) > new Date())}
+                      >
+                        <Rocket className="h-3 w-3" />
+                        {(property as any).boosted_until && new Date((property as any).boosted_until) > new Date() ? 'Boosté' : 'Boost'}
+                      </Button>
                     </div>
                   </div>
                 </div>

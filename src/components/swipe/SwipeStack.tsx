@@ -6,7 +6,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
-import { X } from 'lucide-react';
+import { X, Undo2, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
@@ -77,6 +77,29 @@ export function SwipeStack({ filters }: SwipeStackProps) {
     }
   }, [currentProperty, swipe]);
 
+  const handleSuperLike = useCallback(async () => {
+    if (!currentProperty || swipe.isPending) return;
+    setSwipeDirection('right');
+    try {
+      const result = await swipe.mutateAsync({
+        propertyId: currentProperty.id,
+        direction: 'right',
+        ownerId: currentProperty.owner_id,
+        isSuperLike: true,
+      });
+      setTimeout(() => {
+        setSwipeDirection(null);
+        setOffset({ x: 0, y: 0 });
+        setCurrentIndex(prev => prev + 1);
+        if (result.matched) setShowMatch(true);
+      }, 300);
+      toast.success('⭐ Super Like envoyé !');
+    } catch {
+      setSwipeDirection(null);
+      setOffset({ x: 0, y: 0 });
+    }
+  }, [currentProperty, swipe]);
+
   const handleFavorite = useCallback(async () => {
     if (!currentProperty || addFavorite.isPending) return;
     try {
@@ -117,9 +140,10 @@ export function SwipeStack({ filters }: SwipeStackProps) {
   if (!currentProperty) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-8">
-        <img src={iconMatches} alt="" className="h-16 w-16 object-contain mb-4 opacity-50" />
-        <h2 className="text-xl font-semibold mb-2">{t('explore.noMoreProperties')}</h2>
-        <p className="text-muted-foreground">{t('explore.noMorePropertiesHint')}</p>
+        <img src={iconMatches} alt="" className="h-16 w-16 object-contain mb-4" />
+        <h2 className="text-xl font-semibold mb-2 text-foreground">Toutes les maisons ne sont pas faites pour tout le monde.</h2>
+        <p className="text-muted-foreground mb-4">Nous cherchons votre future connexion.</p>
+        <p className="text-xs text-muted-foreground/60">Revenez plus tard ou ajustez vos filtres pour découvrir de nouveaux biens !</p>
       </div>
     );
   }
@@ -174,7 +198,16 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-6 py-3 flex-shrink-0">
+      <div className="flex items-center justify-center gap-4 py-3 flex-shrink-0">
+        {currentIndex > 0 && (
+          <button
+            onClick={() => { setCurrentIndex(i => Math.max(0, i - 1)); }}
+            className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"
+            aria-label="Retour"
+          >
+            <Undo2 className="h-4 w-4" />
+          </button>
+        )}
         <button
           onClick={handlePass}
           disabled={swipe.isPending}
@@ -186,10 +219,18 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         <button
           onClick={handleFavorite}
           disabled={addFavorite.isPending}
-          className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center hover:bg-foreground/80 transition-colors"
+          className="w-11 h-11 rounded-full bg-foreground flex items-center justify-center hover:bg-foreground/80 transition-colors"
           aria-label={t('property.favorite')}
         >
-          <img src={iconFavorites} alt="" className="h-6 w-6 object-contain" />
+          <img src={iconFavorites} alt="" className="h-5 w-5 object-contain" />
+        </button>
+        <button
+          onClick={handleSuperLike}
+          disabled={swipe.isPending}
+          className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30 hover:from-amber-500 hover:to-amber-700 transition-all active:scale-95"
+          aria-label="Super Like"
+        >
+          <Star className="h-6 w-6 text-white fill-white" />
         </button>
         <button
           onClick={handleMatch}

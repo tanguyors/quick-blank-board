@@ -124,6 +124,17 @@ export function useTransaction(transactionId: string) {
     onSuccess: invalidateAll,
   });
 
+  const acceptOffer = useMutation({
+    mutationFn: () => WorkflowService.acceptOffer(transactionId, user!.id),
+    onSuccess: invalidateAll,
+  });
+
+  const rejectOffer = useMutation({
+    mutationFn: (args: { reason?: string; counterAmount?: number }) =>
+      WorkflowService.rejectOffer(transactionId, user!.id, args.reason, args.counterAmount),
+    onSuccess: invalidateAll,
+  });
+
   const finalizeDeal = useMutation({
     mutationFn: () => WorkflowService.finalizeDeal(transactionId, user!.id),
     onSuccess: invalidateAll,
@@ -160,6 +171,8 @@ export function useTransaction(transactionId: string) {
     rescheduleVisit,
     expressIntention,
     makeOffer,
+    acceptOffer,
+    rejectOffer,
     finalizeDeal,
     submitFeedback,
     sendMessage,

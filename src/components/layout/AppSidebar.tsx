@@ -42,6 +42,7 @@ export function AppSidebar() {
     { to: '/messages', icon: iconMessages, label: t('nav.messages') },
     { to: '/notifications', icon: iconNotifications, label: t('nav.notifications') },
     { to: '/mes-transactions', icon: iconContrat, label: t('nav.transactions') },
+    { to: '/home-exchange', icon: iconHome, label: 'Home Exchange' },
   ];
 
   const ownerLinks = [
@@ -50,6 +51,7 @@ export function AppSidebar() {
     { to: '/messages', icon: iconMessages, label: t('nav.messages') },
     { to: '/notifications', icon: iconNotifications, label: t('nav.notifications') },
     { to: '/mes-transactions', icon: iconContrat, label: t('nav.transactions') },
+    { to: '/home-exchange', icon: iconHome, label: 'Home Exchange' },
   ];
 
   const notaireLinks = [

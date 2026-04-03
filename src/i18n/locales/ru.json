@@ -249,5 +249,11 @@
     "configured": "Настроено ✅",
     "toConfigure": "Настроить",
     "loading": "Загрузка..."
+  },
+  "favorites": {
+    "noFavorites": "Пока нет избранного",
+    "addHint": "Нажмите на сердце в Обзоре",
+    "viewProperty": "Посмотреть",
+    "properties": "объект(ов)"
   }
 }

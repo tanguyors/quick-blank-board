@@ -54,13 +54,17 @@ export function TransactionTimeline({ currentStatus, logs }: TransactionTimeline
             {/* Dot + line */}
             <div className="flex flex-col items-center">
               <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                isCurrent
-                  ? 'bg-primary text-primary-foreground'
-                  : isCompleted
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-secondary text-muted-foreground'
+                isCurrent && currentStatus === 'deal_finalized'
+                  ? 'bg-green-500/20 text-green-400'
+                  : isCurrent
+                    ? 'bg-primary text-primary-foreground'
+                    : isCompleted
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-secondary text-muted-foreground'
               }`}>
                 {isCompleted && !isCurrent ? (
+                  <Check className="h-3 w-3" />
+                ) : isCurrent && currentStatus === 'deal_finalized' ? (
                   <Check className="h-3 w-3" />
                 ) : isCurrent ? (
                   <Clock className="h-3 w-3" />

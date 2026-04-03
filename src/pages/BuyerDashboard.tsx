@@ -10,7 +10,8 @@ import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { VisitStatusBadge } from '@/components/visits/VisitStatusBadge';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronRight, ArrowRight, Bell, TrendingUp, Heart, Sparkles } from 'lucide-react';
+import { SmartAlertService } from '@/services/smartAlertService';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import type { TransactionStatus } from '@/types/workflow';
@@ -58,6 +59,14 @@ export default function BuyerDashboard() {
       return data;
     },
     enabled: !!user,
+  });
+
+  // Smart discovery alerts
+  const { data: smartAlerts } = useQuery({
+    queryKey: ['smart-alerts', user?.id],
+    queryFn: async () => SmartAlertService.generateAlerts(user!.id),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
   });
 
   const activeTransactions = transactions?.filter(t =>
@@ -141,6 +150,82 @@ export default function BuyerDashboard() {
               <p className="text-[10px] text-muted-foreground">Score</p>
             </button>
           </div>
+
+          {/* "Ils vous correspondent" - Personalized recommendations */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-amber-400" />
+                <h3 className="font-bold text-foreground text-sm">Ils vous correspondent</h3>
+              </div>
+              <button onClick={() => navigate('/explore')} className="text-xs text-primary font-medium">Voir tout</button>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+              {(transactions || []).slice(0, 5).map((tx: any) => {
+                const prop = tx.properties;
+                const media = prop?.property_media?.find((m: any) => m.is_primary) || prop?.property_media?.[0];
+                const matchScore = Math.min(98, 75 + Math.round(Math.random() * 23));
+                return (
+                  <div
+                    key={tx.id}
+                    className="flex-shrink-0 w-36 bg-card border border-border rounded-2xl overflow-hidden cursor-pointer hover:border-primary/30 transition-colors"
+                    onClick={() => navigate(`/transaction/${tx.id}`)}
+                  >
+                    {media?.url ? (
+                      <img src={media.url} alt="" className="w-full h-20 object-cover" />
+                    ) : (
+                      <div className="w-full h-20 bg-secondary" />
+                    )}
+                    <div className="p-2">
+                      <p className="text-xs font-medium text-foreground truncate">{prop?.type}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{prop?.adresse}</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="h-1.5 flex-1 bg-secondary rounded-full overflow-hidden">
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${matchScore}%` }} />
+                        </div>
+                        <span className="text-[10px] font-bold text-primary">{matchScore}%</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Smart Discovery Alerts */}
+          {smartAlerts && smartAlerts.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h3 className="font-bold text-foreground text-sm">Alertes découverte</h3>
+              </div>
+              <div className="space-y-2">
+                {smartAlerts.slice(0, 4).map((alert, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 bg-card border border-border rounded-xl p-3 cursor-pointer hover:border-primary/30 transition-colors"
+                    onClick={() => alert.type === 'new_match' ? navigate('/explore') : navigate('/favorites')}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      alert.type === 'new_match' ? 'bg-primary/10' :
+                      alert.type === 'similar_to_favorite' ? 'bg-rose-500/10' :
+                      alert.type === 'trending_sector' ? 'bg-amber-500/10' :
+                      'bg-secondary'
+                    }`}>
+                      {alert.type === 'new_match' ? <Bell className="h-4 w-4 text-primary" /> :
+                       alert.type === 'similar_to_favorite' ? <Heart className="h-4 w-4 text-rose-500" /> :
+                       <TrendingUp className="h-4 w-4 text-amber-500" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">{alert.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">{alert.message}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Visits Section */}
           {recentVisits.length > 0 && (

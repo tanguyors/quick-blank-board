@@ -12,8 +12,8 @@ import iconMap from '@/assets/icons/map.png';
 const FEATURES = [
   {
     icon: iconAppsearch,
-    title: 'Swipe Immobilier',
-    description: 'Parcourez les biens comme sur Tinder. Swipez à droite pour liker, à gauche pour passer. Simple et intuitif.',
+    title: 'Exploration Intelligente',
+    description: 'Parcourez les biens en un geste. Likez pour sauvegarder, passez pour continuer. Simple et intuitif.',
   },
   {
     icon: iconAssurance,

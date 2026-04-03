@@ -249,5 +249,11 @@
     "configured": "Dikonfigurasi ✅",
     "toConfigure": "Untuk dikonfigurasi",
     "loading": "Memuat..."
+  },
+  "favorites": {
+    "noFavorites": "Belum ada favorit",
+    "addHint": "Ketuk hati di Jelajahi untuk menambahkan properti",
+    "viewProperty": "Lihat properti",
+    "properties": "properti"
   }
 }

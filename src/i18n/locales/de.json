@@ -249,5 +249,11 @@
     "configured": "Konfiguriert ✅",
     "toConfigure": "Zu konfigurieren",
     "loading": "Laden..."
+  },
+  "favorites": {
+    "noFavorites": "Noch keine Favoriten",
+    "addHint": "Tippen Sie auf das Herz in Entdecken, um eine Immobilie hinzuzufuegen",
+    "viewProperty": "Immobilie ansehen",
+    "properties": "Immobilie(n)"
   }
 }
