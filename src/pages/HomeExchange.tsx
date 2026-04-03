@@ -53,7 +53,9 @@ export default function HomeExchange() {
 
   return (
     <AppLayout>
-      <PageTopBar title="Home Exchange" />
+      <PageTopBar>
+        <span className="text-lg font-semibold text-foreground">Home Exchange</span>
+      </PageTopBar>
 
       <div className="p-4 space-y-6">
         {/* Hero section */}

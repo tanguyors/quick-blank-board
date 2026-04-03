@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
@@ -84,14 +84,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-5 pt-5 pb-3 z-10">
+      {/* Top bar — padding sous l’heure / Dynamic Island (safe area) */}
+      <div className="flex items-center justify-between px-5 pb-3 z-10 pt-[max(1.25rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-2">
           <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
           <span className="font-semibold text-lg text-foreground">SomaGate</span>
         </div>
-        <div className="flex items-center gap-1">
-          <LanguageSelector compact />
+        <div className="flex max-w-[58vw] items-center gap-1 overflow-x-auto sm:max-w-none">
+          <LanguageButtons dense className="flex-nowrap" />
           <button
             onClick={() => navigate('/auth')}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-secondary/50"

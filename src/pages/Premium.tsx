@@ -52,9 +52,11 @@ export default function Premium() {
 
   return (
     <AppLayout>
-      <PageTopBar title="SomaGate Premium" />
+      <PageTopBar>
+        <span className="text-lg font-semibold text-foreground">SomaGate Premium</span>
+      </PageTopBar>
 
-      <div className="p-4 space-y-6 pb-24">
+      <div className="space-y-6 p-4 pb-6">
         {/* Hero */}
         <div className="text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mx-auto">

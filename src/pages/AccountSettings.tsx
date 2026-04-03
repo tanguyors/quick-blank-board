@@ -12,7 +12,7 @@ import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save
 import { CURRENCIES } from '@/lib/currencies';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
 import { IdentityVerification } from '@/components/settings/IdentityVerification';
-import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { useTranslation } from 'react-i18next';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -109,7 +109,7 @@ export default function AccountSettings() {
               <Globe className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-bold text-foreground">{t('settings.language')}</h3>
             </div>
-            <LanguageSelector />
+            <LanguageButtons />
           </div>
 
           {/* Currency */}

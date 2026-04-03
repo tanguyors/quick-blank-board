@@ -100,9 +100,12 @@
   border-radius: 4px;
 }
 
-/* Safe area for mobile */
+/* Safe area for mobile (notch / Dynamic Island / home indicator) */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Force Leaflet map below modals/sheets/chatbot */

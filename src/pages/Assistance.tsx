@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Send, MessageCircle, Mail, HelpCircle } from 'lucide-react';
+import { Send, MessageCircle, Mail, HelpCircle } from 'lucide-react';
+import { PublicNavBar } from '@/components/layout/PublicNavBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -52,14 +53,7 @@ export default function Assistance() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="flex items-center px-4 py-4 border-b border-border">
-        <Link to="/" className="text-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <span className="flex-1 text-center font-semibold text-lg text-foreground">Assistance</span>
-        <div className="w-8" />
-      </div>
+      <PublicNavBar title="Assistance" />
 
       <div className="max-w-2xl mx-auto px-5 py-8 space-y-8">
         {/* Hero */}

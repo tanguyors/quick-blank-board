@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { PublicNavBar } from '@/components/layout/PublicNavBar';
 
 export default function ProfileSetup() {
   const { user, roles, refreshProfile } = useAuth();
@@ -55,13 +55,7 @@ export default function ProfileSetup() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="flex items-center px-4 py-4">
-        <button onClick={() => navigate(-1)} className="text-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <span className="flex-1 text-center font-semibold text-lg text-foreground">{t('profile.setupTitle')}</span>
-        <div className="w-8" />
-      </div>
+      <PublicNavBar title={t('profile.setupTitle')} onBack={() => navigate(-1)} />
 
       <div className="flex-1 px-6 py-6 max-w-sm mx-auto w-full space-y-5">
         <div className="flex justify-center">

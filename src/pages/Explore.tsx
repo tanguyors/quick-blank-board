@@ -55,7 +55,7 @@ export default function Explore() {
   };
 
   return (
-    <AppLayout hideHeader>
+    <AppLayout hideHeader lockMainScroll>
       <AlertDialog open={showGeoDialog} onOpenChange={setShowGeoDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -80,8 +80,8 @@ export default function Explore() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="flex flex-col" style={{ height: 'calc(100dvh - 5rem)' }}>
-        <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
+        <div className="flex flex-shrink-0 items-center justify-between px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
             <span className="text-foreground font-semibold">SomaGate</span>

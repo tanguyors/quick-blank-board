@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { CURRENCIES } from '@/lib/currencies';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
-import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { useTranslation } from 'react-i18next';
 
 export function OwnerProfileTab() {
@@ -109,7 +109,7 @@ export function OwnerProfileTab() {
           <Globe className="h-5 w-5 text-muted-foreground" />
           <h3 className="text-lg font-bold text-foreground">{t('settings.language')}</h3>
         </div>
-        <LanguageSelector />
+        <LanguageButtons />
       </div>
 
       {/* Currency */}

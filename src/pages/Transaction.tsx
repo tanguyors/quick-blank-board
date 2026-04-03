@@ -12,6 +12,7 @@ import { OfferForm } from '@/components/workflow/OfferForm';
 import { DealFinalization } from '@/components/workflow/DealFinalization';
 import { FeedbackQuestionnaire } from '@/components/workflow/FeedbackQuestionnaire';
 import { ArrowLeft, FileText, CheckCircle, Loader2, Download, DollarSign, Archive } from 'lucide-react';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
@@ -76,49 +77,54 @@ export default function Transaction() {
     <AppLayout hideHeader>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button onClick={() => navigate('/matches')} className="text-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <div className="flex-1">
-            <h1 className="font-semibold text-foreground">Transaction</h1>
-            <TransactionStatusBadge status={tx.status as TxStatus} />
-          </div>
-          {['deal_finalized', 'archived', 'deal_cancelled'].includes(tx.status) && (
-            <div className="flex gap-1">
-              {['deal_finalized', 'deal_cancelled'].includes(tx.status) && (
+        <div className="border-b border-border">
+          <div className="flex items-center gap-3 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <button onClick={() => navigate('/matches')} className="text-foreground">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div className="flex-1 min-w-0">
+              <h1 className="font-semibold text-foreground">Transaction</h1>
+              <TransactionStatusBadge status={tx.status as TxStatus} />
+            </div>
+            {['deal_finalized', 'archived', 'deal_cancelled'].includes(tx.status) && (
+              <div className="flex shrink-0 gap-1">
+                {['deal_finalized', 'deal_cancelled'].includes(tx.status) && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={async () => {
+                      try {
+                        await WorkflowService.updateStatus(tx.id, 'archived', user!.id);
+                        toast.success('Transaction archivée');
+                        transaction.refetch();
+                      } catch (err) {
+                        toast.error('Erreur lors de l\'archivage');
+                      }
+                    }}
+                  >
+                    <Archive className="h-4 w-4" />
+                  </Button>
+                )}
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant="outline"
                   onClick={async () => {
                     try {
-                      await WorkflowService.updateStatus(tx.id, 'archived', user!.id);
-                      toast.success('Transaction archivée');
-                      transaction.refetch();
+                      await TransactionExportService.exportTransaction(tx.id);
+                      toast.success('Dossier téléchargé !');
                     } catch (err) {
-                      toast.error('Erreur lors de l\'archivage');
+                      toast.error('Erreur lors du téléchargement');
                     }
                   }}
                 >
-                  <Archive className="h-4 w-4" />
+                  <Download className="h-4 w-4 mr-1" /> Dossier
                 </Button>
-              )}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={async () => {
-                  try {
-                    await TransactionExportService.exportTransaction(tx.id);
-                    toast.success('Dossier téléchargé !');
-                  } catch (err) {
-                    toast.error('Erreur lors du téléchargement');
-                  }
-                }}
-              >
-                <Download className="h-4 w-4 mr-1" /> Dossier
-              </Button>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
+          <div className="overflow-x-auto px-4 pb-2">
+            <LanguageButtons dense className="flex-nowrap" />
+          </div>
         </div>
 
         {/* Tabs */}

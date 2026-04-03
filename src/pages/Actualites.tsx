@@ -57,7 +57,7 @@ const CATEGORY_ICONS: Record<string, typeof TrendingUp> = {
 
 export default function Actualites() {
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="bg-background pb-6">
       <PageTopBar><h1 className="text-xl font-bold text-foreground">Actualités</h1></PageTopBar>
 
       <div className="max-w-3xl mx-auto px-4 py-4">

@@ -5,6 +5,7 @@ import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useAuth } from '@/hooks/useAuth';
 import { ChatView } from '@/components/messages/ChatView';
 import { ArrowLeft, MapPin } from 'lucide-react';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 export default function ConversationView() {
   const { id } = useParams();
@@ -38,14 +39,17 @@ export default function ConversationView() {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header with back button */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-border flex-shrink-0">
+      <div className="flex flex-shrink-0 flex-wrap items-center gap-2 border-b border-border px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
         <button
           onClick={() => navigate(backTo)}
-          className="p-2 text-foreground hover:text-foreground/70 transition-colors"
+          className="p-2 text-foreground transition-colors hover:text-foreground/70"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <span className="font-semibold text-foreground text-sm">Conversation</span>
+        <span className="flex-1 text-sm font-semibold text-foreground">Conversation</span>
+        <div className="max-w-[min(100%,18rem)] overflow-x-auto">
+          <LanguageButtons dense className="flex-nowrap justify-end" />
+        </div>
       </div>
 
       {/* Property summary banner */}

@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex flex-col h-full">
+      <div className="flex h-full min-h-0 flex-col">
         <PageTopBar>
           <div className="flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
             <Home className="h-4 w-4 text-primary" />
@@ -28,7 +28,7 @@ export default function Dashboard() {
         <OwnerProfileHeader />
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto pb-20">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain pb-6">
           {activeTab === 'biens' && <OwnerPropertyTab />}
           {activeTab === 'visites' && <OwnerVisitsTab />}
           {activeTab === 'messages' && <OwnerMessagesTab />}

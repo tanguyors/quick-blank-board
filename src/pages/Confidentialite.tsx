@@ -1,16 +1,20 @@
 import { ArrowLeft, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 export default function Confidentialite() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-5 py-8">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-6 gap-1">
-          <ArrowLeft className="h-4 w-4" /> Retour
-        </Button>
+      <div className="mx-auto max-w-3xl px-5 py-8 pt-[max(2rem,env(safe-area-inset-top))]">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-1">
+            <ArrowLeft className="h-4 w-4" /> Retour
+          </Button>
+          <LanguageButtons dense className="max-w-full overflow-x-auto" />
+        </div>
 
         <div className="flex items-center gap-3 mb-2">
           <Lock className="h-7 w-7 text-primary" />

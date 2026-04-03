@@ -54,8 +54,11 @@ export function BottomNav() {
   const links = isAdmin ? adminLinks : isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 pb-safe lg:hidden" aria-label="Navigation mobile">
-      <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
+    <nav
+      className="z-50 shrink-0 w-full border-t border-border bg-background pb-safe lg:hidden"
+      aria-label="Navigation mobile"
+    >
+      <div className="mx-auto flex h-16 max-w-lg items-center justify-around">
         {links.map((link) => {
           const { to, icon, label } = link;
           const tabLink = 'tab' in link ? (link as any).tab : null;

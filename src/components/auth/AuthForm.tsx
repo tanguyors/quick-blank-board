@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import logoSoma from '@/assets/logo-soma.png';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 export function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -52,7 +53,12 @@ export function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="relative flex min-h-screen flex-col bg-background">
+      <div className="absolute right-0 top-0 z-10 max-w-[min(100%,24rem)] px-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <div className="overflow-x-auto rounded-lg bg-background/80 py-1 pl-2 pr-1 backdrop-blur">
+          <LanguageButtons dense className="flex-nowrap justify-end" />
+        </div>
+      </div>
       {!isLogin && (
         <div className="flex items-center px-4 py-4">
           <button onClick={() => setIsLogin(true)} className="flex items-center gap-2 text-foreground">

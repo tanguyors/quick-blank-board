@@ -3,7 +3,7 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
-import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { useTranslation } from 'react-i18next';
 import logoSoma from '@/assets/logo-soma.png';
 
@@ -128,8 +128,8 @@ export function AppSidebar() {
         </Link>
 
         <div className="border-t border-border mt-2 pt-2">
-          <div className="px-3 py-2">
-            <LanguageSelector compact />
+          <div className="px-2 py-2">
+            <LanguageButtons dense className="gap-0.5" />
           </div>
           <Link
             to="/profile"

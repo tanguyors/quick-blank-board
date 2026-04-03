@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { TransactionStatusBadge } from '@/components/workflow/TransactionStatus';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
@@ -33,18 +34,23 @@ export default function NotaireDashboard() {
 
   return (
     <AppLayout hideHeader>
-      <div className="flex flex-col h-full">
+      <div className="flex h-full min-h-0 flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-border bg-background px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             <Scale className="h-5 w-5 text-primary" />
             <span className="font-semibold text-foreground">Espace Notaire</span>
           </div>
-          <NotificationBell />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="max-w-[min(100%,20rem)] overflow-x-auto">
+              <LanguageButtons dense className="flex-nowrap" />
+            </div>
+            <NotificationBell />
+          </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-border">
+        <div className="flex shrink-0 border-b border-border bg-background">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (
@@ -65,7 +71,7 @@ export default function NotaireDashboard() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto pb-24">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain pb-6">
           {activeTab === 'overview' && <NotaireOverview />}
           {activeTab === 'documents' && <NotaireDocuments />}
           {activeTab === 'transactions' && <NotaireTransactions />}

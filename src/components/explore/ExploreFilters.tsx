@@ -173,7 +173,7 @@ export function ExploreFilters({ filters, onFiltersChange, activeCount }: {
           <SheetDescription>{t('explore.chooseMethod')}</SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col gap-6 mt-4 overflow-y-auto pb-24">
+        <div className="mt-4 flex flex-col gap-6 overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {/* Search Method Toggle */}
           <div>
             <label className="text-sm font-medium text-foreground mb-2 block">{t('explore.searchMethod')}</label>

@@ -47,7 +47,7 @@ export default function Install() {
         </div>
       </PageTopBar>
 
-      <div className="max-w-md mx-auto px-4 pt-8 pb-24 text-center space-y-6">
+      <div className="mx-auto max-w-md space-y-6 px-4 pb-6 pt-8 text-center">
         <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto">
           <Smartphone className="h-10 w-10 text-primary" />
         </div>

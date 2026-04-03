@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { User, Home, ArrowLeft } from 'lucide-react';
+import { User, Home } from 'lucide-react';
+import { PublicNavBar } from '@/components/layout/PublicNavBar';
 import { toast } from 'sonner';
 
 export default function ProfileSelection() {
@@ -48,13 +49,7 @@ export default function ProfileSelection() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="flex items-center px-4 py-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <span className="flex-1 text-center font-semibold text-lg text-foreground">Choisissez votre profil</span>
-        <div className="w-8" />
-      </div>
+      <PublicNavBar title="Choisissez votre profil" onBack={() => navigate(-1)} />
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
         <div className="mb-8 flex flex-col items-center">

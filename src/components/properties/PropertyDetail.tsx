@@ -39,7 +39,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
     .sort((a, b) => a.position - b.position) || [];
 
   return (
-    <div className="pb-20">
+    <div className="pb-6">
       {images.length > 0 ? (
         <div className="relative aspect-video bg-muted">
           <img src={images[currentImage]?.url} alt="" className="w-full h-full object-cover" />

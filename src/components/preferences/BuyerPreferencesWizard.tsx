@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getCurrencyInfo } from '@/lib/currencies';
+import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 const PROPERTY_TYPES = [
   { value: 'villa', label: 'Villa', icon: Home },
@@ -197,12 +198,15 @@ export function BuyerPreferencesWizard() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Progress header */}
-      <div className="px-4 pt-4 pb-2">
-        <div className="flex items-center justify-between mb-2">
+      <div className="px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
+        <div className="mb-2 flex items-center justify-between">
           <span className="text-sm font-medium text-foreground">Section {step + 1} / {TOTAL_SECTIONS}</span>
           <span className="text-sm text-muted-foreground">{progress}%</span>
         </div>
         <Progress value={progress} className="h-2" />
+        <div className="mt-3 overflow-x-auto pb-1">
+          <LanguageButtons dense className="min-w-min flex-nowrap" />
+        </div>
       </div>
 
       {/* Content */}

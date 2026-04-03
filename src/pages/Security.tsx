@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PublicNavBar } from '@/components/layout/PublicNavBar';
 
 import iconAssurance from '@/assets/icons/assurance.png';
 import iconSecurity from '@/assets/icons/security.png';
@@ -52,14 +53,7 @@ const TIPS = [
 export default function Security() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="flex items-center px-4 py-4 border-b border-border">
-        <Link to="/" className="text-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <span className="flex-1 text-center font-semibold text-lg text-foreground">Sécurité</span>
-        <div className="w-8" />
-      </div>
+      <PublicNavBar title="Sécurité" />
 
       <div className="max-w-2xl mx-auto px-5 py-8 space-y-8">
         {/* Hero */}
