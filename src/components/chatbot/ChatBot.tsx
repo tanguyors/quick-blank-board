@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { X, Send, Bot } from 'lucide-react';
+import { subscribeChatbot, setChatbotOpen } from './chatbotState';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -77,6 +78,12 @@ async function sendToAPI(userMessage: string, _history: Msg[]): Promise<string> 
 
 export function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    return subscribeChatbot((open) => {
+      setIsOpen(open);
+    });
+  }, []);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -114,16 +121,6 @@ export function ChatBot() {
 
   return (
     <>
-      {/* FAB Button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-48 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-110 lg:bottom-6"
-        aria-label="Ouvrir le chatbot"
-      >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-      </button>
-
       {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
@@ -132,17 +129,25 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-64 right-4 z-50 flex h-[460px] w-[340px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl lg:bottom-22"
+            className="fixed inset-x-4 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px)+0.5rem)] top-[calc(env(safe-area-inset-top,0px)+4rem)] z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl lg:inset-x-auto lg:right-4 lg:bottom-6 lg:top-auto lg:h-[460px] lg:w-[340px]"
           >
             {/* Header */}
             <div className="px-4 py-3 border-b border-border bg-primary/5 flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bot className="h-4 w-4 text-primary" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h3 className="text-sm font-semibold text-foreground">Assistant Soma Gate</h3>
                 <p className="text-[10px] text-muted-foreground">Intelligence immobilière · RAG</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setChatbotOpen(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label="Fermer"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
             {/* Messages */}

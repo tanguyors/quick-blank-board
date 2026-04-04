@@ -15,6 +15,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { Tables } from '@/integrations/supabase/types';
 import { useProfile } from '@/hooks/useProfile';
 import { CURRENCIES, convertCurrency, getCurrencyInfo } from '@/lib/currencies';
+import { useTranslation } from 'react-i18next';
+import { InsuranceCheckboxes } from '@/components/exchange/InsuranceCheckboxes';
+import { PointsPerNightDisplay } from '@/components/exchange/PointsPerNightDisplay';
+import { calculatePointsPerNight } from '@/lib/pointsCalculation';
+import { useAwardPoints } from '@/hooks/useSomaPoints';
 
 /* ── Type mappings ── */
 const PROPERTY_TYPES = [
@@ -137,6 +142,9 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
   const preferredCurrency = (profile.data as any)?.preferred_currency || 'EUR';
 
+  const { t } = useTranslation();
+  const awardPoints = useAwardPoints();
+
   const [form, setForm] = useState({
     type: (property?.type || 'appartement') as string,
     droit: (property?.droit || '') as string,
@@ -151,6 +159,11 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     operations: (property?.operations || 'freehold') as string,
     equipements: (property?.equipements as string[]) || [],
     is_published: property?.is_published ?? false,
+    capacity: property?.capacity?.toString() || '0',
+    available_from: property?.available_from || '',
+    available_to: property?.available_to || '',
+    insurance_confirmed: property?.insurance_confirmed ?? false,
+    exchange_allowed_confirmed: property?.exchange_allowed_confirmed ?? false,
   });
 
   const [media, setMedia] = useState<any[]>(existingMedia);
@@ -253,15 +266,32 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     if (!form.prix || Number(form.prix) <= 0) { toast.error('Le prix est requis'); return; }
     if (!form.secteur.trim()) { toast.error('Le secteur est requis'); return; }
 
+    const isExchange = form.operations === 'home_exchange';
+    if (isExchange) {
+      if (!form.insurance_confirmed || !form.exchange_allowed_confirmed) {
+        toast.error(t('homeExchange.insuranceRequired'));
+        return;
+      }
+      if (!form.capacity || Number(form.capacity) <= 0) {
+        toast.error(t('homeExchange.capacityRequired'));
+        return;
+      }
+    }
+
     try {
       const submitCfg = getConfig(form.type);
+      const chambres = submitCfg.showRooms ? Number(form.chambres) : 0;
+      const pointsPerNight = isExchange
+        ? calculatePointsPerNight(Number(form.capacity), chambres, form.equipements)
+        : 0;
+
       const payload = {
         type: form.type as any,
         operations: form.operations as any,
         adresse: form.adresse,
         secteur: form.secteur || null,
         surface: form.surface ? Number(form.surface) : null,
-        chambres: submitCfg.showRooms ? Number(form.chambres) : 0,
+        chambres,
         salles_bain: submitCfg.showBathrooms ? Number(form.salles_bain) : 0,
         prix: Number(form.prix),
         prix_currency: form.prix_currency,
@@ -269,6 +299,12 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         description: form.description || null,
         equipements: form.equipements,
         is_published: form.is_published,
+        capacity: isExchange ? Number(form.capacity) : 0,
+        points_per_night: pointsPerNight,
+        available_from: isExchange && form.available_from ? form.available_from : null,
+        available_to: isExchange && form.available_to ? form.available_to : null,
+        insurance_confirmed: isExchange ? form.insurance_confirmed : false,
+        exchange_allowed_confirmed: isExchange ? form.exchange_allowed_confirmed : false,
       };
 
       if (property) {
@@ -281,6 +317,15 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         if (pendingFiles.length > 0) {
           await handleUploadToProperty(data.id, pendingFiles);
           setPendingFiles([]);
+        }
+        // Award 300 SOMA Points for first exchange property
+        if (isExchange) {
+          awardPoints.mutate({
+            amount: 300,
+            type: 'registration_bonus',
+            description: 'Bonus inscription Home Exchange',
+            referenceId: data.id,
+          });
         }
         toast.success('Bien créé');
         onSuccess?.(data.id);
@@ -404,6 +449,67 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
           ))}
         </div>
       </div>
+
+      {/* Home Exchange fields */}
+      {form.operations === 'home_exchange' && (
+        <div className="space-y-4 bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4">
+          <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Star className="h-4 w-4 text-cyan-500" />
+            Home Exchange
+          </h4>
+
+          <InsuranceCheckboxes
+            insuranceConfirmed={form.insurance_confirmed}
+            exchangeAllowedConfirmed={form.exchange_allowed_confirmed}
+            onInsuranceChange={v => update('insurance_confirmed', v)}
+            onExchangeAllowedChange={v => update('exchange_allowed_confirmed', v)}
+          />
+
+          <div>
+            <Label className="text-sm font-semibold">{t('homeExchange.capacity')} *</Label>
+            <Input
+              type="number"
+              min="1"
+              className="mt-1"
+              value={form.capacity}
+              onChange={e => update('capacity', e.target.value)}
+              placeholder="Ex: 4"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-sm font-semibold">{t('homeExchange.availableFrom')}</Label>
+              <Input
+                type="date"
+                className="mt-1"
+                value={form.available_from}
+                onChange={e => update('available_from', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-semibold">{t('homeExchange.availableTo')}</Label>
+              <Input
+                type="date"
+                className="mt-1"
+                value={form.available_to}
+                onChange={e => update('available_to', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="bg-card rounded-lg p-3 border border-border">
+            <p className="text-xs text-muted-foreground mb-1">Points par nuit (calculé automatiquement)</p>
+            <PointsPerNightDisplay
+              capacity={Number(form.capacity) || 0}
+              chambres={Number(form.chambres) || 0}
+              equipements={form.equipements}
+            />
+          </div>
+
+          <p className="text-xs text-primary font-medium">{t('homeExchange.registrationBonus')}</p>
+        </div>
+      )}
 
       {/* Équipements - conditionnel avec catégories spécifiques au type */}
       {cfg.showEquipements && cfg.equipementCategories.length > 0 && (

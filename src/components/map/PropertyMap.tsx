@@ -64,13 +64,13 @@ interface PropertyMapProps {
 
 export function PropertyMap({ embedded = false }: PropertyMapProps) {
   const navigate = useNavigate();
-  const { user, roles } = useAuth();
+  const { user, activeRole } = useAuth();
   const { displayPrice } = useDisplayPrice();
   const [filters, setFilters] = useState({ type: '', operation: '', minPrice: '', maxPrice: '' });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
 
-  const isBuyer = !roles.includes('owner') && !roles.includes('notaire') && !roles.includes('admin');
+  const isBuyer = activeRole === 'user';
   const swipeMutation = useSwipe();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 

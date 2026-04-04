@@ -12,8 +12,8 @@ export default function ConversationView() {
   const navigate = useNavigate();
   const location = useLocation();
   const { displayPrice } = useDisplayPrice();
-  const { roles } = useAuth();
-  const isOwner = roles.includes('owner');
+  const { activeRole } = useAuth();
+  const isOwner = activeRole === 'owner';
 
   // Determine back destination: use state if provided, otherwise role-based
   const backTo = (location.state as any)?.from || (isOwner ? '/dashboard?tab=messages' : '/messages');

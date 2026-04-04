@@ -4,16 +4,16 @@ import Home from './Home';
 import { PageLoader } from '@/components/ui/PageLoader';
 
 export default function Index() {
-  const { user, roles, loading } = useAuth();
+  const { user, activeRole, loading } = useAuth();
 
   if (loading) return <PageLoader />;
-  
+
   // Non-authenticated users see the landing page
   if (!user) return <Home />;
 
-  const isAdmin = roles.includes('admin');
-  const isOwner = roles.includes('owner');
-  const isNotaire = roles.includes('notaire');
-  const redirectPath = isNotaire ? '/notaire' : (isOwner || isAdmin) ? '/profile' : '/explore';
+  const redirectPath = activeRole === 'notaire' ? '/notaire'
+    : activeRole === 'admin' ? '/admin'
+    : activeRole === 'owner' ? '/dashboard'
+    : '/explore';
   return <Navigate to={redirectPath} replace />;
 }

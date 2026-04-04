@@ -2,14 +2,18 @@ import { useState } from 'react';
 import { useProperty } from '@/hooks/useProperties';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Edit, CalendarDays, TrendingUp, Eye, Users, Clock, Flame, Share2, FolderPlus, Briefcase } from 'lucide-react';
+import { Edit, CalendarDays, TrendingUp, Eye, Users, Clock, Flame, Share2, FolderPlus, Briefcase, Star, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { VisitForm } from '@/components/visits/VisitForm';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { EquipmentGrid } from '@/components/properties/EquipmentIcon';
 import { PropertySellerCard } from '@/components/properties/PropertySellerCard';
+import { PointsPerNightDisplay } from '@/components/exchange/PointsPerNightDisplay';
+import { ExchangeReviewsList } from '@/components/exchange/ExchangeReviewsList';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
@@ -22,7 +26,7 @@ interface PropertyDetailProps {
 
 export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailProps) {
   const { data: property, isLoading } = useProperty(propertyId);
-  const { user, roles } = useAuth();
+  const { user, activeRole } = useAuth();
   const navigate = useNavigate();
   const { displayPrice } = useDisplayPrice();
   const { t } = useTranslation();
@@ -33,7 +37,7 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
   if (!property) return <div className="text-center p-8">{t('property.notFound')}</div>;
 
   const isOwner = property.owner_id === user?.id;
-  const isViewerOwnerRole = roles.includes('owner');
+  const isViewerOwnerRole = activeRole === 'owner';
   const hideActions = readOnly || (isViewerOwnerRole && !isOwner);
   const images = property.property_media
     ?.filter(m => m.type === 'image')
@@ -91,11 +95,97 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
         </div>
 
+        {/* Home Exchange info */}
+        {property.operations === 'home_exchange' && (
+          <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <Star className="h-4 w-4 text-cyan-500" />
+                Home Exchange
+              </h3>
+              <PointsPerNightDisplay
+                capacity={property.capacity}
+                chambres={property.chambres}
+                equipements={Array.isArray(property.equipements) ? property.equipements as string[] : []}
+                precomputed={property.points_per_night || undefined}
+              />
+            </div>
+            <div className="flex gap-4 text-sm">
+              {property.capacity > 0 && (
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Users className="h-4 w-4" /> {property.capacity} {t('homeExchange.guests')}
+                </span>
+              )}
+              {property.available_from && (
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  {new Date(property.available_from).toLocaleDateString()} → {property.available_to ? new Date(property.available_to).toLocaleDateString() : '...'}
+                </span>
+              )}
+            </div>
+            {!isOwner && !hideActions && (
+              <div className="flex gap-2">
+                <Button className="flex-1" size="sm" onClick={async () => {
+                  if (!user) return;
+                  try {
+                    // Check if conversation already exists for this property
+                    const { data: existing } = await supabase
+                      .from('conversations')
+                      .select('id')
+                      .eq('property_id', property.id)
+                      .eq('buyer_id', user.id)
+                      .maybeSingle();
+
+                    let convId = existing?.id;
+
+                    if (!convId) {
+                      // Create conversation
+                      const { data: conv, error } = await supabase
+                        .from('conversations')
+                        .insert({
+                          buyer_id: user.id,
+                          owner_id: property.owner_id,
+                          property_id: property.id,
+                        })
+                        .select('id')
+                        .single();
+                      if (error) throw error;
+                      convId = conv.id;
+
+                      // Send auto-formatted intro message
+                      await supabase.from('messages').insert({
+                        conversation_id: convId,
+                        sender_id: user.id,
+                        content: `${t('exchangeNav.exchangeIntro')} ${property.type} à ${property.adresse}. ${t('exchangeNav.myPropertyLink')} Discutons des modalités !`,
+                      });
+                      await supabase.from('conversations').update({ last_message_at: new Date().toISOString() }).eq('id', convId);
+                    }
+
+                    navigate(`/messages/${convId}`, { state: { from: '/home-exchange/requests' } });
+                  } catch (err: any) {
+                    toast.error(err.message || 'Erreur');
+                  }
+                }}>
+                  {t('homeExchange.requestExchange')}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {!isOwner && (
           <PropertySellerCard
             profile={(property as any).owner_profile}
             score={(property as any).owner_score}
           />
+        )}
+
+        {/* Exchange reviews */}
+        {property.operations === 'home_exchange' && !isOwner && (
+          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <h3 className="font-semibold text-foreground text-sm">{t('exchangeReview.publicReviews')}</h3>
+            <ExchangeReviewsList userId={property.owner_id} />
+          </div>
         )}
 
         {/* Share & Collection buttons */}
@@ -220,40 +310,43 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
         {property.equipements && (property.equipements as string[]).length > 0 && (
           <EquipmentGrid equipments={property.equipements as string[]} />
         )}
-        {/* Professional services */}
-        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-foreground text-sm">{t('property.needProfessional')}</h3>
+        {/* Professional services — hidden for home exchange */}
+        {property.operations !== 'home_exchange' && (
+          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold text-foreground text-sm">{t('property.needProfessional')}</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">{t('property.proDescription')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: 'Avocat', emoji: '⚖️' },
+                { label: 'Notaire', emoji: '📋' },
+                { label: 'Architecte', emoji: '📐' },
+                { label: 'Contractor', emoji: '🔨' },
+              ].map(pro => (
+                <button
+                  key={pro.label}
+                  onClick={async () => {
+                    const { toast } = await import('sonner');
+                    toast.success(`Demande envoyée ! Un ${pro.label.toLowerCase()} vous contactera bientôt.`);
+                  }}
+                  className="flex items-center gap-2 py-2.5 px-3 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+                >
+                  <span>{pro.emoji}</span> {pro.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground">{t('property.proDescription')}</p>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { label: 'Avocat', emoji: '⚖️' },
-              { label: 'Notaire', emoji: '📋' },
-              { label: 'Architecte', emoji: '📐' },
-              { label: 'Contractor', emoji: '🔨' },
-            ].map(pro => (
-              <button
-                key={pro.label}
-                onClick={async () => {
-                  const { toast } = await import('sonner');
-                  toast.success(`Demande envoyée ! Un ${pro.label.toLowerCase()} vous contactera bientôt.`);
-                }}
-                className="flex items-center gap-2 py-2.5 px-3 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-secondary transition-colors"
-              >
-                <span>{pro.emoji}</span> {pro.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
-        {!isOwner && !hideActions && (
+        {/* Visit request — hidden for home exchange */}
+        {property.operations !== 'home_exchange' && !isOwner && !hideActions && (
           <Button className="w-full" onClick={() => setShowVisitForm(true)}>
             <CalendarDays className="h-4 w-4 mr-2" /> {t('property.requestVisit')}
           </Button>
         )}
-        {showVisitForm && !hideActions && (
+        {property.operations !== 'home_exchange' && showVisitForm && !hideActions && (
           <VisitForm propertyId={property.id} ownerId={property.owner_id} onClose={() => setShowVisitForm(false)} />
         )}
       </div>

@@ -13,20 +13,29 @@ import iconAdmin from '@/assets/icons/security.png';
 import iconProperties from '@/assets/icons/imeuble.png';
 import iconMap from '@/assets/icons/appmap.png';
 import iconContrat from '@/assets/icons/contrat.png';
+import iconExchange from '@/assets/icons/exchange.png';
 
 export function BottomNav() {
   const { pathname, search } = useLocation();
-  const { roles } = useAuth();
+  const { activeRole } = useAuth();
   const { t } = useTranslation();
-  const isOwner = roles.includes('owner');
-  const isAdmin = roles.includes('admin');
-  const isNotaire = roles.includes('notaire');
+  const isOwner = activeRole === 'owner';
+  const isAdmin = activeRole === 'admin';
+  const isNotaire = activeRole === 'notaire';
+  const isExchangeMode = pathname.startsWith('/home-exchange');
+
+  const exchangeLinks = [
+    { to: '/home-exchange', icon: iconExchange, label: t('exchangeNav.browse') },
+    { to: '/home-exchange/my-properties', icon: iconHome, label: t('exchangeNav.myProperties') },
+    { to: '/home-exchange/requests', icon: iconMatches, label: t('exchangeNav.requests') },
+    { to: '/home-exchange/profile', icon: iconProfile, label: t('exchangeNav.profile') },
+  ];
 
   const buyerLinks = [
     { to: '/explore', icon: iconExplore, label: t('nav.discover') },
     { to: '/matches', icon: iconMatches, label: t('nav.matches') },
     { to: '/messages', icon: iconMessages, label: t('nav.messages') },
-    { to: '/visits', icon: iconVisits, label: t('nav.visits') },
+    { to: '/mes-transactions', icon: iconContrat, label: t('nav.tracking') },
     { to: '/profile', icon: iconProfile, label: t('nav.profile') },
   ];
 
@@ -51,7 +60,7 @@ export function BottomNav() {
     { to: '/profile', icon: iconProfile, label: t('nav.profile') },
   ];
 
-  const links = isAdmin ? adminLinks : isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
+  const links = isExchangeMode ? exchangeLinks : isAdmin ? adminLinks : isNotaire ? notaireLinks : isOwner ? ownerLinks : buyerLinks;
 
   return (
     <nav

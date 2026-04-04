@@ -7,7 +7,8 @@ import { AvatarUpload } from './AvatarUpload';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Flame, Heart, Star, CalendarDays, Eye, TrendingUp, ArrowRight, Settings, SlidersHorizontal, Pencil } from 'lucide-react';
+import { Flame, Heart, Star, CalendarDays, Eye, TrendingUp, ArrowRight, Settings, SlidersHorizontal, Pencil, RefreshCw, Lock } from 'lucide-react';
+import { useExchangeAccess } from '@/hooks/useExchangeDocuments';
 import { supabase } from '@/integrations/supabase/client';
 import { CertifiedBadge } from '@/components/ui/CertifiedBadge';
 import { useBuyerPreferences } from '@/hooks/useBuyerPreferences';
@@ -20,6 +21,7 @@ export function ProfileForm() {
   const { roles, refreshProfile, user } = useAuth();
   const { profile, updateProfile } = useProfile();
   const { preferences } = useBuyerPreferences();
+  const { allApproved: exchangeDocsApproved } = useExchangeAccess();
   const { favorites } = useFavorites();
   const { visits } = useVisits();
   const [editingBio, setEditingBio] = useState(false);
@@ -243,6 +245,53 @@ export function ProfileForm() {
             </div>
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* Emotional Profile Button */}
+      <div className="mx-4 mb-4">
+        <button
+          onClick={() => navigate('/buyer/emotional')}
+          className="w-full bg-card rounded-xl p-4 border border-border flex items-center justify-between hover:border-primary/30 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <Heart className="h-5 w-5 text-primary" />
+            <div className="text-left">
+              <p className="font-semibold text-foreground text-sm">Mon profil émotionnel</p>
+              <p className="text-xs text-muted-foreground">Définir mon coup de cœur idéal</p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* Home Exchange Button */}
+      <div className="mx-4 mb-4">
+        <button
+          onClick={() => {
+            if (exchangeDocsApproved) {
+              navigate('/home-exchange');
+            } else {
+              toast.error('Vous devez d\'abord valider vos documents dans les paramètres pour accéder à Home Exchange.');
+              navigate('/account-settings');
+            }
+          }}
+          className="w-full bg-gradient-to-r from-cyan-500/10 to-primary/10 rounded-xl p-4 border border-cyan-500/30 flex items-center justify-between hover:border-cyan-500/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            {exchangeDocsApproved ? (
+              <RefreshCw className="h-5 w-5 text-cyan-500" />
+            ) : (
+              <Lock className="h-5 w-5 text-amber-500" />
+            )}
+            <div className="text-left">
+              <p className="font-semibold text-foreground text-sm">Home Exchange</p>
+              <p className="text-xs text-muted-foreground">
+                {exchangeDocsApproved ? t('homeExchange.heroDesc') : 'Documents à valider pour débloquer'}
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-cyan-500" />
         </button>
       </div>
 

@@ -6,8 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { User, Shield } from 'lucide-react';
 
 export default function Profile() {
-  const { roles } = useAuth();
-  const isAdmin = roles.includes('admin');
+  const { activeRole } = useAuth();
+  const isAdmin = activeRole === 'admin';
 
   return (
     <AppLayout hideHeader>

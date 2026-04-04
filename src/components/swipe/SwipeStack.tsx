@@ -6,12 +6,14 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
-import { X, Undo2, Star } from 'lucide-react';
+import { Undo2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
 import iconMatches from '@/assets/icons/matches.png';
+import iconPass from '@/assets/icons/pass.png';
+import iconSuperlike from '@/assets/icons/superlike.png';
 
 interface SwipeStackProps {
   filters?: ExploreFilterValues;
@@ -209,7 +211,7 @@ export function SwipeStack({ filters }: SwipeStackProps) {
         </div>
       )}
 
-      <div className="relative z-[60] flex shrink-0 items-center justify-center gap-4 border-t border-border/40 bg-background/95 py-3 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
+      <div className="relative z-[60] flex shrink-0 items-center justify-center gap-4 py-3">
         {currentIndex > 0 && (
           <button
             type="button"
@@ -224,19 +226,19 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           type="button"
           onClick={handlePass}
           disabled={swipe.isPending}
-          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-destructive text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-destructive transition-colors hover:bg-destructive/10 active:scale-95"
           aria-label={t('explore.pass')}
         >
-          <X className="h-6 w-6" />
+          <img src={iconPass} alt="" className="h-7 w-7 object-contain" />
         </button>
         <button
           type="button"
           onClick={handleSuperLike}
           disabled={swipe.isPending}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 shadow-lg shadow-amber-500/30 transition-all hover:from-amber-500 hover:to-amber-700 active:scale-95"
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-amber-500 transition-all hover:bg-amber-500/10 active:scale-90"
           aria-label="Super Like"
         >
-          <Star className="h-6 w-6 text-white fill-white" />
+          <img src={iconSuperlike} alt="" className="h-10 w-10 object-contain" />
         </button>
         <button
           type="button"

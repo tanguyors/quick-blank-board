@@ -3,6 +3,7 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from './ThemeToggle';
+import { RoleSwitcher } from './RoleSwitcher';
 import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { useTranslation } from 'react-i18next';
 import logoSoma from '@/assets/logo-soma.png';
@@ -26,13 +27,14 @@ import iconVerifiedDoc from '@/assets/icons/verified_doc.png';
 
 export function AppSidebar() {
   const { pathname, search } = useLocation();
-  const { roles, profile, signOut } = useAuth();
+  const { activeRole, roles, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const isOwner = roles.includes('owner');
-  const isAdmin = roles.includes('admin');
-  const isNotaire = roles.includes('notaire');
+  const isOwner = activeRole === 'owner';
+  const isAdmin = activeRole === 'admin';
+  const isNotaire = activeRole === 'notaire';
+  const canSwitch = roles.includes('user') && roles.includes('owner');
 
   const buyerLinks = [
     { to: '/buyer', icon: iconDashboard, label: t('nav.dashboard') },
@@ -83,6 +85,12 @@ export function AppSidebar() {
         <img src={logoSoma} alt="SomaGate" className="h-8 w-8 object-contain" />
         <span className="text-foreground font-semibold text-lg">SomaGate</span>
       </Link>
+
+      {canSwitch && (
+        <div className="px-3 pt-3">
+          <RoleSwitcher variant="full" className="w-full justify-center" />
+        </div>
+      )}
 
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {links.map(({ to, icon, label }) => {

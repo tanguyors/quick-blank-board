@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save, Globe } from 'lucide-react';
+import { ArrowLeft, User, MessageSquare, CreditCard, LogOut, AlertTriangle, Save, Globe, ArrowLeftRight, Plus } from 'lucide-react';
+import { ExchangeDocumentUpload } from '@/components/exchange/ExchangeDocumentUpload';
 import { CURRENCIES } from '@/lib/currencies';
 import { NotificationSettings } from '@/components/settings/NotificationSettings';
 import { IdentityVerification } from '@/components/settings/IdentityVerification';
@@ -21,10 +22,13 @@ import {
 
 export default function AccountSettings() {
   const navigate = useNavigate();
-  const { user, signOut, refreshProfile, roles } = useAuth();
+  const { user, signOut, refreshProfile, roles, activeRole, addRole } = useAuth();
   const { profile, updateProfile } = useProfile();
   const { t } = useTranslation();
-  const isOwner = roles.includes('owner');
+  const isOwner = activeRole === 'owner';
+  const hasBothRoles = roles.includes('user') && roles.includes('owner');
+  const isBuyerOnly = roles.includes('user') && !roles.includes('owner');
+  const isOwnerOnly = roles.includes('owner') && !roles.includes('user');
   const [form, setForm] = useState({
     first_name: '', last_name: '', full_name: '', whatsapp: '',
     preferred_currency: 'EUR', nationality: '',
@@ -103,6 +107,32 @@ export default function AccountSettings() {
             )}
           </div>
 
+          {/* Role management */}
+          <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
+            <div className="flex items-center gap-2">
+              <ArrowLeftRight className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-bold text-foreground">{t('roles.title')}</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">{t('roles.currentRole')}: <span className="font-semibold text-foreground">{t(`roles.${activeRole}`)}</span></p>
+            {(isBuyerOnly || isOwnerOnly) && (
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={async () => {
+                  const newRole = isBuyerOnly ? 'owner' : 'user';
+                  await addRole(newRole);
+                  toast.success(t('roles.roleAdded'));
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                {isBuyerOnly ? t('roles.becomeOwner') : t('roles.becomeBuyer')}
+              </Button>
+            )}
+            {hasBothRoles && (
+              <p className="text-sm text-muted-foreground">{t('roles.switchHint')}</p>
+            )}
+          </div>
+
           {/* Language */}
           <div className="bg-card rounded-2xl p-5 border border-border space-y-4">
             <div className="flex items-center gap-2">
@@ -130,6 +160,8 @@ export default function AccountSettings() {
           />
 
           <IdentityVerification />
+
+          <ExchangeDocumentUpload />
 
           <Button onClick={handleSave} className="w-full gap-2" disabled={updateProfile.isPending}>
             <Save className="h-4 w-4" /> {t('settings.saveChanges')}

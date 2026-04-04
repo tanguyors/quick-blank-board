@@ -15,11 +15,11 @@ interface VisitListProps {
 
 export function VisitList({ statusFilter = 'all' }: VisitListProps) {
   const { visits, updateVisitStatus } = useVisits();
-  const { user, roles } = useAuth();
+  const { user, activeRole } = useAuth();
   const { displayPrice } = useDisplayPrice();
   const { data: conversations } = useConversations();
   const navigate = useNavigate();
-  const isOwner = roles.includes('owner');
+  const isOwner = activeRole === 'owner';
 
   const findConversation = (propertyId: string) =>
     conversations?.find((c: any) => c.property_id === propertyId);

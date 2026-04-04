@@ -11,10 +11,10 @@ import { useTranslation } from 'react-i18next';
 import { PublicNavBar } from '@/components/layout/PublicNavBar';
 
 export default function ProfileSetup() {
-  const { user, roles, refreshProfile } = useAuth();
+  const { user, activeRole, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isOwner = roles.includes('owner');
+  const isOwner = activeRole === 'owner';
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     first_name: '',

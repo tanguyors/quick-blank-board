@@ -64,7 +64,7 @@ export function PropertyDetailSheet({
   property, open, onClose, showBuyerActions = false, onLike, onToggleFavorite, isFavorite,
 }: PropertyDetailSheetProps) {
   const { displayPrice } = useDisplayPrice();
-  const { user, roles } = useAuth();
+  const { user, activeRole } = useAuth();
   const { t } = useTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [showVisitForm, setShowVisitForm] = useState(false);
@@ -73,7 +73,7 @@ export function PropertyDetailSheet({
 
   const images = (property.property_media || []).filter((m: any) => !m.type || m.type === 'image');
   const isOwner = property.owner_id === user?.id;
-  const isViewerOwnerRole = roles.includes('owner');
+  const isViewerOwnerRole = activeRole === 'owner';
   const hideActions = isViewerOwnerRole && !isOwner;
   const fav = isFavorite ? isFavorite(property.id) : false;
 

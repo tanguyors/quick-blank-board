@@ -10,19 +10,38 @@ export interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   roles: string[];
+  activeRole: string;
+  setActiveRole: (role: string) => void;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  addRole: (role: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const ACTIVE_ROLE_KEY = 'somagate_active_role';
+
+function resolveActiveRole(roles: string[], stored: string | null): string {
+  if (stored && roles.includes(stored)) return stored;
+  if (roles.includes('admin')) return 'admin';
+  if (roles.includes('notaire')) return 'notaire';
+  if (roles.includes('owner')) return 'owner';
+  return 'user';
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const [activeRole, setActiveRoleState] = useState<string>('user');
   const [loading, setLoading] = useState(true);
+
+  const setActiveRole = (role: string) => {
+    setActiveRoleState(role);
+    localStorage.setItem(ACTIVE_ROLE_KEY, role);
+  };
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -38,7 +57,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from('user_roles')
       .select('role')
       .eq('user_id', userId);
-    setRoles(data?.map(r => r.role) || []);
+    const fetched = data?.map(r => r.role) || [];
+    setRoles(fetched);
+    const stored = localStorage.getItem(ACTIVE_ROLE_KEY);
+    setActiveRoleState(resolveActiveRole(fetched, stored));
+  };
+
+  const addRole = async (role: string) => {
+    if (!user || roles.includes(role)) return;
+    await supabase.from('user_roles').insert({ user_id: user.id, role });
+    await fetchRoles(user.id);
   };
 
   const refreshProfile = async () => {
@@ -101,10 +129,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
     setRoles([]);
+    setActiveRoleState('user');
+    localStorage.removeItem(ACTIVE_ROLE_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, roles, loading, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, roles, activeRole, setActiveRole, loading, signOut, refreshProfile, addRole }}>
       {children}
     </AuthContext.Provider>
   );

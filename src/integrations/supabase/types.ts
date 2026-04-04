@@ -22,6 +22,7 @@ export type Database = {
           cash_available: string | null
           created_at: string
           custom_sector: string | null
+          emotional_profile: Json | null
           id: string
           intention: string | null
           is_complete: boolean | null
@@ -45,6 +46,7 @@ export type Database = {
           cash_available?: string | null
           created_at?: string
           custom_sector?: string | null
+          emotional_profile?: Json | null
           id?: string
           intention?: string | null
           is_complete?: boolean | null
@@ -68,6 +70,7 @@ export type Database = {
           cash_available?: string | null
           created_at?: string
           custom_sector?: string | null
+          emotional_profile?: Json | null
           id?: string
           intention?: string | null
           is_complete?: boolean | null
@@ -394,17 +397,24 @@ export type Database = {
       properties: {
         Row: {
           adresse: string
+          available_from: string | null
+          available_to: string | null
+          capacity: number
           chambres: number
           created_at: string
           description: string | null
           droit: Database["public"]["Enums"]["property_droit"] | null
+          emotional_profile: Json | null
           equipements: Json | null
+          exchange_allowed_confirmed: boolean
           id: string
+          insurance_confirmed: boolean
           is_published: boolean
           latitude: number | null
           longitude: number | null
           operations: Database["public"]["Enums"]["property_operation"]
           owner_id: string
+          points_per_night: number
           prix: number
           prix_currency: string
           salles_bain: number
@@ -416,17 +426,24 @@ export type Database = {
         }
         Insert: {
           adresse: string
+          available_from?: string | null
+          available_to?: string | null
+          capacity?: number
           chambres?: number
           created_at?: string
           description?: string | null
           droit?: Database["public"]["Enums"]["property_droit"] | null
+          emotional_profile?: Json | null
           equipements?: Json | null
+          exchange_allowed_confirmed?: boolean
           id?: string
+          insurance_confirmed?: boolean
           is_published?: boolean
           latitude?: number | null
           longitude?: number | null
           operations?: Database["public"]["Enums"]["property_operation"]
           owner_id: string
+          points_per_night?: number
           prix: number
           prix_currency?: string
           salles_bain?: number
@@ -438,17 +455,24 @@ export type Database = {
         }
         Update: {
           adresse?: string
+          available_from?: string | null
+          available_to?: string | null
+          capacity?: number
           chambres?: number
           created_at?: string
           description?: string | null
           droit?: Database["public"]["Enums"]["property_droit"] | null
+          emotional_profile?: Json | null
           equipements?: Json | null
+          exchange_allowed_confirmed?: boolean
           id?: string
+          insurance_confirmed?: boolean
           is_published?: boolean
           latitude?: number | null
           longitude?: number | null
           operations?: Database["public"]["Enums"]["property_operation"]
           owner_id?: string
+          points_per_night?: number
           prix?: number
           prix_currency?: string
           salles_bain?: number
@@ -457,6 +481,150 @@ export type Database = {
           surface?: number | null
           type?: Database["public"]["Enums"]["property_type"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      exchange_documents: {
+        Row: {
+          id: string
+          user_id: string
+          document_url: string
+          document_type: string
+          status: string
+          submitted_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          rejection_reason: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          document_url: string
+          document_type?: string
+          status?: string
+          submitted_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          document_url?: string
+          document_type?: string
+          status?: string
+          submitted_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          rejection_reason?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exchange_reviews: {
+        Row: {
+          id: string
+          exchange_transaction_id: string | null
+          reviewer_id: string
+          reviewee_id: string
+          property_id: string
+          rating_overall: number
+          rating_cleanliness: number
+          rating_communication: number
+          rating_property_respect: number
+          comment: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          exchange_transaction_id?: string | null
+          reviewer_id: string
+          reviewee_id: string
+          property_id: string
+          rating_overall: number
+          rating_cleanliness: number
+          rating_communication: number
+          rating_property_respect: number
+          comment?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          exchange_transaction_id?: string | null
+          reviewer_id?: string
+          reviewee_id?: string
+          property_id?: string
+          rating_overall?: number
+          rating_cleanliness?: number
+          rating_communication?: number
+          rating_property_respect?: number
+          comment?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      soma_points_accounts: {
+        Row: {
+          id: string
+          user_id: string
+          balance: number
+          total_earned: number
+          total_spent: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          balance?: number
+          total_earned?: number
+          total_spent?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          balance?: number
+          total_earned?: number
+          total_spent?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      soma_points_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          type: string
+          reference_id: string | null
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount: number
+          type: string
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount?: number
+          type?: string
+          reference_id?: string | null
+          description?: string | null
+          created_at?: string
         }
         Relationships: []
       }

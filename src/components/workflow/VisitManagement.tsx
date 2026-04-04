@@ -86,12 +86,12 @@ export function VisitManagement({
         />
       )}
 
-      {/* Express intention after visit */}
-      {status === 'visit_completed' && isBuyer && (
+      {/* Express intention after visit (or re-express after "continue") */}
+      {(status === 'visit_completed' || (status === 'intention_expressed' && transaction.buyer_intention === 'continue')) && isBuyer && (
         <IntentionCard onExpress={onExpressIntention} isLoading={isLoading} />
       )}
 
-      {status === 'visit_completed' && isSeller && (
+      {(status === 'visit_completed' || (status === 'intention_expressed' && transaction.buyer_intention === 'continue')) && isSeller && (
         <WaitingCard message={t('visitMgmt.waitingBuyerDecision')} />
       )}
 

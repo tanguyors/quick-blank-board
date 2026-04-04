@@ -16,8 +16,9 @@ import { AdminOverviewTab } from '@/components/admin/AdminOverviewTab';
 import { AdminNotificationsTab } from '@/components/admin/AdminNotificationsTab';
 import { PropertyMap } from '@/components/map/PropertyMap';
 import { AdminVerificationsTab } from '@/components/admin/AdminVerificationsTab';
+import { AdminExchangeDocsTab } from '@/components/admin/AdminExchangeDocsTab';
 
-type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'verifications' | 'map';
+type AdminTab = 'overview' | 'users' | 'transactions' | 'properties' | 'visits' | 'notifications' | 'verifications' | 'exchange_docs' | 'map';
 
 export default function Admin() {
   const { roles, loading } = useAuth();
@@ -41,6 +42,7 @@ export default function Admin() {
     { id: 'transactions', label: 'Transactions', icon: FileText },
     { id: 'notifications', label: 'Notifications', icon: Mail },
     { id: 'verifications', label: 'Identités', icon: UserCheck },
+    { id: 'exchange_docs', label: 'Docs Exchange', icon: FileText },
     { id: 'map', label: 'Carte', icon: Map },
   ];
 
@@ -87,6 +89,7 @@ export default function Admin() {
           {activeTab === 'transactions' && <AdminTransactionsTab />}
           {activeTab === 'notifications' && <AdminNotificationsTab />}
           {activeTab === 'verifications' && <AdminVerificationsTab />}
+          {activeTab === 'exchange_docs' && <AdminExchangeDocsTab />}
           {activeTab === 'map' && (
             <div className="h-[calc(100vh-10rem)] w-full">
               <PropertyMap embedded />

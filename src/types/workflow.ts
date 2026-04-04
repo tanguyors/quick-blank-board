@@ -22,7 +22,7 @@ export const VALID_TRANSITIONS: Record<TransactionStatus, TransactionStatus[]> =
   visit_completed: ['intention_expressed', 'deal_cancelled'],
   visit_cancelled: ['visit_requested', 'archived'],
   visit_rescheduled: ['visit_confirmed', 'visit_cancelled'],
-  intention_expressed: ['offer_made', 'deal_cancelled'],
+  intention_expressed: ['intention_expressed', 'offer_made', 'deal_cancelled'],
   offer_made: ['documents_generated', 'intention_expressed', 'deal_cancelled'],
   documents_generated: ['in_validation'],
   in_validation: ['deal_finalized', 'documents_generated'],

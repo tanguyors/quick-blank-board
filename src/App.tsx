@@ -49,8 +49,14 @@ const CGV = lazy(() => import("./pages/CGV"));
 const CGVAbonnement = lazy(() => import("./pages/CGVAbonnement"));
 const Confidentialite = lazy(() => import("./pages/Confidentialite"));
 const Actualites = lazy(() => import("./pages/Actualites"));
-const HomeExchange = lazy(() => import("./pages/HomeExchange"));
+const ExchangeBrowse = lazy(() => import("./pages/exchange/ExchangeBrowse"));
+const ExchangeMyProperties = lazy(() => import("./pages/exchange/ExchangeMyProperties"));
+const ExchangeRequests = lazy(() => import("./pages/exchange/ExchangeRequests"));
+const ExchangeProfile = lazy(() => import("./pages/exchange/ExchangeProfile"));
+import { ExchangeGate } from './components/exchange/ExchangeGate';
 const Premium = lazy(() => import("./pages/Premium"));
+const PropertyEmotionalProfile = lazy(() => import("./pages/PropertyEmotionalProfile"));
+const BuyerEmotionalProfile = lazy(() => import("./pages/BuyerEmotionalProfile"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -111,7 +117,12 @@ const App = () => (
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/buyer/preferences" element={<ProtectedRoute><BuyerPreferences /></ProtectedRoute>} />
-                <Route path="/home-exchange" element={<ProtectedRoute><HomeExchange /></ProtectedRoute>} />
+                <Route path="/buyer/emotional" element={<ProtectedRoute><BuyerEmotionalProfile /></ProtectedRoute>} />
+                <Route path="/properties/:id/emotional" element={<ProtectedRoute><PropertyEmotionalProfile /></ProtectedRoute>} />
+                <Route path="/home-exchange" element={<ProtectedRoute><ExchangeGate><ExchangeBrowse /></ExchangeGate></ProtectedRoute>} />
+                <Route path="/home-exchange/my-properties" element={<ProtectedRoute><ExchangeGate><ExchangeMyProperties /></ExchangeGate></ProtectedRoute>} />
+                <Route path="/home-exchange/requests" element={<ProtectedRoute><ExchangeGate><ExchangeRequests /></ExchangeGate></ProtectedRoute>} />
+                <Route path="/home-exchange/profile" element={<ProtectedRoute><ExchangeGate><ExchangeProfile /></ExchangeGate></ProtectedRoute>} />
                 <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
                 <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />

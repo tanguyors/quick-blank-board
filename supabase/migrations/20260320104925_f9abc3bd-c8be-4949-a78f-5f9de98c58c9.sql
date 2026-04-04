@@ -1,1 +1,0 @@
-ALTER TYPE public.property_operation ADD VALUE IF NOT EXISTS 'home_exchange';

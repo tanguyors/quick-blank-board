@@ -2,6 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
+import { RoleSwitcher } from './RoleSwitcher';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import logoSoma from '@/assets/logo-soma.png';
@@ -45,7 +46,8 @@ export function Header() {
         </button>
       </div>
       </div>
-      <div className="overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+        <RoleSwitcher />
         <LanguageButtons dense className="min-w-min flex-nowrap" />
       </div>
     </header>
