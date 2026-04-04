@@ -56,7 +56,7 @@ export default function Admin() {
           </div>
         </PageTopBar>
 
-        <div className="flex border-b border-border overflow-x-auto [-webkit-overflow-scrolling:touch] touch-pan-x">
+        <div className="grid grid-cols-4 gap-1 px-2 py-2 border-b border-border lg:flex lg:gap-0 lg:px-0 lg:py-0">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const desktopOnly = tab.id === 'notifications';
@@ -64,14 +64,14 @@ export default function Admin() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`items-center justify-center gap-1 px-2 py-2 text-[10px] font-medium transition-colors rounded-lg lg:rounded-none lg:px-4 lg:py-3 lg:text-sm lg:whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'text-primary border-b-2 border-primary'
+                    ? 'bg-primary/10 text-primary lg:bg-transparent lg:border-b-2 lg:border-primary'
                     : 'text-muted-foreground'
-                } ${desktopOnly ? 'hidden lg:flex' : 'flex'}`}
+                } ${desktopOnly ? 'hidden lg:flex' : 'flex flex-col lg:flex-row'}`}
               >
                 <Icon className="h-4 w-4" />
-                {tab.label}
+                <span className="truncate">{tab.label}</span>
               </button>
             );
           })}
