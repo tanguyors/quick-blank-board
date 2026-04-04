@@ -23,9 +23,11 @@ export function useExplorableProperties(filters?: ExploreFilterValues) {
         .eq('status', 'available')
         .neq('owner_id', user!.id);
 
-      // Apply filters
+      // Apply filters — exclude home_exchange from normal swipe unless explicitly filtered
       if (filters?.operation) {
         query = query.eq('operations', filters.operation as any);
+      } else {
+        query = query.neq('operations', 'home_exchange' as any);
       }
       if (filters?.type) {
         query = query.eq('type', filters.type as any);
