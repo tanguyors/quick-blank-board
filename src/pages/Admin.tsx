@@ -56,7 +56,7 @@ export default function Admin() {
           </div>
         </PageTopBar>
 
-        <div className="flex border-b border-border overflow-x-auto scrollbar-hide">
+        <div className="flex border-b border-border overflow-x-auto [-webkit-overflow-scrolling:touch] touch-pan-x">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const desktopOnly = tab.id === 'notifications';
