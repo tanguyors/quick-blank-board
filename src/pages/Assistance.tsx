@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { Link } from 'react-router-dom';
 import { Send, MessageCircle, Mail, HelpCircle } from 'lucide-react';
 import { PublicNavBar } from '@/components/layout/PublicNavBar';
@@ -27,6 +28,7 @@ const FAQ = [
 ];
 
 export default function Assistance() {
+  useAllowScroll();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');

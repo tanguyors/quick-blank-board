@@ -1,9 +1,11 @@
 import { ArrowLeft, Lock } from 'lucide-react';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 export default function Confidentialite() {
+  useAllowScroll();
   const navigate = useNavigate();
 
   return (

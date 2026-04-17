@@ -1,9 +1,11 @@
 import { ArrowLeft, CreditCard } from 'lucide-react';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { LanguageButtons } from '@/components/ui/LanguageButtons';
 
 export default function CGV() {
+  useAllowScroll();
   const navigate = useNavigate();
 
   return (
