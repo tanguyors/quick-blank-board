@@ -86,15 +86,19 @@ function SwipeCardItem({ card, exit, onDecide }: SwipeCardItemProps) {
   // Démo automatique : wiggle droite -> gauche -> centre pour suggérer le swipe
   useEffect(() => {
     let cancelled = false;
+    const tween = (to: number, duration: number) =>
+      new Promise<void>((resolve) => {
+        const ctrl = animate(x, to, { duration, ease: 'easeInOut', onComplete: () => resolve() });
+        if (cancelled) ctrl.stop();
+      });
     const run = async () => {
-      // Petit délai pour laisser la carte apparaître
       await new Promise((r) => setTimeout(r, 600));
       if (cancelled || interactedRef.current) return;
-      await animate(x, 90, { duration: 0.7, ease: 'easeInOut' }).then();
+      await tween(90, 0.7);
       if (cancelled || interactedRef.current) return;
-      await animate(x, -90, { duration: 0.9, ease: 'easeInOut' }).then();
+      await tween(-90, 0.9);
       if (cancelled || interactedRef.current) return;
-      await animate(x, 0, { duration: 0.5, ease: 'easeOut' }).then();
+      await tween(0, 0.5);
     };
     run();
     return () => {
