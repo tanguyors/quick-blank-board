@@ -255,5 +255,55 @@
     "addHint": "Ketuk hati di Jelajahi untuk menambahkan properti",
     "viewProperty": "Lihat properti",
     "properties": "properti"
+  },
+  "homeDesktop": {
+    "nav": {
+      "features": "Fitur",
+      "security": "Keamanan",
+      "help": "Bantuan",
+      "download": "Unduh",
+      "login": "Masuk"
+    },
+    "hero": {
+      "title1": "Temukan",
+      "title2": "villa impian Anda",
+      "subtitle": "Geser, cocokkan, kunjungi. Properti di Bali jadi sederhana dan intuitif.",
+      "ctaPrimary": "Jelajahi properti",
+      "ctaSecondary": "Dasbor saya",
+      "stat1": "Properti",
+      "stat2": "Klien puas",
+      "stat3": "Kunjungan diatur 7/7"
+    },
+    "features": {
+      "f1Title": "Geser & Cocokkan",
+      "f1Desc": "Jelajahi properti seperti di Tinder. Sukai yang Anda suka, lewati sisanya.",
+      "f2Title": "Kunjungan Terorganisir",
+      "f2Desc": "Pesan kunjungan Anda dengan sekali klik. Sendiri atau grup, kami urus semuanya.",
+      "f3Title": "Skor Cerdas",
+      "f3Desc": "Semakin Anda terlibat, semakin Anda mengakses properti eksklusif lebih dulu."
+    },
+    "showcase": {
+      "line1": "Cocokkan.",
+      "line2": "Temukan.",
+      "line3": "Kunjungi.",
+      "desc": "Temukan properti terbaik di Bali. Geser untuk menjelajah, cocokkan dengan favorit Anda dan kunjungi dengan sekali klik. Yang Anda butuhkan hanya foto bagus dan keinginan nyata untuk menemukan properti ideal.",
+      "cta": "Daftar"
+    },
+    "footer": {
+      "download": "Unduh aplikasi!",
+      "downloadInAppStore": "Unduh di",
+      "appStore": "App Store",
+      "availableOnGooglePlay": "Tersedia di",
+      "googlePlay": "Google Play",
+      "p1": "Hai, Anda di Bali? Mencari villa yang sempurna, ingin berinvestasi di properti atau hanya menjelajahi pasar? Semuanya terjadi di SomaGate. Dengan ribuan properti yang sudah ada, ini adalah cara terbaik untuk menemukan properti atau akuisisi masa depan Anda di Bali. Geser, cocokkan, kunjungi: semuanya terjadi online atau di media sosial. Dengan SomaGate, pasar properti Bali hanya satu klik saja dan menunggu Anda menemukan properti yang cocok untuk Anda. Baik Anda pembeli, penyewa atau investor, dengan SomaGate, Anda akan membuat percikan.",
+      "p2": "Di SomaGate, Anda pasti akan menemukan apa yang Anda cari. Ingin membeli villa? Temukan di SomaGate. Ingin menyewa rumah? Temukan di SomaGate. Menonjol dalam investasi properti dan ingin memaksimalkan portofolio Anda? SomaGate dibuat untuk Anda. SomaGate bukan situs properti biasa: ini adalah aplikasi penemuan properti dengan properti paling beragam. Dari villa hingga apartemen segala jenis, mereka bertemu di sini, peluang tercipta, persahabatan terbentuk dan masih banyak lagi.",
+      "faq": "FAQ",
+      "assistance": "Bantuan",
+      "safety": "Tips keamanan",
+      "tos": "Syarat penggunaan",
+      "cookies": "Kebijakan cookie",
+      "privacy": "Kebijakan privasi",
+      "copyright": "© 2025 SomaGate, LLC. Semua hak dilindungi."
+    }
   }
 }
