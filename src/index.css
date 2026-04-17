@@ -96,23 +96,34 @@
   display: none;
 }
 
-/* Prevent iOS bounce/rubber-band on mobile only — keeps nav bars fixed in the webapp.
-   Desktop (>=1024px) keeps native page scroll so long pages like the home can scroll. */
-@media (max-width: 1023px) {
-  html, body {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-  }
+/* Prevent iOS bounce/rubber-band on the body — keeps nav bars fixed in the webapp */
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
 
-  #root {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Public landing pages (e.g. desktop home) need native page scroll */
+html.allow-scroll,
+html.allow-scroll body {
+  position: static;
+  height: auto;
+  overflow: auto;
+  overscroll-behavior: auto;
+}
+
+html.allow-scroll #root {
+  height: auto;
+  overflow: visible;
 }
 
 /* Horizontal scroll containers — smooth touch scrolling */
