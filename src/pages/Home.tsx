@@ -11,6 +11,7 @@ import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
 import beachImg from '@/assets/onboarding-beach-3.jpg';
 import logoSoma from '@/assets/logo-soma.png';
+import HomeDesktop from '@/components/home/HomeDesktop';
 
 import iconAssurance from '@/assets/icons/assurance.png';
 import iconDoc from '@/assets/icons/doc.png';
