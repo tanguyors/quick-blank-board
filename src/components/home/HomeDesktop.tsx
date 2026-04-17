@@ -42,25 +42,25 @@ export default function HomeDesktop() {
               onClick={() => navigate('/features')}
               className="flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
-              Features <ChevronDown className="h-3.5 w-3.5" />
+              {t('homeDesktop.nav.features')} <ChevronDown className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => navigate('/security')}
               className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
-              {t('home.security')}
+              {t('homeDesktop.nav.security')}
             </button>
             <button
               onClick={() => navigate('/assistance')}
               className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
-              {t('home.help')}
+              {t('homeDesktop.nav.help')}
             </button>
             <button
               onClick={() => navigate('/install')}
               className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
-              Télécharger
+              {t('homeDesktop.nav.download')}
             </button>
           </nav>
 
@@ -71,7 +71,7 @@ export default function HomeDesktop() {
               onClick={() => navigate('/auth')}
               className="rounded-full px-5 h-10 bg-foreground text-background hover:bg-foreground/90"
             >
-              <span className="mr-1.5">👤</span> {t('home.login')}
+              <span className="mr-1.5">👤</span> {t('homeDesktop.nav.login')}
             </Button>
           </div>
         </div>
@@ -81,12 +81,12 @@ export default function HomeDesktop() {
       <section className="relative overflow-hidden bg-gradient-to-b from-secondary/30 to-background">
         <div className="max-w-5xl mx-auto px-8 py-24 text-center">
           <h1 className="text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
-            Trouvez votre
+            {t('homeDesktop.hero.title1')}
             <br />
-            <span className="italic font-serif text-primary/80">villa de rêve</span>
+            <span className="italic font-serif text-primary/80">{t('homeDesktop.hero.title2')}</span>
           </h1>
           <p className="mt-8 text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Swipez, matchez, visitez. L'immobilier à Bali rendu simple et intuitif.
+            {t('homeDesktop.hero.subtitle')}
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-4">
@@ -95,29 +95,29 @@ export default function HomeDesktop() {
               className="rounded-full h-14 px-8 text-base font-semibold bg-foreground text-background hover:bg-foreground/90"
             >
               <Search className="h-5 w-5 mr-2" />
-              Découvrir les biens
+              {t('homeDesktop.hero.ctaPrimary')}
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate('/auth')}
               className="rounded-full h-14 px-8 text-base font-semibold border-border bg-card hover:bg-secondary"
             >
-              Mon tableau de bord
+              {t('homeDesktop.hero.ctaSecondary')}
             </Button>
           </div>
 
           <div className="mt-14 flex items-center justify-center gap-8 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {stats?.properties || 500}+ Propriétés
+              {stats?.properties || 500}+ {t('homeDesktop.hero.stat1')}
             </span>
             <span className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              {stats?.users || 1000}+ Clients satisfaits
+              {stats?.users || 1000}+ {t('homeDesktop.hero.stat2')}
             </span>
             <span className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              Visites organisées 7j/7
+              {t('homeDesktop.hero.stat3')}
             </span>
           </div>
         </div>
@@ -127,21 +127,9 @@ export default function HomeDesktop() {
       <section className="py-20 px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-3 gap-6">
           {[
-            {
-              icon: Heart,
-              title: 'Swipe & Match',
-              desc: 'Parcourez les biens comme sur Tinder. Aimez ce qui vous plaît, ignorez le reste.',
-            },
-            {
-              icon: Calendar,
-              title: 'Visites Organisées',
-              desc: "Réservez vos visites en un clic. Seul ou en groupe, on s'occupe de tout.",
-            },
-            {
-              icon: TrendingUp,
-              title: 'Score Intelligent',
-              desc: 'Plus vous êtes engagé, plus vous accédez à des biens exclusifs en priorité.',
-            },
+            { icon: Heart, title: t('homeDesktop.features.f1Title'), desc: t('homeDesktop.features.f1Desc') },
+            { icon: Calendar, title: t('homeDesktop.features.f2Title'), desc: t('homeDesktop.features.f2Desc') },
+            { icon: TrendingUp, title: t('homeDesktop.features.f3Title'), desc: t('homeDesktop.features.f3Desc') },
           ].map((f, i) => (
             <div
               key={i}
@@ -162,24 +150,22 @@ export default function HomeDesktop() {
         <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-6xl font-bold text-foreground leading-[1.05] tracking-tight">
-              Matche.
+              {t('homeDesktop.showcase.line1')}
               <br />
-              Découvre.
+              {t('homeDesktop.showcase.line2')}
               <br />
-              Visite.
+              {t('homeDesktop.showcase.line3')}
               <br />
               <span className="italic font-serif text-primary/80">SomaGate®</span>
             </h2>
             <p className="mt-8 text-base text-muted-foreground leading-relaxed max-w-md">
-              Découvre les meilleures propriétés à Bali. Swipe pour explorer, matche avec tes
-              favoris et visite en un clic. Tout ce dont tu as besoin, c'est de bonnes photos et une
-              vraie envie de trouver ton bien idéal.
+              {t('homeDesktop.showcase.desc')}
             </p>
             <Button
               onClick={() => navigate('/auth')}
               className="mt-8 rounded-full h-12 px-8 bg-foreground text-background hover:bg-foreground/90"
             >
-              Je m'inscris
+              {t('homeDesktop.showcase.cta')}
             </Button>
           </div>
 
@@ -192,57 +178,41 @@ export default function HomeDesktop() {
       <footer className="bg-foreground text-background mt-auto">
         <div className="max-w-6xl mx-auto px-8 py-16">
           <h3 className="text-2xl font-semibold text-primary/80 italic font-serif mb-6">
-            Téléchargez l'application !
+            {t('homeDesktop.footer.download')}
           </h3>
 
           <div className="flex gap-4 mb-12">
             <button className="flex items-center gap-3 bg-background text-foreground rounded-2xl px-5 py-3 hover:opacity-90 transition-opacity">
               <Apple className="h-7 w-7" />
               <div className="text-left">
-                <p className="text-[10px] opacity-70">Télécharger dans</p>
-                <p className="text-sm font-semibold">l'App Store</p>
+                <p className="text-[10px] opacity-70">{t('homeDesktop.footer.downloadInAppStore')}</p>
+                <p className="text-sm font-semibold">{t('homeDesktop.footer.appStore')}</p>
               </div>
             </button>
             <button className="flex items-center gap-3 bg-background text-foreground rounded-2xl px-5 py-3 hover:opacity-90 transition-opacity">
               <Play className="h-7 w-7" />
               <div className="text-left">
-                <p className="text-[10px] opacity-70">Disponible sur</p>
-                <p className="text-sm font-semibold">Google Play</p>
+                <p className="text-[10px] opacity-70">{t('homeDesktop.footer.availableOnGooglePlay')}</p>
+                <p className="text-sm font-semibold">{t('homeDesktop.footer.googlePlay')}</p>
               </div>
             </button>
           </div>
 
           <div className="text-xs text-background/60 leading-relaxed space-y-4 max-w-5xl">
-            <p>
-              Hé, t'es sur Bali ? Tu cherches la villa parfaite, tu veux investir dans l'immobilier
-              ou juste explorer le marché ? C'est sur SomaGate que ça se passe. Avec déjà des
-              milliers de propriétés, c'est le meilleur plan pour trouver ton bien ou ta future
-              acquisition à Bali. Swipe, matche, visite : les choses se passent en ligne ou sur les
-              réseaux. Avec SomaGate, le marché immobilier de Bali est à portée de clic et t'attend
-              plus que de découvrir la propriété qui te correspond. Que tu sois acheteur, locataire
-              ou investisseur, avec SomaGate, tu vas faire des étincelles.
-            </p>
-            <p>
-              Sur SomaGate, tu trouveras forcément ce que tu recherches. Tu veux acheter une villa ?
-              Trouve-la sur SomaGate. Tu as envie de louer une maison ? Découvre-la sur SomaGate. Tu
-              démarques dans l'investissement immobilier et tu veux maximiser ton portefeuille ?
-              SomaGate est fait pour toi. SomaGate n'est pas un site immobilier ordinaire : c'est
-              l'appli de découverte immobilière avec les propriétés les plus variées. Des villas aux
-              appartements de tous horizons s'y donnent rendez-vous, s'y créent des opportunités, y
-              tissent des amitiés et bien plus encore.
-            </p>
+            <p>{t('homeDesktop.footer.p1')}</p>
+            <p>{t('homeDesktop.footer.p2')}</p>
           </div>
 
           <div className="mt-12 pt-8 border-t border-background/10 flex flex-wrap gap-6 text-xs text-background/60">
-            <button onClick={() => navigate('/assistance')} className="hover:text-background transition-colors">FAQ</button>
-            <button onClick={() => navigate('/assistance')} className="hover:text-background transition-colors">Assistance</button>
-            <button onClick={() => navigate('/security')} className="hover:text-background transition-colors">Conseils de sécurité</button>
-            <button onClick={() => navigate('/cgu')} className="hover:text-background transition-colors">Conditions d'utilisation</button>
-            <button onClick={() => navigate('/confidentialite')} className="hover:text-background transition-colors">Politique relative aux cookies</button>
-            <button onClick={() => navigate('/confidentialite')} className="hover:text-background transition-colors">Règles de Confidentialité</button>
+            <button onClick={() => navigate('/assistance')} className="hover:text-background transition-colors">{t('homeDesktop.footer.faq')}</button>
+            <button onClick={() => navigate('/assistance')} className="hover:text-background transition-colors">{t('homeDesktop.footer.assistance')}</button>
+            <button onClick={() => navigate('/security')} className="hover:text-background transition-colors">{t('homeDesktop.footer.safety')}</button>
+            <button onClick={() => navigate('/cgu')} className="hover:text-background transition-colors">{t('homeDesktop.footer.tos')}</button>
+            <button onClick={() => navigate('/confidentialite')} className="hover:text-background transition-colors">{t('homeDesktop.footer.cookies')}</button>
+            <button onClick={() => navigate('/confidentialite')} className="hover:text-background transition-colors">{t('homeDesktop.footer.privacy')}</button>
           </div>
 
-          <p className="mt-8 text-xs text-background/40">© 2025 SomaGate, LLC. Tous droits réservés.</p>
+          <p className="mt-8 text-xs text-background/40">{t('homeDesktop.footer.copyright')}</p>
         </div>
       </footer>
     </div>
