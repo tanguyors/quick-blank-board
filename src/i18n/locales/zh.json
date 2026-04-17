@@ -255,5 +255,55 @@
     "addHint": "在发现中点击爱心添加房产",
     "viewProperty": "查看房产",
     "properties": "房产"
+  },
+  "homeDesktop": {
+    "nav": {
+      "features": "功能",
+      "security": "安全",
+      "help": "帮助",
+      "download": "下载",
+      "login": "登录"
+    },
+    "hero": {
+      "title1": "找到您的",
+      "title2": "梦想别墅",
+      "subtitle": "滑动、匹配、参观。让巴厘岛房产变得简单直观。",
+      "ctaPrimary": "探索房产",
+      "ctaSecondary": "我的仪表板",
+      "stat1": "房产",
+      "stat2": "满意客户",
+      "stat3": "全周参观"
+    },
+    "features": {
+      "f1Title": "滑动与匹配",
+      "f1Desc": "像 Tinder 一样浏览房产。喜欢就赞,不喜欢就跳过。",
+      "f2Title": "有序参观",
+      "f2Desc": "一键预约参观。无论独自或团体,我们全程负责。",
+      "f3Title": "智能评分",
+      "f3Desc": "越积极参与,越能优先获得独家房产。"
+    },
+    "showcase": {
+      "line1": "匹配。",
+      "line2": "发现。",
+      "line3": "参观。",
+      "desc": "发现巴厘岛最好的房产。滑动探索,与心仪房产匹配,一键参观。您只需好照片和寻找理想房产的真正愿望。",
+      "cta": "注册"
+    },
+    "footer": {
+      "download": "下载应用!",
+      "downloadInAppStore": "下载于",
+      "appStore": "App Store",
+      "availableOnGooglePlay": "可在",
+      "googlePlay": "Google Play",
+      "p1": "嘿,您在巴厘岛吗?在寻找完美别墅,想投资房产或只是探索市场?一切都在 SomaGate 上发生。已有数千套房产,这是在巴厘岛找到您的房产或未来收购的最佳方案。滑动、匹配、参观:一切都在线上或社交媒体上发生。借助 SomaGate,巴厘岛房产市场一键即达,只等您发现适合您的房产。无论您是买家、租户还是投资者,SomaGate 都将让您闪耀。",
+      "p2": "在 SomaGate 上,您一定会找到您所寻找的。想买别墅?在 SomaGate 上找到。想租房子?在 SomaGate 上发现。在房产投资中脱颖而出并希望最大化您的投资组合?SomaGate 为您而生。SomaGate 不是普通的房产网站:它是拥有最多样化房产的房产发现应用。从别墅到各类公寓,机遇在这里诞生,友谊在这里结成,还有更多。",
+      "faq": "常见问题",
+      "assistance": "协助",
+      "safety": "安全提示",
+      "tos": "使用条款",
+      "cookies": "Cookie 政策",
+      "privacy": "隐私政策",
+      "copyright": "© 2025 SomaGate, LLC. 版权所有。"
+    }
   }
 }

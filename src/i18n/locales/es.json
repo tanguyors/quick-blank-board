@@ -255,5 +255,55 @@
     "addHint": "Pulse el corazon en Descubrir para agregar una propiedad",
     "viewProperty": "Ver propiedad",
     "properties": "propiedad(es)"
+  },
+  "homeDesktop": {
+    "nav": {
+      "features": "Funciones",
+      "security": "Seguridad",
+      "help": "Ayuda",
+      "download": "Descargar",
+      "login": "Iniciar sesión"
+    },
+    "hero": {
+      "title1": "Encuentra tu",
+      "title2": "villa de ensueño",
+      "subtitle": "Desliza, conecta, visita. El sector inmobiliario en Bali simple e intuitivo.",
+      "ctaPrimary": "Descubrir propiedades",
+      "ctaSecondary": "Mi panel",
+      "stat1": "Propiedades",
+      "stat2": "Clientes satisfechos",
+      "stat3": "Visitas organizadas 7/7"
+    },
+    "features": {
+      "f1Title": "Desliza y Conecta",
+      "f1Desc": "Explora propiedades como en Tinder. Marca lo que te gusta, ignora el resto.",
+      "f2Title": "Visitas Organizadas",
+      "f2Desc": "Reserva tus visitas con un clic. Solo o en grupo, nos encargamos de todo.",
+      "f3Title": "Puntuación Inteligente",
+      "f3Desc": "Cuanto más activo seas, más propiedades exclusivas tendrás en prioridad."
+    },
+    "showcase": {
+      "line1": "Conecta.",
+      "line2": "Descubre.",
+      "line3": "Visita.",
+      "desc": "Descubre las mejores propiedades en Bali. Desliza para explorar, conecta con tus favoritas y visita con un clic. Todo lo que necesitas son buenas fotos y verdaderas ganas de encontrar tu propiedad ideal.",
+      "cta": "Me registro"
+    },
+    "footer": {
+      "download": "¡Descarga la aplicación!",
+      "downloadInAppStore": "Descargar en",
+      "appStore": "App Store",
+      "availableOnGooglePlay": "Disponible en",
+      "googlePlay": "Google Play",
+      "p1": "Hola, ¿estás en Bali? ¿Buscas la villa perfecta, quieres invertir en bienes raíces o simplemente explorar el mercado? Todo sucede en SomaGate. Con miles de propiedades ya disponibles, es el mejor plan para encontrar tu propiedad o futura adquisición en Bali. Desliza, conecta, visita: las cosas suceden en línea o en redes. Con SomaGate, el mercado inmobiliario de Bali está a un clic y solo espera que descubras la propiedad que te corresponde. Ya seas comprador, inquilino o inversor, con SomaGate vas a hacer chispas.",
+      "p2": "En SomaGate seguro encontrarás lo que buscas. ¿Quieres comprar una villa? Encuéntrala en SomaGate. ¿Quieres alquilar una casa? Descúbrela en SomaGate. ¿Destacas en inversión inmobiliaria y quieres maximizar tu cartera? SomaGate está hecho para ti. SomaGate no es un sitio inmobiliario común: es la app de descubrimiento inmobiliario con las propiedades más variadas. De villas a apartamentos de todo tipo, se reúnen aquí, se crean oportunidades, se forjan amistades y mucho más.",
+      "faq": "FAQ",
+      "assistance": "Asistencia",
+      "safety": "Consejos de seguridad",
+      "tos": "Términos de uso",
+      "cookies": "Política de cookies",
+      "privacy": "Política de privacidad",
+      "copyright": "© 2025 SomaGate, LLC. Todos los derechos reservados."
+    }
   }
 }

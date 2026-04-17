@@ -255,5 +255,55 @@
     "addHint": "Tik op het hart in Ontdekken om een woning toe te voegen",
     "viewProperty": "Woning bekijken",
     "properties": "woning(en)"
+  },
+  "homeDesktop": {
+    "nav": {
+      "features": "Functies",
+      "security": "Veiligheid",
+      "help": "Help",
+      "download": "Downloaden",
+      "login": "Inloggen"
+    },
+    "hero": {
+      "title1": "Vind je",
+      "title2": "droomvilla",
+      "subtitle": "Swipe, match, bezoek. Vastgoed op Bali eenvoudig en intuïtief.",
+      "ctaPrimary": "Ontdek panden",
+      "ctaSecondary": "Mijn dashboard",
+      "stat1": "Panden",
+      "stat2": "Tevreden klanten",
+      "stat3": "Bezichtigingen 7/7"
+    },
+    "features": {
+      "f1Title": "Swipe & Match",
+      "f1Desc": "Blader door panden zoals op Tinder. Like wat je leuk vindt, sla de rest over.",
+      "f2Title": "Georganiseerde bezichtigingen",
+      "f2Desc": "Boek je bezichtigingen met één klik. Alleen of in groep, wij regelen alles.",
+      "f3Title": "Slimme Score",
+      "f3Desc": "Hoe actiever je bent, hoe eerder je toegang krijgt tot exclusieve panden."
+    },
+    "showcase": {
+      "line1": "Match.",
+      "line2": "Ontdek.",
+      "line3": "Bezoek.",
+      "desc": "Ontdek de beste panden op Bali. Swipe om te ontdekken, match met je favorieten en bezoek met één klik. Alles wat je nodig hebt zijn goede foto's en de wil om je ideale pand te vinden.",
+      "cta": "Aanmelden"
+    },
+    "footer": {
+      "download": "Download de app!",
+      "downloadInAppStore": "Download in",
+      "appStore": "de App Store",
+      "availableOnGooglePlay": "Verkrijgbaar via",
+      "googlePlay": "Google Play",
+      "p1": "Hé, ben je op Bali? Op zoek naar de perfecte villa, wil je investeren in vastgoed of gewoon de markt verkennen? Het gebeurt allemaal op SomaGate. Met al duizenden panden is dit de beste manier om je pand of toekomstige aankoop op Bali te vinden. Swipe, match, bezoek: alles gebeurt online of op sociale media. Met SomaGate is de vastgoedmarkt van Bali één klik verwijderd en wacht alleen op jou om het pand te ontdekken dat bij je past. Of je nu koper, huurder of investeerder bent, met SomaGate ga je vonken laten spatten.",
+      "p2": "Op SomaGate vind je zeker wat je zoekt. Wil je een villa kopen? Vind hem op SomaGate. Wil je een huis huren? Ontdek het op SomaGate. Onderscheid je je in vastgoedbeleggingen en wil je je portefeuille maximaliseren? SomaGate is voor jou gemaakt. SomaGate is geen gewone vastgoedsite: het is de vastgoedontdekkings-app met de meest gevarieerde panden. Van villa's tot appartementen van alle soorten, ze ontmoeten elkaar hier, kansen ontstaan, vriendschappen worden gesmeed en nog veel meer.",
+      "faq": "FAQ",
+      "assistance": "Assistentie",
+      "safety": "Veiligheidstips",
+      "tos": "Gebruiksvoorwaarden",
+      "cookies": "Cookiebeleid",
+      "privacy": "Privacybeleid",
+      "copyright": "© 2025 SomaGate, LLC. Alle rechten voorbehouden."
+    }
   }
 }

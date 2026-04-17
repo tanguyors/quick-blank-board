@@ -636,5 +636,55 @@
     "becomeBuyer": "Also become a buyer",
     "roleAdded": "New role added successfully!",
     "switchHint": "Use the switch button in the header to change mode."
+  },
+  "homeDesktop": {
+    "nav": {
+      "features": "Features",
+      "security": "Security",
+      "help": "Help",
+      "download": "Download",
+      "login": "Sign in"
+    },
+    "hero": {
+      "title1": "Find your",
+      "title2": "dream villa",
+      "subtitle": "Swipe, match, visit. Real estate in Bali made simple and intuitive.",
+      "ctaPrimary": "Discover properties",
+      "ctaSecondary": "My dashboard",
+      "stat1": "Properties",
+      "stat2": "Happy clients",
+      "stat3": "Visits organized 7/7"
+    },
+    "features": {
+      "f1Title": "Swipe & Match",
+      "f1Desc": "Browse properties like on Tinder. Like what you love, skip the rest.",
+      "f2Title": "Organized Visits",
+      "f2Desc": "Book your visits in one click. Alone or in a group, we handle everything.",
+      "f3Title": "Smart Score",
+      "f3Desc": "The more engaged you are, the more exclusive properties you access first."
+    },
+    "showcase": {
+      "line1": "Match.",
+      "line2": "Discover.",
+      "line3": "Visit.",
+      "desc": "Discover the best properties in Bali. Swipe to explore, match with your favorites and visit in one click. All you need is good photos and a real desire to find your ideal property.",
+      "cta": "Sign up"
+    },
+    "footer": {
+      "download": "Download the app!",
+      "downloadInAppStore": "Download on",
+      "appStore": "the App Store",
+      "availableOnGooglePlay": "Get it on",
+      "googlePlay": "Google Play",
+      "p1": "Hey, are you in Bali? Looking for the perfect villa, want to invest in real estate or just explore the market? It all happens on SomaGate. With thousands of properties already, it's the best plan to find your property or future acquisition in Bali. Swipe, match, visit: things happen online or on social media. With SomaGate, the Bali real estate market is just one click away and only waiting for you to discover the property that suits you. Whether you're a buyer, tenant or investor, with SomaGate, you're going to make sparks fly.",
+      "p2": "On SomaGate, you'll find exactly what you're looking for. Want to buy a villa? Find it on SomaGate. Want to rent a house? Discover it on SomaGate. Standing out in real estate investment and want to maximize your portfolio? SomaGate is made for you. SomaGate is not an ordinary real estate site: it's the property discovery app with the most varied properties. From villas to apartments of all kinds, they meet here, opportunities are created, friendships are formed and much more.",
+      "faq": "FAQ",
+      "assistance": "Assistance",
+      "safety": "Safety tips",
+      "tos": "Terms of use",
+      "cookies": "Cookie policy",
+      "privacy": "Privacy policy",
+      "copyright": "© 2025 SomaGate, LLC. All rights reserved."
+    }
   }
 }
