@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PublicNavBar } from '@/components/layout/PublicNavBar';
@@ -51,6 +52,7 @@ const TIPS = [
 ];
 
 export default function Security() {
+  useAllowScroll();
   return (
     <div className="min-h-screen bg-background">
       <PublicNavBar title="Sécurité" />

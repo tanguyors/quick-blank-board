@@ -1,9 +1,11 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { PwaInstallFloat } from '@/components/pwa/PwaInstallFloat';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
 export default function Auth() {
+  useAllowScroll();
   const { user, loading } = useAuth();
 
   if (loading) return (

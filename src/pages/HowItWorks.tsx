@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PublicNavBar } from '@/components/layout/PublicNavBar';
@@ -43,6 +44,7 @@ const STEPS = [
 ];
 
 export default function HowItWorks() {
+  useAllowScroll();
   return (
     <div className="min-h-screen bg-background">
       <PublicNavBar title="Comment ça marche" />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { PageTopBar } from '@/components/layout/PageTopBar';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function Install() {
+  useAllowScroll();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIos, setIsIos] = useState(false);

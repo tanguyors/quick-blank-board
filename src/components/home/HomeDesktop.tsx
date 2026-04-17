@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, Heart, Calendar, TrendingUp, Apple, Play, ChevronDown } from 'lucide-react';
@@ -7,18 +6,13 @@ import { LanguageButtons } from '@/components/ui/LanguageButtons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import logoSoma from '@/assets/logo-soma.png';
-import villaImg from '@/assets/onboarding-villa-1.jpg';
+import { HomeSwipeableCards } from '@/components/home/HomeSwipeableCards';
+import { useAllowScroll } from '@/hooks/useAllowScroll';
 
 export default function HomeDesktop() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  // Allow native page scrolling only while this landing page is mounted.
-  // The rest of the app keeps `position: fixed` to lock nav bars in the webapp.
-  useEffect(() => {
-    document.documentElement.classList.add('allow-scroll');
-    return () => document.documentElement.classList.remove('allow-scroll');
-  }, []);
+  useAllowScroll();
 
   const { data: stats } = useQuery({
     queryKey: ['home-desktop-stats'],
@@ -189,32 +183,8 @@ export default function HomeDesktop() {
             </Button>
           </div>
 
-          {/* Stacked card mockup */}
-          <div className="relative h-[500px] flex items-center justify-center">
-            <div className="absolute w-72 h-96 rounded-3xl bg-card border border-border shadow-2xl rotate-[-8deg] translate-x-[-30px]" />
-            <div className="relative w-72 h-96 rounded-3xl overflow-hidden bg-card border border-border shadow-2xl rotate-[6deg]">
-              <img src={villaImg} alt="Villa Moderna" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 inset-x-0 p-5 text-white">
-                <h3 className="text-2xl font-bold">Villa Moderna</h3>
-                <p className="text-xs opacity-90 flex items-center gap-1 mt-1">📍 Seminyak, Bali</p>
-                <div className="flex items-center gap-3 text-xs mt-2 opacity-90">
-                  <span>🛏 4</span>
-                  <span>🛁 3</span>
-                  <span>📐 250 m²</span>
-                </div>
-                <p className="text-xl font-bold mt-2">$850,000</p>
-              </div>
-              <div className="absolute bottom-5 right-5 flex gap-2">
-                <button className="h-12 w-12 rounded-full bg-background/90 flex items-center justify-center shadow-lg">
-                  ✕
-                </button>
-                <button className="h-12 w-12 rounded-full bg-primary flex items-center justify-center shadow-lg text-primary-foreground">
-                  <Heart className="h-5 w-5 fill-current" />
-                </button>
-              </div>
-            </div>
-          </div>
+          {/* Pile de cartes interactive : drag + boutons like/dislike */}
+          <HomeSwipeableCards />
         </div>
       </section>
 
