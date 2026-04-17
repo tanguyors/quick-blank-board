@@ -11,6 +11,7 @@ import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
 import beachImg from '@/assets/onboarding-beach-3.jpg';
 import logoSoma from '@/assets/logo-soma.png';
+import HomeDesktop from '@/components/home/HomeDesktop';
 
 import iconAssurance from '@/assets/icons/assurance.png';
 import iconDoc from '@/assets/icons/doc.png';
@@ -83,7 +84,14 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
+      {/* Desktop version (>= lg) */}
+      <div className="hidden lg:block">
+        <HomeDesktop />
+      </div>
+
+      {/* Mobile version (< lg) */}
+      <div className="lg:hidden min-h-screen bg-background flex flex-col">
       {/* Top bar — fixed like a native app */}
       <div className="sticky top-0 z-50 flex items-center justify-between px-5 pb-3 bg-background/95 backdrop-blur-md border-b border-border/50 pt-[max(1.25rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-2">
@@ -271,6 +279,7 @@ export default function Home() {
           {t('home.slogan')}
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
