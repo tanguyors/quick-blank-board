@@ -279,6 +279,7 @@ export default function Home() {
           {t('home.slogan')}
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
