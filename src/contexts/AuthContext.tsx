@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const addRole = async (role: string) => {
     if (!user || roles.includes(role)) return;
-    await supabase.from('user_roles').insert({ user_id: user.id, role });
+    await supabase.from('user_roles').insert({ user_id: user.id, role: role as any });
     await fetchRoles(user.id);
   };
 
