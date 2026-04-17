@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, Heart, Calendar, TrendingUp, Apple, Play, ChevronDown } from 'lucide-react';
@@ -11,6 +12,13 @@ import villaImg from '@/assets/onboarding-villa-1.jpg';
 export default function HomeDesktop() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // Allow native page scrolling only while this landing page is mounted.
+  // The rest of the app keeps `position: fixed` to lock nav bars in the webapp.
+  useEffect(() => {
+    document.documentElement.classList.add('allow-scroll');
+    return () => document.documentElement.classList.remove('allow-scroll');
+  }, []);
 
   const { data: stats } = useQuery({
     queryKey: ['home-desktop-stats'],
