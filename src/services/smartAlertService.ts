@@ -24,8 +24,8 @@ export class SmartAlertService {
       .neq('owner_id', userId)
       .gte('created_at', yesterday);
 
-    if (prefs.preferred_operation) query = query.eq('operations', prefs.preferred_operation);
-    if (prefs.preferred_types?.length) query = query.in('type', prefs.preferred_types);
+    if (prefs.preferred_operation) query = query.eq('operations', prefs.preferred_operation as any);
+    if (prefs.preferred_types?.length) query = query.in('type', prefs.preferred_types as any);
 
     const { data: newProps } = await query;
     return (newProps || []).map(p => ({
