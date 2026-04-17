@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion, useMotionValue, useTransform, PanInfo, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useMotionValue, useTransform, PanInfo, AnimatePresence, animate } from 'framer-motion';
 import { Heart, X, MapPin, Bed, Bath, Maximize2 } from 'lucide-react';
 import villaImg from '@/assets/onboarding-villa-1.jpg';
 import apartmentImg from '@/assets/onboarding-apartment-2.jpg';
@@ -81,11 +81,42 @@ function SwipeCardItem({ card, exit, onDecide }: SwipeCardItemProps) {
   const rotate = useTransform(x, [-200, 0, 200], [-18, 6, 24]);
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const nopeOpacity = useTransform(x, [-100, 0], [1, 0]);
+  const interactedRef = useRef(false);
+
+  // Démo automatique : wiggle droite -> gauche -> centre pour suggérer le swipe
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      // Petit délai pour laisser la carte apparaître
+      await new Promise((r) => setTimeout(r, 600));
+      if (cancelled || interactedRef.current) return;
+      await animate(x, 90, { duration: 0.7, ease: 'easeInOut' }).then();
+      if (cancelled || interactedRef.current) return;
+      await animate(x, -90, { duration: 0.9, ease: 'easeInOut' }).then();
+      if (cancelled || interactedRef.current) return;
+      await animate(x, 0, { duration: 0.5, ease: 'easeOut' }).then();
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [x]);
+
+  const handleDragStart = () => {
+    interactedRef.current = true;
+    x.stop();
+  };
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 110;
     if (info.offset.x > threshold) onDecide('right');
     else if (info.offset.x < -threshold) onDecide('left');
+    else animate(x, 0, { duration: 0.3, ease: 'easeOut' });
+  };
+
+  const handleButton = (dir: 'left' | 'right') => {
+    interactedRef.current = true;
+    onDecide(dir);
   };
 
   return (
@@ -95,6 +126,7 @@ function SwipeCardItem({ card, exit, onDecide }: SwipeCardItemProps) {
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -149,7 +181,7 @@ function SwipeCardItem({ card, exit, onDecide }: SwipeCardItemProps) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onDecide('left');
+            handleButton('left');
           }}
           aria-label="Dislike"
           className="h-12 w-12 rounded-full bg-background/95 hover:bg-background flex items-center justify-center shadow-lg transition-transform hover:scale-110"
@@ -160,7 +192,7 @@ function SwipeCardItem({ card, exit, onDecide }: SwipeCardItemProps) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onDecide('right');
+            handleButton('right');
           }}
           aria-label="Like"
           className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 flex items-center justify-center shadow-lg text-primary-foreground transition-transform hover:scale-110"
