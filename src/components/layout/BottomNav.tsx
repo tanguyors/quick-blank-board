@@ -65,7 +65,6 @@ export function BottomNav() {
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50 w-full shrink-0 border-t border-border bg-background lg:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Navigation mobile"
     >
       <div className="mx-auto flex h-14 max-w-lg items-center justify-around">
@@ -93,6 +92,11 @@ export function BottomNav() {
           );
         })}
       </div>
+      {/* iOS safe-area spacer : fait que le fond du nav s'étend jusqu'au home indicator sans pousser les items vers le haut */}
+      <div
+        aria-hidden
+        style={{ height: 'env(safe-area-inset-bottom, 0px)' }}
+      />
     </nav>
   );
 }

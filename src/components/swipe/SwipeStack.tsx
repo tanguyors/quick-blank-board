@@ -6,14 +6,12 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { SwipeCard } from './SwipeCard';
 import { MatchAnimation } from './MatchAnimation';
 import { PropertyDetailSheet } from '@/components/map/PropertyDetailSheet';
-import { Undo2 } from 'lucide-react';
+import { Undo2, X, Star, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { ExploreFilterValues } from '@/components/explore/ExploreFilters';
 
 import iconMatches from '@/assets/icons/matches.png';
-import iconPass from '@/assets/icons/pass.png';
-import iconSuperlike from '@/assets/icons/superlike.png';
 
 interface SwipeStackProps {
   filters?: ExploreFilterValues;
@@ -226,28 +224,28 @@ export function SwipeStack({ filters }: SwipeStackProps) {
           type="button"
           onClick={handlePass}
           disabled={swipe.isPending}
-          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-destructive transition-colors hover:bg-destructive/10 active:scale-95"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(253,80,104,0.35)] transition-all hover:shadow-[0_6px_16px_rgba(253,80,104,0.45)] active:scale-95"
           aria-label={t('explore.pass')}
         >
-          <img src={iconPass} alt="" className="h-7 w-7 object-contain" />
+          <X className="h-8 w-8 text-[#FD5068]" strokeWidth={3} />
         </button>
         <button
           type="button"
           onClick={handleSuperLike}
           disabled={swipe.isPending}
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-amber-500 transition-all hover:bg-amber-500/10 active:scale-90"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(94,195,250,0.40)] transition-all hover:shadow-[0_6px_18px_rgba(94,195,250,0.55)] active:scale-90"
           aria-label="Super Like"
         >
-          <img src={iconSuperlike} alt="" className="h-10 w-10 object-contain" />
+          <Star className="h-9 w-9 text-[#5EC3FA] fill-[#5EC3FA]" strokeWidth={2} />
         </button>
         <button
           type="button"
           onClick={handleMatch}
           disabled={swipe.isPending}
-          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary transition-colors hover:bg-primary"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(66,230,164,0.35)] transition-all hover:shadow-[0_6px_16px_rgba(66,230,164,0.45)] active:scale-95"
           aria-label="Match"
         >
-          <img src={iconMatches} alt="" className="h-7 w-7 object-contain" />
+          <Heart className="h-8 w-8 text-[#42E6A4] fill-[#42E6A4]" strokeWidth={2} />
         </button>
       </div>
 

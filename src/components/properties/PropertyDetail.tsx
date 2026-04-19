@@ -16,8 +16,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 import iconMap from '@/assets/icons/map.png';
-import iconHome from '@/assets/icons/lit.png';
-import iconSearch from '@/assets/icons/search.png';
+import iconLit from '@/assets/icons/lit.png';
+import iconBain from '@/assets/icons/bain.png';
+import iconSurface from '@/assets/icons/surface.png';
+import iconDocStatus from '@/assets/icons/doc_status.png';
+import iconDocNotProvided from '@/assets/icons/doc_not_provided.png';
+import iconDocInProgress from '@/assets/icons/doc_in_progress.png';
+import iconDocProvided from '@/assets/icons/doc_provided.png';
 
 interface PropertyDetailProps {
   propertyId: string;
@@ -90,9 +95,9 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
           <img src={iconMap} alt="" className="h-4 w-4 object-contain" /><span>{property.adresse}</span>
         </div>
         <div className="flex gap-4 text-sm text-foreground">
-          {property.surface && <span className="flex items-center gap-1"><img src={iconSearch} alt="" className="h-5 w-5 object-contain" />{property.surface} m²</span>}
-          <span className="flex items-center gap-1"><img src={iconHome} alt="" className="h-5 w-5 object-contain" />{property.chambres}</span>
-          <span className="flex items-center gap-1">🚿 {property.salles_bain}</span>
+          {property.surface && <span className="flex items-center gap-1"><img src={iconSurface} alt="" className="h-5 w-5 object-contain" />{property.surface} m²</span>}
+          <span className="flex items-center gap-1"><img src={iconLit} alt="" className="h-5 w-5 object-contain" />{property.chambres}</span>
+          <span className="flex items-center gap-1"><img src={iconBain} alt="" className="h-5 w-5 object-contain" />{property.salles_bain}</span>
         </div>
 
         {/* Home Exchange info */}
@@ -232,16 +237,22 @@ export function PropertyDetail({ propertyId, readOnly = false }: PropertyDetailP
 
         {/* Document status */}
         <div className="bg-secondary/50 border border-border rounded-xl p-4">
-          <p className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">📄 {t('property.docStatus')}</p>
+          <p className="text-base font-semibold text-foreground flex items-center gap-2 mb-3">
+            <img src={iconDocStatus} alt="" className="h-7 w-7 object-contain" />
+            {t('property.docStatus')}
+          </p>
           <div className="flex flex-wrap gap-2">
-            <span className="text-sm px-3 py-1.5 rounded-full bg-destructive/10 text-destructive border border-destructive/30 font-medium">
-              ⬜ {t('property.docNotProvided')}
+            <span className="text-sm px-3 py-2 rounded-full bg-destructive/10 text-destructive border border-destructive/30 font-medium flex items-center gap-2">
+              <img src={iconDocNotProvided} alt="" className="h-6 w-6 object-contain" />
+              {t('property.docNotProvided')}
             </span>
-            <span className="text-xs px-3 py-1.5 rounded-full bg-muted text-muted-foreground border border-border">
-              ⬜ {t('property.docInProgress')}
+            <span className="text-sm px-3 py-2 rounded-full bg-muted text-muted-foreground border border-border flex items-center gap-2">
+              <img src={iconDocInProgress} alt="" className="h-6 w-6 object-contain" />
+              {t('property.docInProgress')}
             </span>
-            <span className="text-xs px-3 py-1.5 rounded-full bg-muted text-muted-foreground border border-border">
-              ⬜ {t('property.docProvided')}
+            <span className="text-sm px-3 py-2 rounded-full bg-muted text-muted-foreground border border-border flex items-center gap-2">
+              <img src={iconDocProvided} alt="" className="h-6 w-6 object-contain" />
+              {t('property.docProvided')}
             </span>
           </div>
         </div>

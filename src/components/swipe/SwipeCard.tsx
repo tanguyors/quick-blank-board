@@ -1,11 +1,10 @@
-import { Info } from 'lucide-react';
+import { Info, Bookmark } from 'lucide-react';
 import { useDisplayPrice } from '@/hooks/useDisplayPrice';
 import { useTranslation } from 'react-i18next';
 
 import iconMap from '@/assets/icons/map.png';
 import iconHome from '@/assets/icons/lit.png';
 import iconSearch from '@/assets/icons/search.png';
-import iconFavorites from '@/assets/icons/favorites.png';
 import { PropertySellerCard } from '@/components/properties/PropertySellerCard';
 import type { OwnerProfilePublic, OwnerScorePublic } from '@/lib/enrichPropertySellers';
 
@@ -56,15 +55,15 @@ export function SwipeCard({ property, onInfoClick, onFavoriteClick, isFavorite, 
               e.preventDefault();
               onFavoriteClick();
             }}
-            className={`absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full shadow-lg transition-colors disabled:opacity-50 ${
-              isFavorite
-                ? 'bg-primary ring-2 ring-primary/40'
-                : 'bg-white ring-1 ring-black/10 hover:bg-neutral-50 dark:bg-card dark:ring-white/15 dark:hover:bg-muted'
-            }`}
+            className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(255,176,46,0.40)] transition-all hover:shadow-[0_6px_16px_rgba(255,176,46,0.55)] active:scale-95 disabled:opacity-50"
             aria-label={t('property.favorite')}
             aria-pressed={isFavorite}
           >
-            <img src={iconFavorites} alt="" className="h-5 w-5 object-contain" />
+            <Bookmark
+              className="h-5 w-5 text-[#FFB02E]"
+              strokeWidth={2.5}
+              fill={isFavorite ? '#FFB02E' : 'transparent'}
+            />
           </button>
         )}
 

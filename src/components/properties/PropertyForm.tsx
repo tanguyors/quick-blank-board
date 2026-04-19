@@ -20,6 +20,28 @@ import { InsuranceCheckboxes } from '@/components/exchange/InsuranceCheckboxes';
 import { PointsPerNightDisplay } from '@/components/exchange/PointsPerNightDisplay';
 import { calculatePointsPerNight } from '@/lib/pointsCalculation';
 import { useAwardPoints } from '@/hooks/useSomaPoints';
+import imageCompression from 'browser-image-compression';
+import { AddressAutocomplete } from '@/components/ui/AddressAutocomplete';
+
+const COMPRESSION_OPTS = {
+  maxSizeMB: 1,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  preserveExif: false,
+  initialQuality: 0.8,
+};
+
+async function compressIfImage(file: File): Promise<File> {
+  if (!file.type.startsWith('image/')) return file;
+  if (file.size < 500 * 1024) return file;
+  try {
+    const compressed = await imageCompression(file, COMPRESSION_OPTS);
+    return new File([compressed], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' });
+  } catch (e) {
+    console.warn('[PropertyForm] Compression failed, using original:', e);
+    return file;
+  }
+}
 
 /* ── Type mappings ── */
 const PROPERTY_TYPES = [
@@ -150,6 +172,8 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     droit: (property?.droit || '') as string,
     secteur: property?.secteur || '',
     adresse: property?.adresse || '',
+    latitude: (property?.latitude as number | null) ?? null,
+    longitude: (property?.longitude as number | null) ?? null,
     prix: property?.prix?.toString() || '',
     prix_currency: property?.prix_currency || preferredCurrency,
     surface: property?.surface?.toString() || '',
@@ -206,10 +230,15 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
     setUploading(true);
     try {
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const ext = file.name.split('.').pop();
+        const rawFile = files[i];
+        const file = await compressIfImage(rawFile);
+        const ext = file.name.split('.').pop() || 'jpg';
         const path = `${propertyId}/${Date.now()}-${i}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from('property-media').upload(path, file);
+        const uploadPromise = supabase.storage.from('property-media').upload(path, file);
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Upload timeout (60s) — photo ${i + 1}/${files.length}, réessayez`)), 60_000)
+        );
+        const { error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from('property-media').getPublicUrl(path);
         const { data, error } = await supabase
@@ -225,10 +254,11 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         if (error) throw error;
         setMedia(prev => [...prev, data]);
       }
-      toast.success('Photos uploadées');
       queryClient.invalidateQueries({ queryKey: ['property', propertyId] });
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('[PropertyForm] Upload error:', error);
+      toast.error(`Upload échoué: ${error.message}`);
+      throw error;
     } finally {
       setUploading(false);
     }
@@ -263,6 +293,10 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
   /* ── Submit ── */
   const handleSubmit = async () => {
     if (!form.adresse.trim()) { toast.error('L\'adresse est requise'); return; }
+    if (form.latitude == null || form.longitude == null) {
+      toast.error('Sélectionnez une adresse dans les suggestions pour la géolocaliser');
+      return;
+    }
     if (!form.prix || Number(form.prix) <= 0) { toast.error('Le prix est requis'); return; }
     if (!form.secteur.trim()) { toast.error('Le secteur est requis'); return; }
 
@@ -289,6 +323,8 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
         type: form.type as any,
         operations: form.operations as any,
         adresse: form.adresse,
+        latitude: form.latitude,
+        longitude: form.longitude,
         secteur: form.secteur || null,
         surface: form.surface ? Number(form.surface) : null,
         chambres,
@@ -309,16 +345,19 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
       if (property) {
         await updateProperty.mutateAsync({ id: property.id, ...payload });
-        toast.success('Bien mis à jour');
+        toast.success('Bien mis à jour ✓', { duration: 4000 });
         onSuccess?.(property.id);
       } else {
         const data = await createProperty.mutateAsync({ ...payload, owner_id: user!.id });
-        // Upload pending files after creation
+        let uploadFailed = false;
         if (pendingFiles.length > 0) {
-          await handleUploadToProperty(data.id, pendingFiles);
-          setPendingFiles([]);
+          try {
+            await handleUploadToProperty(data.id, pendingFiles);
+            setPendingFiles([]);
+          } catch {
+            uploadFailed = true;
+          }
         }
-        // Award 300 SOMA Points for first exchange property
         if (isExchange) {
           awardPoints.mutate({
             amount: 300,
@@ -327,15 +366,23 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
             referenceId: data.id,
           });
         }
-        toast.success('Bien créé');
+        if (uploadFailed) {
+          toast.warning('Bien créé, mais certaines photos n\'ont pas pu être uploadées. Réessayez depuis l\'édition.', { duration: 6000 });
+        } else {
+          toast.success('Bien créé ✓', { duration: 4000 });
+        }
         onSuccess?.(data.id);
       }
     } catch (error: any) {
+      console.error('[PropertyForm] Submit error:', error);
       toast.error(error.message);
     }
   };
 
-  const isPending = createProperty.isPending || updateProperty.isPending;
+  const isPending = createProperty.isPending || updateProperty.isPending || uploading;
+  const submitLabel = property
+    ? (updateProperty.isPending ? 'Mise à jour...' : 'Mettre à jour')
+    : (createProperty.isPending ? 'Création...' : uploading ? 'Upload photos...' : 'Créer le bien');
 
   const cfg = getConfig(form.type);
 
@@ -377,8 +424,20 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
       {/* Adresse */}
       <div>
-        <Label className="text-sm font-semibold">Adresse</Label>
-        <Input className="mt-1" value={form.adresse} onChange={e => update('adresse', e.target.value)} placeholder="Adresse complète" />
+        <Label className="text-sm font-semibold">Adresse *</Label>
+        <div className="mt-1">
+          <AddressAutocomplete
+            value={form.adresse}
+            onChange={v => setForm(prev => ({ ...prev, adresse: v, latitude: null, longitude: null }))}
+            onSelect={r => setForm(prev => ({ ...prev, adresse: r.label, latitude: r.latitude, longitude: r.longitude, secteur: prev.secteur || r.city || '' }))}
+            placeholder="Tapez pour chercher (ex: Jl. Legian, Kuta)"
+          />
+        </div>
+        {form.latitude != null && form.longitude != null ? (
+          <p className="text-xs text-emerald-600 mt-1">✓ Adresse géolocalisée ({form.latitude.toFixed(4)}, {form.longitude.toFixed(4)})</p>
+        ) : form.adresse ? (
+          <p className="text-xs text-amber-600 mt-1">⚠ Sélectionnez une suggestion pour géolocaliser l'adresse</p>
+        ) : null}
       </div>
 
       {/* Prix + Devise */}
@@ -598,7 +657,7 @@ export function PropertyForm({ property, existingMedia = [], onSuccess }: Proper
 
       {/* Submit */}
       <Button type="button" onClick={handleSubmit} className="w-full" size="lg" disabled={isPending}>
-        {isPending ? 'En cours...' : property ? 'Mettre à jour' : 'Créer le bien'}
+        {submitLabel}
       </Button>
     </div>
   );

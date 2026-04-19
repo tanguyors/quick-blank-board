@@ -1,70 +1,118 @@
-import {
-  BedDouble, Bath, Sofa, CookingPot, Waves, TreePalm, Fence,
-  ShieldCheck, DoorOpen, ParkingSquare, Heater, Package, UtensilsCrossed,
-  Warehouse, Refrigerator, Tv, Wifi, AirVent, WashingMachine, Droplets
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Home } from 'lucide-react';
+import iconLit from '@/assets/icons/lit.png';
+import iconLitBebe from '@/assets/icons/lit_bebe.png';
+import iconParking from '@/assets/icons/parking.png';
+import iconSecurity from '@/assets/icons/security.png';
+import iconShield from '@/assets/icons/shield_check.png';
+import iconKey from '@/assets/icons/key.png';
+import iconHomeGarage from '@/assets/icons/home_garage.png';
+import iconWifi from '@/assets/icons/wifi.png';
+import iconJacuzzi from '@/assets/icons/jacuzzi.png';
+import iconLaveLinge from '@/assets/icons/lave_linge.png';
+import iconCuisine from '@/assets/icons/cuisine.png';
+import iconBarbecue from '@/assets/icons/barbecue.png';
+import iconPiscine from '@/assets/icons/piscine.png';
+import iconTv from '@/assets/icons/tv.png';
+import iconSecheLinge from '@/assets/icons/seche_linge.png';
+import iconClimatisation from '@/assets/icons/climatisation.png';
+import iconChauffage from '@/assets/icons/chauffage.png';
+import iconEspaceTravail from '@/assets/icons/espace_travail.png';
+import iconSecheCheveux from '@/assets/icons/seche_cheveux.png';
+import iconFerRepasser from '@/assets/icons/fer_repasser.png';
+import iconStationRecharge from '@/assets/icons/station_recharge.png';
+import iconSalleSport from '@/assets/icons/salle_sport.png';
+import iconPetitDejeuner from '@/assets/icons/petit_dejeuner.png';
+import iconCheminee from '@/assets/icons/cheminee.png';
+import iconLogementFumeur from '@/assets/icons/logement_fumeur.png';
+import iconAscenseur from '@/assets/icons/ascenseur.png';
+import iconGardien from '@/assets/icons/gardien.png';
+import iconAlarme from '@/assets/icons/alarme.png';
+import iconAccesHandicape from '@/assets/icons/acces_handicape.png';
+import iconJardin from '@/assets/icons/jardin.png';
+import iconEauCourante from '@/assets/icons/eau_courante.png';
+import iconElectricite from '@/assets/icons/electricite.png';
+import iconCloture from '@/assets/icons/cloture.png';
+import iconViabilise from '@/assets/icons/viabilise.png';
+import iconAccesGoudronne from '@/assets/icons/acces_goudronne.png';
+import iconBain from '@/assets/icons/bain.png';
 
-const equipmentIconMap: Record<string, { icon: any; emoji: string }> = {
-  // Rooms
-  chambre: { icon: BedDouble, emoji: '🛏️' },
-  bedroom: { icon: BedDouble, emoji: '🛏️' },
-  salon: { icon: Sofa, emoji: '🛋️' },
-  'living room': { icon: Sofa, emoji: '🛋️' },
-  séjour: { icon: Sofa, emoji: '🛋️' },
+const equipmentMap: Record<string, string> = {
+  // Rooms & beds
+  'chambre': iconLit,
+  'bedroom': iconLit,
+  'lit king size': iconLit,
+  'lit pour bébé': iconLitBebe,
+  'espace de travail dédié': iconEspaceTravail,
 
-  // Bathroom
-  'salle de bain': { icon: Bath, emoji: '🛁' },
-  bathroom: { icon: Bath, emoji: '🛁' },
-  toilette: { icon: Droplets, emoji: '🚿' },
-  toilet: { icon: Droplets, emoji: '🚿' },
-  douche: { icon: Droplets, emoji: '🚿' },
+  // Bathroom & water
+  'salle de bain': iconBain,
+  'bathroom': iconBain,
+  'jacuzzi': iconJacuzzi,
+  'eau courante': iconEauCourante,
 
   // Kitchen
-  cuisine: { icon: CookingPot, emoji: '🍳' },
-  kitchen: { icon: CookingPot, emoji: '🍳' },
-  'cuisine équipée': { icon: CookingPot, emoji: '🍳' },
-  réfrigérateur: { icon: Refrigerator, emoji: '🧊' },
+  'cuisine': iconCuisine,
+  'kitchen': iconCuisine,
+  'cuisine équipée': iconCuisine,
+  'petit déjeuner': iconPetitDejeuner,
 
   // Outdoor
-  piscine: { icon: Waves, emoji: '🏊' },
-  swimming: { icon: Waves, emoji: '🏊' },
-  jardin: { icon: TreePalm, emoji: '🌴' },
-  garden: { icon: TreePalm, emoji: '🌴' },
-  terrasse: { icon: Fence, emoji: '☀️' },
-  balcon: { icon: Fence, emoji: '🌿' },
-  balcony: { icon: Fence, emoji: '🌿' },
+  'piscine': iconPiscine,
+  'swimming': iconPiscine,
+  'jardin': iconJardin,
+  'garden': iconJardin,
+  'barbecue': iconBarbecue,
+  'clôturé': iconCloture,
+  'viabilisé': iconViabilise,
+  'accès goudronné': iconAccesGoudronne,
+  'électricité': iconElectricite,
 
-  // Security & access
-  sécurité: { icon: ShieldCheck, emoji: '🛡️' },
-  security: { icon: ShieldCheck, emoji: '🛡️' },
-  ascenseur: { icon: DoorOpen, emoji: '🛗' },
-  elevator: { icon: DoorOpen, emoji: '🛗' },
-  parking: { icon: ParkingSquare, emoji: '🅿️' },
-  garage: { icon: ParkingSquare, emoji: '🚗' },
+  // Security
+  'sécurité': iconSecurity,
+  'security': iconSecurity,
+  'détecteur de fumée': iconShield,
+  'détecteur de monoxyde de carbone': iconShield,
+  'alarme': iconAlarme,
+  'gardien': iconGardien,
+
+  // Access
+  'ascenseur': iconAscenseur,
+  'elevator': iconAscenseur,
+  'parking': iconParking,
+  'parking gratuit': iconParking,
+  'garage': iconHomeGarage,
+  'station de recharge pour véhicules électriques': iconStationRecharge,
+  'accès handicapé': iconAccesHandicape,
+  'clé': iconKey,
 
   // Comfort
-  chauffage: { icon: Heater, emoji: '🔥' },
-  heating: { icon: Heater, emoji: '🔥' },
-  climatisation: { icon: AirVent, emoji: '❄️' },
-  'air conditionné': { icon: AirVent, emoji: '❄️' },
-  wifi: { icon: Wifi, emoji: '📶' },
-  tv: { icon: Tv, emoji: '📺' },
-  'lave-linge': { icon: WashingMachine, emoji: '🧺' },
+  'chauffage': iconChauffage,
+  'heating': iconChauffage,
+  'climatisation': iconClimatisation,
+  'air conditionné': iconClimatisation,
+  'wifi': iconWifi,
+  'télévision': iconTv,
+  'tv': iconTv,
+  'cheminée': iconCheminee,
+  'salle de sport': iconSalleSport,
+  'logement fumeur': iconLogementFumeur,
 
-  // Storage & misc
-  rangement: { icon: Package, emoji: '📦' },
-  storage: { icon: Package, emoji: '📦' },
-  buanderie: { icon: Warehouse, emoji: '🏠' },
-  'salle à manger': { icon: UtensilsCrossed, emoji: '🍽️' },
-  meublé: { icon: Sofa, emoji: '🪑' },
+  // Laundry
+  'lave-linge': iconLaveLinge,
+  'sèche-linge': iconSecheLinge,
+  'fer à repasser': iconFerRepasser,
+  'sèche-cheveux': iconSecheCheveux,
 };
 
-function findEquipment(name: string) {
+function findEquipment(name: string): string | null {
   const lower = name.toLowerCase().trim();
-  if (equipmentIconMap[lower]) return equipmentIconMap[lower];
-  for (const key of Object.keys(equipmentIconMap)) {
-    if (lower.includes(key) || key.includes(lower)) return equipmentIconMap[key];
+  if (equipmentMap[lower]) return equipmentMap[lower];
+  for (const key of Object.keys(equipmentMap)) {
+    if (lower === key) return equipmentMap[key];
+  }
+  for (const key of Object.keys(equipmentMap)) {
+    if (lower.includes(key) || key.includes(lower)) return equipmentMap[key];
   }
   return null;
 }
@@ -75,16 +123,18 @@ interface EquipmentIconProps {
 }
 
 export function EquipmentIcon({ name, className }: EquipmentIconProps) {
-  const match = findEquipment(name);
+  const png = findEquipment(name);
 
   return (
     <div className={cn(
-      "flex flex-col items-center gap-1.5 p-3 rounded-xl bg-primary/10 border border-primary/20 min-w-[80px]",
+      "flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-primary/10 border border-primary/20 min-w-[80px] min-h-[80px]",
       className
     )}>
-      <span className="text-2xl">
-        {match?.emoji || '🏠'}
-      </span>
+      {png ? (
+        <img src={png} alt="" className="h-10 w-10 object-contain" />
+      ) : (
+        <Home className="h-7 w-7 text-primary" strokeWidth={1.75} />
+      )}
       <span className="text-xs font-medium text-foreground text-center leading-tight capitalize">
         {name}
       </span>

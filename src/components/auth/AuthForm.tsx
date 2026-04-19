@@ -39,7 +39,11 @@ export function AuthForm() {
         if (error) throw error;
         if (data.user) {
           await supabase.from('profiles').upsert({ id: data.user.id, email, full_name: fullName });
-          await supabase.from('user_roles').insert({ user_id: data.user.id, role });
+          await supabase.from('user_roles').insert([
+            { user_id: data.user.id, role: 'user' },
+            { user_id: data.user.id, role: 'owner' },
+          ]);
+          localStorage.setItem('somagate_active_role', role);
           await supabase.from('wf_user_scores').insert({ user_id: data.user.id }).select();
           toast.success(t('auth.accountCreated'));
           navigate('/profile-selection');
